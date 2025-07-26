@@ -3553,6 +3553,34 @@ input, select, textarea {
 	line-height: 1.6;
 }
 
+/* Icon Container for Feature Articles */
+.feature-article .icon-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 200px;
+	height: 150px;
+	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+	border-radius: var(--radius-md);
+	transition: all 0.3s ease;
+	margin-bottom: 1rem;
+}
+
+.feature-article .icon-container i {
+	font-size: 3rem;
+	color: white;
+	transition: all 0.3s ease;
+}
+
+.feature-article:hover .icon-container {
+	transform: scale(1.05);
+	box-shadow: var(--shadow-md);
+}
+
+.feature-article:hover .icon-container i {
+	transform: scale(1.1);
+}
+
 /* Contact Section */
 .contact-content {
 	margin-top: 2rem;
