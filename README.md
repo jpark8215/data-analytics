@@ -141,10 +141,6 @@ A modern, professional website showcasing data analytics, AI/ML solutions, and b
 - **LinkedIn**: [Connect with us](https://www.linkedin.com/in/developerjp/)
 - **GitHub**: [View our projects](https://github.com/jpark8215)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ---
 
 **Built with modern web technologies and best practices for optimal performance and user experience.** 
