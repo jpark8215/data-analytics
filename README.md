@@ -2,7 +2,7 @@
 
 A modern, professional website showcasing data analytics, AI/ML solutions, and business intelligence services.
 
-## 🚀 Recent Updates (2024)
+## 🚀 Recent Updates (2025)
 
 ### Complete Website Modernization
 - **Consistent Design System**: All pages now use the same modern CSS structure and styling
@@ -138,7 +138,6 @@ A modern, professional website showcasing data analytics, AI/ML solutions, and b
 
 ## 📞 Contact
 
-- **Email**: contact@dataanalytics.com
 - **LinkedIn**: [Connect with us](https://www.linkedin.com/in/developerjp/)
 - **GitHub**: [View our projects](https://github.com/jpark8215)
 
