@@ -2423,7 +2423,7 @@ input, select, textarea {
 			display: inline-block;
 			margin: 0 0 1.6875em 0;
 			padding: 0.35em 0 0 3.5em;
-			position: relative;
+			position: center;
 			vertical-align: top;
 			width: 48%;
 			background: inherit;
@@ -2721,7 +2721,7 @@ input, select, textarea {
 		.features article .inner {
 			display: inline-block;
 			vertical-align: middle;
-			width: 50%;
+			width: 100%;
 		}
 
 			.features article .inner > :last-child {
