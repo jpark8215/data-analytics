@@ -2705,28 +2705,30 @@ input, select, textarea {
 /* Features */
 
 	.features {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 2rem;
-		margin-top: 2rem;
-		text-align: center;
-	}
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2.5rem;
+	margin-top: 2rem;
+	text-align: center;
+	padding: 0 1rem;
+}
 
 	.features article {
-		border-top: none;
-		margin-bottom: 0;
-		padding-top: 0;
-		background: var(--bg-primary);
-		border: 1px solid var(--border-color);
-		border-radius: var(--radius-lg);
-		overflow: hidden;
-		transition: all 0.3s ease;
-		box-shadow: var(--shadow-sm);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-	}
+	border-top: none;
+	margin-bottom: 0;
+	padding-top: 0;
+	background: var(--bg-primary);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	transition: all 0.3s ease;
+	box-shadow: var(--shadow-sm);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	margin: 0.5rem;
+}
 
 		.features article:first-child {
 			border-top: none;
@@ -2744,13 +2746,13 @@ input, select, textarea {
 		}
 
 		.features article .inner {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			width: 100%;
-			padding: 2rem;
-			text-align: center;
-		}
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	padding: 2.5rem 2rem;
+	text-align: center;
+}
 
 			.features article .inner > :last-child {
 				margin-bottom: 0;
@@ -3399,18 +3401,20 @@ input, select, textarea {
 .key-features {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
+	gap: 2.5rem;
 	margin-top: 3rem;
+	padding: 0 1rem;
 }
 
 .feature-card {
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 2.5rem 2rem;
 	text-align: center;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
+	margin: 0.5rem;
 }
 
 .feature-card:hover {
@@ -3422,8 +3426,9 @@ input, select, textarea {
 .feature-card i {
 	font-size: 2.5rem;
 	color: var(--primary-color);
-	margin-bottom: 1rem;
+	margin-bottom: 1.5rem;
 	display: block;
+	padding: 1rem;
 }
 
 .feature-card h4 {
@@ -3442,19 +3447,21 @@ input, select, textarea {
 .solutions-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: 2rem;
+	gap: 2.5rem;
 	margin-top: 2rem;
+	padding: 0 1rem;
 }
 
 .solution-card {
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 2.5rem 2rem;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
 	position: relative;
 	overflow: hidden;
+	margin: 0.5rem;
 }
 
 .solution-card:hover {
@@ -3480,14 +3487,15 @@ input, select, textarea {
 }
 
 .solution-icon {
-	width: 60px;
-	height: 60px;
+	width: 70px;
+	height: 70px;
 	background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
 	border-radius: var(--radius-lg);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	margin-bottom: 1.5rem;
+	padding: 0.5rem;
 }
 
 .solution-icon i {
@@ -3585,13 +3593,13 @@ input, select, textarea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 120px;
-	height: 120px;
+	width: 130px;
+	height: 130px;
 	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 	border-radius: var(--radius-md);
 	transition: all 0.3s ease;
-	margin-bottom: 1.5rem;
 	margin: 0 auto 1.5rem auto;
+	padding: 1rem;
 }
 
 .feature-article .icon-container i {
@@ -3618,10 +3626,11 @@ input, select, textarea {
 .contact-info {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
+	gap: 2.5rem;
 	justify-items: center;
 	max-width: 800px;
 	margin: 0 auto;
+	padding: 0 1rem;
 }
 
 .contact-item {
@@ -3629,13 +3638,14 @@ input, select, textarea {
 	align-items: center;
 	justify-content: center;
 	gap: 1rem;
-	padding: 1.5rem;
+	padding: 2rem 1.5rem;
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
 	transition: all 0.3s ease;
 	text-align: center;
 	min-width: 250px;
+	margin: 0.5rem;
 }
 
 .contact-item:hover {
@@ -3647,8 +3657,9 @@ input, select, textarea {
 .contact-item i {
 	font-size: 1.5rem;
 	color: var(--primary-color);
-	width: 40px;
+	width: 50px;
 	text-align: center;
+	padding: 0.5rem;
 }
 
 .contact-item h4 {
@@ -3712,28 +3723,38 @@ input, select, textarea {
 @media screen and (max-width: 768px) {
 	.key-features {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 2rem;
+		padding: 0 0.5rem;
 	}
 	
 	.solutions-grid {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 2rem;
+		padding: 0 0.5rem;
 	}
 	
 	.features {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 2rem;
+		padding: 0 0.5rem;
 	}
 	
 	.contact-info {
 		grid-template-columns: 1fr;
-		gap: 1rem;
+		gap: 1.5rem;
+		padding: 0 0.5rem;
 	}
 	
 	.feature-card,
 	.solution-card,
 	.feature-article {
+		padding: 2rem 1.5rem;
+		margin: 0.25rem;
+	}
+	
+	.contact-item {
 		padding: 1.5rem;
+		margin: 0.25rem;
 	}
 	
 	#main > section {
