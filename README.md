@@ -155,7 +155,6 @@ The website is fully responsive with breakpoints at:
 
 - **LinkedIn**: [developerjp](https://www.linkedin.com/in/developerjp/)
 - **GitHub**: [jpark8215](https://github.com/jpark8215)
-- **Email**: contact@dataanalytics.com
 
 ## 📄 License
 
