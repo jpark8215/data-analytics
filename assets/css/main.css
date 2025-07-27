@@ -2869,7 +2869,7 @@ input, select, textarea {
 /* Wrapper */
 
 	#wrapper {
-		background: #fff;
+		background: transparent;
 		padding-right: 20em;
 	}
 
