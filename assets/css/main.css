@@ -29,6 +29,9 @@
 	--radius-xl: 1rem;
 	--font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: 'Source Code Pro', 'Monaco', 'Consolas', monospace;
+	--compact-spacing: 0.75rem;
+	--standard-spacing: 1rem;
+	--section-spacing: 2rem;
 }
 
 html, body, div, span, applet, object,
@@ -463,53 +466,53 @@ input, select, textarea {
 
 		.row {
 			margin-top: 0;
-			margin-left: -2em;
+			margin-left: -0.75em;
 		}
 
 			.row > * {
-				padding: 0 0 0 2em;
+				padding: 0 0 0 0.75em;
 			}
 
 			.row.gtr-uniform {
-				margin-top: -2em;
+				margin-top: -0.75em;
 			}
 
 				.row.gtr-uniform > * {
-					padding-top: 2em;
+					padding-top: 0.75em;
 				}
 
 		.row.gtr-150 {
 			margin-top: 0;
-			margin-left: -3em;
+			margin-left: -1.5em;
 		}
 
 			.row.gtr-150 > * {
-				padding: 0 0 0 3em;
+				padding: 0 0 0 1.5em;
 			}
 
 			.row.gtr-150.gtr-uniform {
-				margin-top: -3em;
+				margin-top: -1.5em;
 			}
 
 				.row.gtr-150.gtr-uniform > * {
-					padding-top: 3em;
+					padding-top: 1.5em;
 				}
 
 		.row.gtr-200 {
 			margin-top: 0;
-			margin-left: -4em;
+			margin-left: -2em;
 		}
 
 			.row.gtr-200 > * {
-				padding: 0 0 0 4em;
+				padding: 0 0 0 2em;
 			}
 
 			.row.gtr-200.gtr-uniform {
-				margin-top: -4em;
+				margin-top: -2em;
 			}
 
 				.row.gtr-200.gtr-uniform > * {
-					padding-top: 4em;
+					padding-top: 2em;
 				}
 
 		@media screen and (max-width: 1680px) {
@@ -1741,7 +1744,7 @@ input, select, textarea {
 
 	.container {
 		margin: 0 auto;
-		max-width: calc(100% - 4.5em);
+		max-width: calc(100% - 2em);
 		width: 45em;
 		background: #ffffff;
 		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
@@ -2461,8 +2464,7 @@ input, select, textarea {
 	ul.icons {
 		cursor: default;
 		list-style: none;
-/* 		padding-left: 0;*/
-		padding-left: 2em; 
+		padding-left: 0;
 	}
 
 		ul.icons li {
@@ -2876,7 +2878,7 @@ input, select, textarea {
 	}
 
 		#main > section > .container {
-			padding: 6em 0 4em 0;
+			padding: 2em 0 1.5em 0;
 		}
 
 		#main > section:first-child {
@@ -2950,7 +2952,7 @@ input, select, textarea {
 		/* Main */
 
 			#main > section > .container {
-				padding: 4em 0 2em 0;
+				padding: 2em 0 1.5em 0;
 			}
 
 	}
@@ -3256,7 +3258,7 @@ input, select, textarea {
 		/* Main */
 
 			#main > section > .container {
-				padding: 2em 0 0 0;
+				padding: 1.5em 0 0 0;
 			}
 
 		/* Footer */
@@ -3366,21 +3368,21 @@ input, select, textarea {
 
 /* Hero Content */
 .hero-content {
-	margin: 2rem 0;
+	margin: 1rem 0;
 }
 
 .key-features {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
-	margin-top: 3rem;
+	gap: 1rem;
+	margin-top: 1.5rem;
 }
 
 .feature-card {
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 1.25rem;
 	text-align: center;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
@@ -3415,15 +3417,15 @@ input, select, textarea {
 .solutions-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: 2rem;
-	margin-top: 2rem;
+	gap: 1rem;
+	margin-top: 1rem;
 }
 
 .solution-card {
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 1.25rem;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
 	position: relative;
@@ -3526,7 +3528,7 @@ input, select, textarea {
 }
 
 .feature-article .inner {
-	padding: 2rem;
+	padding: 1.25rem;
 }
 
 .feature-article .inner h4 {
@@ -3579,20 +3581,20 @@ input, select, textarea {
 
 /* Contact Section */
 .contact-content {
-	margin-top: 2rem;
+	margin-top: 1rem;
 }
 
 .contact-info {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
+	gap: 1rem;
 }
 
 .contact-item {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	padding: 1.5rem;
+	padding: 1rem;
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
@@ -3662,7 +3664,7 @@ input, select, textarea {
 
 /* Section Improvements */
 #main > section {
-	padding: 4rem 0;
+	padding: 2rem 0;
 }
 
 #main > section:nth-child(even) {
@@ -3673,33 +3675,17 @@ input, select, textarea {
 @media screen and (max-width: 768px) {
 	.key-features {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 1rem;
 	}
 	
 	.solutions-grid {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 1rem;
 	}
 	
 	.contact-info {
 		grid-template-columns: 1fr;
-		gap: 1rem;
-	}
-	
-	.feature-card,
-	.solution-card,
-	.feature-article {
-		padding: 1.5rem;
-	}
-	
-	#main > section {
-		padding: 2rem 0;
-	}
-}
-
-@media screen and (max-width: 480px) {
-	.key-features {
-		margin-top: 2rem;
+		gap: 0.75rem;
 	}
 	
 	.feature-card,
@@ -3708,14 +3694,30 @@ input, select, textarea {
 		padding: 1rem;
 	}
 	
+	#main > section {
+		padding: 1.5rem 0;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.key-features {
+		margin-top: 1rem;
+	}
+	
+	.feature-card,
+	.solution-card,
+	.feature-article {
+		padding: 0.75rem;
+	}
+	
 	.solution-icon {
-		width: 50px;
-		height: 50px;
-		margin-bottom: 1rem;
+		width: 45px;
+		height: 45px;
+		margin-bottom: 0.75rem;
 	}
 	
 	.solution-icon i {
-		font-size: 1.25rem;
+		font-size: 1.1rem;
 	}
 }
 
@@ -3820,8 +3822,8 @@ input, select, textarea {
 
 /* Content Layout */
 .intro-section {
-	margin-bottom: 3rem;
-	padding: 2rem;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
 	background: var(--bg-secondary);
 	border-radius: var(--radius-lg);
 	border-left: 4px solid var(--primary-color);
@@ -3830,15 +3832,15 @@ input, select, textarea {
 .content-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-	gap: 2rem;
-	margin: 2rem 0;
+	gap: 1rem;
+	margin: 1rem 0;
 }
 
 .content-section {
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 1.25rem;
 	box-shadow: var(--shadow-sm);
 	transition: all 0.3s ease;
 }
@@ -3885,8 +3887,8 @@ input, select, textarea {
 }
 
 .conclusion-section {
-	margin-top: 3rem;
-	padding: 2rem;
+	margin-top: 2rem;
+	padding: 1.5rem;
 	background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
 	border-radius: var(--radius-lg);
 	border: 1px solid var(--border-color);
@@ -3904,8 +3906,8 @@ input, select, textarea {
 
 /* Page Footer */
 .page-footer {
-	margin-top: 3rem;
-	padding-top: 2rem;
+	margin-top: 2rem;
+	padding-top: 1.5rem;
 	border-top: 1px solid var(--border-color);
 }
 
@@ -3932,16 +3934,16 @@ input, select, textarea {
 @media screen and (max-width: 768px) {
 	.content-grid {
 		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 1rem;
 	}
 	
 	.content-section {
-		padding: 1.5rem;
+		padding: 1rem;
 	}
 	
 	.intro-section,
 	.conclusion-section {
-		padding: 1.5rem;
+		padding: 1rem;
 	}
 	
 	.navigation-buttons {
@@ -3966,12 +3968,12 @@ input, select, textarea {
 	}
 	
 	.content-section {
-		padding: 1rem;
+		padding: 0.75rem;
 	}
 	
 	.intro-section,
 	.conclusion-section {
-		padding: 1rem;
+		padding: 0.75rem;
 	}
 	
 	.content-section h3 {
