@@ -1748,6 +1748,8 @@ input, select, textarea {
 		width: 45em;
 		background: #ffffff;
 		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
+		padding-left: 1.25rem;
+		padding-right: 1.25rem;
 	}
 
 		.container.xsmall {
@@ -3981,5 +3983,55 @@ input, select, textarea {
 		align-items: flex-start;
 		gap: 0.5rem;
 	}
+}
+
+/* Add horizontal padding to cards and sections */
+.feature-card,
+.solution-card,
+.feature-article .inner,
+.contact-item,
+.content-section {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+/* Add margin to icons inside cards/items */
+.feature-card i,
+.solution-icon,
+.feature-article .icon-container,
+.contact-item i,
+.content-section h3 i {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .feature-card,
+  .solution-card,
+  .feature-article .inner,
+  .contact-item,
+  .content-section {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .feature-card,
+  .solution-card,
+  .feature-article .inner,
+  .contact-item,
+  .content-section {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 }
 
