@@ -2034,7 +2034,7 @@ input, select, textarea {
 		border-radius: 5px;
 		border: solid 2px #e4e4e4;
 		margin-bottom: 2.25em;
-		padding: 1.5em;
+		padding: 2.5em;
 	}
 
 		.box > :last-child,
@@ -3379,7 +3379,7 @@ input, select, textarea {
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 3rem;
 	text-align: center;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
@@ -3422,7 +3422,7 @@ input, select, textarea {
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 3rem;
 	transition: all 0.3s ease;
 	box-shadow: var(--shadow-sm);
 	position: relative;
@@ -3525,7 +3525,7 @@ input, select, textarea {
 }
 
 .feature-article .inner {
-	padding: 2rem;
+	padding: 3rem;
 }
 
 .feature-article .inner h4 {
@@ -3591,7 +3591,7 @@ input, select, textarea {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	padding: 1.5rem;
+	padding: 2.5rem;
 	background: var(--bg-secondary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
@@ -3688,7 +3688,7 @@ input, select, textarea {
 	.feature-card,
 	.solution-card,
 	.feature-article {
-		padding: 1.5rem;
+		padding: 2.5rem;
 	}
 	
 	#main > section {
@@ -3704,7 +3704,7 @@ input, select, textarea {
 	.feature-card,
 	.solution-card,
 	.feature-article {
-		padding: 1rem;
+		padding: 2rem;
 	}
 	
 	.solution-icon {
@@ -3820,7 +3820,7 @@ input, select, textarea {
 /* Content Layout */
 .intro-section {
 	margin-bottom: 3rem;
-	padding: 2rem;
+	padding: 3rem;
 	background: var(--bg-secondary);
 	border-radius: var(--radius-lg);
 	border-left: 4px solid var(--primary-color);
@@ -3837,7 +3837,7 @@ input, select, textarea {
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-	padding: 2rem;
+	padding: 3rem;
 	box-shadow: var(--shadow-sm);
 	transition: all 0.3s ease;
 }
@@ -3885,7 +3885,7 @@ input, select, textarea {
 
 .conclusion-section {
 	margin-top: 3rem;
-	padding: 2rem;
+	padding: 3rem;
 	background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
 	border-radius: var(--radius-lg);
 	border: 1px solid var(--border-color);
@@ -3935,12 +3935,12 @@ input, select, textarea {
 	}
 	
 	.content-section {
-		padding: 1.5rem;
+		padding: 2.5rem;
 	}
 	
 	.intro-section,
 	.conclusion-section {
-		padding: 1.5rem;
+		padding: 2.5rem;
 	}
 	
 	.navigation-buttons {
@@ -3965,12 +3965,12 @@ input, select, textarea {
 	}
 	
 	.content-section {
-		padding: 1rem;
+		padding: 2rem;
 	}
 	
 	.intro-section,
 	.conclusion-section {
-		padding: 1rem;
+		padding: 2rem;
 	}
 	
 	.content-section h3 {
