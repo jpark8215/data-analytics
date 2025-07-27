@@ -1743,7 +1743,7 @@ input, select, textarea {
 /* Container */
 
 	.container {
-		margin: 5rem auto;
+		margin: 0 auto;
 		max-width: calc(100% - 2em);
 		width: 45em;
 		background: #ffffff;
