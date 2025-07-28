@@ -3403,7 +3403,7 @@ input, select, textarea {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 50%;
+	width: 100%;
 }
 
 .feature-card h4 {
