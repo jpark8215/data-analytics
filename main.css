@@ -1743,7 +1743,7 @@ input, select, textarea {
 		margin: 0 auto;
 		max-width: calc(100% - 4.5em);
 		width: 45em;
-		background: #ffffff;
+		background: transparent;
 		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
 	}
 
