@@ -3397,10 +3397,13 @@ input, select, textarea {
 }
 
 .feature-card i {
-	font-size: 2.5rem;
+	font-size: 1.8rem;
 	color: var(--primary-color);
 	margin-bottom: 1rem;
-	display: block;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
 }
 
 .feature-card h4 {
