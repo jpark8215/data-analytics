@@ -2936,7 +2936,8 @@ input, select, textarea {
 	}
 
 		#main > section > .container {
-			padding: 2em 0 1.5em 0;
+			padding: 3em 0 2.5em 0; /* Increased from 2em 0 1.5em 0 */
+/* 			padding: 2em 0 1.5em 0; */
 		}
 
 		#main > section:first-child {
