@@ -1743,7 +1743,7 @@ input, select, textarea {
 /* Container */
 
 	.container {
-		margin: 100 auto;
+		margin: 0 auto;
 		max-width: calc(100% - 2em);
 		width: 45em;
 		background: #ffffff;
@@ -1780,6 +1780,8 @@ input, select, textarea {
 
 			.container {
 				width: 100% !important;
+				padding-left: 1.25rem;
+				padding-right: 1.25rem;
 			}
 
 		}
@@ -1788,6 +1790,8 @@ input, select, textarea {
 
 			.container {
 				max-width: calc(100% - 3.375em);
+				padding-left: 1.25rem;
+				padding-right: 1.25rem;
 			}
 
 		}
