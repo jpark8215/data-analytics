@@ -1743,11 +1743,11 @@ input, select, textarea {
 /* Container */
 
 	.container {
-		margin: 0 2rem;
+		margin: 0 auto;
 		max-width: calc(100% - 2em);
 		width: 45em;
-		background: #ffffff;
-		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
+/* 		background: #ffffff;
+		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1); */
 		padding-left: 1.25rem;
 		padding-right: 1.25rem;
 	}
