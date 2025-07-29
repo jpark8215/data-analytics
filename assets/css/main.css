@@ -1740,63 +1740,7 @@ input, select, textarea {
 
 		}
 
-
-/* Container - UPDATED WITH WIDER WIDTHS AND BETTER SPACING */
-
-	.container {
-		margin: 0 auto;
-		max-width: calc(100% - 3em); /* Increased from 2em */
-		width: 75em; /* Increased from 45em */
-		background: #ffffff;
-		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
-		padding-left: 2.5rem; /* Increased from 1.25rem */
-		padding-right: 2.5rem; /* Increased from 1.25rem */
-	}
-
-		.container.xsmall {
-			width: 25em; /* Increased from 11.25em */
-		}
-
-		.container.small {
-			width: 40em; /* Increased from 22.5em */
-		}
-
-		.container.medium {
-			width: 55em; /* Increased from 33.75em */
-		}
-
-		.container.large {
-			width: 85em; /* Increased from 56.25em */
-		}
-
-		.container.xlarge {
-			width: 100em; /* Increased from 67.5em */
-		}
-
-		.container.max {
-			width: 100%;
-		}
-
-		@media screen and (max-width: 1024px) {
-
-			.container {
-				width: 100% !important;
-				padding-left: 2rem;
-				padding-right: 2rem;
-			}
-
-		}
-
-		@media screen and (max-width: 480px) {
-
-			.container {
-				max-width: calc(100% - 1.5em); /* Reduced from 3.375em for mobile */
-				padding-left: 1rem;
-				padding-right: 1rem;
-			}
-
-		}
-/* /* Container */
+/* Container */
 
 	.container {
 		margin: 0 auto;
@@ -1804,8 +1748,8 @@ input, select, textarea {
 		width: 45em;
 		background: #ffffff;
 		box-shadow: 0 2px 4px rgba(13, 27, 42, 0.1);
-		padding-left: 1.25rem;
-		padding-right: 1.25rem;
+		padding-left: 111.25rem;
+		padding-right: 111.25rem;
 	}
 
 		.container.xsmall {
@@ -1846,7 +1790,7 @@ input, select, textarea {
 				max-width: calc(100% - 3.375em);
 			}
 
-		} */
+		}
 
 /* Section/Article */
 
@@ -2936,8 +2880,7 @@ input, select, textarea {
 	}
 
 		#main > section > .container {
-			padding: 3em 0 2.5em 0; /* Increased from 2em 0 1.5em 0 */
-/* 			padding: 2em 0 1.5em 0; */
+			padding: 2em 0 1.5em 0;
 		}
 
 		#main > section:first-child {
