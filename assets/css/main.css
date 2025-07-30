@@ -3558,7 +3558,6 @@ input, select, textarea {
 
 /* Icon Container for Feature Articles */
 .feature-article .icon-container {
-	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 200px;
@@ -3566,7 +3565,7 @@ input, select, textarea {
 	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 	border-radius: var(--radius-md);
 	transition: all 0.3s ease;
-	margin: 1rem;
+	margin-bottom: 1rem;
 }
 
 .feature-article .icon-container i {
