@@ -3566,7 +3566,7 @@ input, select, textarea {
 	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 	border-radius: var(--radius-md);
 	transition: all 0.3s ease;
-	margin-bottom: 1rem;
+	margin: 1rem;
 }
 
 .feature-article .icon-container i {
