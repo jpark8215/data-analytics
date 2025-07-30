@@ -3522,8 +3522,8 @@ input, select, textarea {
 }
 
 .feature-article .image img {
-	width: 100%;
-	height: 200px;
+	width: 50%;
+	height: 100px;
 	object-fit: cover;
 	transition: transform 0.3s ease;
 }
@@ -3533,7 +3533,7 @@ input, select, textarea {
 }
 
 .feature-article .inner {
-	padding: 2.25rem;
+	padding: 1.25rem;
 }
 
 .feature-article .inner h4 {
