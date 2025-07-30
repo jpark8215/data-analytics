@@ -3502,7 +3502,6 @@ input, select, textarea {
 
 /* Feature Articles */
 .feature-article {
-	display:flex;
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
@@ -3534,7 +3533,7 @@ input, select, textarea {
 }
 
 .feature-article .inner {
-	padding: 1.25rem;
+	padding: 2.25rem;
 }
 
 .feature-article .inner h4 {
