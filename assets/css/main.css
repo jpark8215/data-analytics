@@ -3502,7 +3502,7 @@ input, select, textarea {
 
 /* Feature Articles */
 .feature-article {
-	display:flex
+	display:flex;
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
