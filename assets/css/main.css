@@ -3502,6 +3502,7 @@ input, select, textarea {
 
 /* Feature Articles */
 .feature-article {
+	display:flex
 	background: var(--bg-primary);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
@@ -3558,6 +3559,7 @@ input, select, textarea {
 
 /* Icon Container for Feature Articles */
 .feature-article .icon-container {
+	display:flex;
 	align-items: center;
 	justify-content: center;
 	width: 200px;
