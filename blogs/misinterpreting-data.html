@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cases Where People Misinterpret Data | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Analyzing common pitfalls, paradoxes, and cases where intuition fails and data becomes misleading.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="/" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="/" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(59, 130, 246, 0.2); color: var(--clr-primary);">Analysis</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Cases Where People Misinterpret Data
+                </h1>
+                <p style="color: var(--clr-text-muted);">When intuition fails and the numbers lead us astray.</p>
+            </header>
+
+            <img src="https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80"
+                alt="Data Misinterpretation" class="post-image">
+
+            <div class="post-content">
+                <p>Data should be objective, but the way we interpret it often isn't. Cognitive biases and statistical
+                    paradoxes can cause even the most expert analysts to draw the wrong conclusions from a dataset.</p>
+
+                <h2>The Correlation vs. Causation Trap</h2>
+                <p>One of the most common mistakes is assuming that because two metrics move together, one must cause
+                    the other. For example, ice cream sales and shark attacks both increase during the summer—but ice
+                    cream doesn't cause shark attacks. The hidden variable here is temperature.</p>
+
+                <h2>Simpson's Paradox</h2>
+                <p>Simpson’s Paradox occurs when a trend appears in different groups of data but disappears or reverses
+                    when these groups are combined. This can lead to misleading conclusions in everything from hospital
+                    survival rates to marketing campaign results.</p>
+
+                <h2>The Survivorship Bias</h2>
+                <p>We often focus on the "winners" and ignore the much larger group of "losers" that we don't see. In
+                    business analytics, this often means studying successful companies while ignoring the data from
+                    those that failed, leading to a skewed understanding of what truly drives success.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="/" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
