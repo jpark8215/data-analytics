@@ -1,49 +1,47 @@
-# Data Analytics and Beyond
+# Data-Informed Insights
 
-A modern, professional website showcasing data analytics, AI/ML solutions, and business intelligence services.
+A premium blog dedicated to solving practical problems with data, correcting misinterpretations, and understanding the reality of data-driven organizations.
 
-## 🚀 Recent Updates (2025)
+## 🚀 Overview
 
-### Updated Pages
-- **Homepage (`index.html`)**: Complete redesign with hero section, feature cards, and contact section
-- **AI/ML Solution Pages**: All 6 pages updated with consistent structure and modern styling
-  - AI Implementation
-  - Process Automation  
-  - Big Data Analytics
-  - Cloud AI Solutions
-  - Machine Learning Models
-  - Neural Networks
-- **Business Intelligence Pages**: All 3 pages updated with consistent navigation and layout
-  - BI Tools and Technology
-  - Data Management
-  - Performance Management
+**Data-Informed Insights** focuses on demystifying advanced data topics, analyzing data pitfalls, and offering an honest look at organizational data culture from a managerial viewpoint.
 
-## 📄 Page Structure
+## 📄 Site Structure
 
-### Homepage
-- **Header**: Navigation, logo, and social links
-- **Hero Section**: Introduction with key features
-- **AI/ML Solutions**: Interactive solution cards
-- **Business Intelligence**: Icon-based feature articles
-- **Contact Section**: Professional contact information
-- **Footer**: Copyright and branding
+### Homepage (`index.html`)
+- **Hero Section**: Clarifying the reality of data and cutting through the noise.
+- **Core Topics**:
+  - **Practical**: Solving problems and bridging the gap between theory and real-world results.
+  - **Analysis**: Analyzing common pitfalls and misinterpretations where intuition fails and data is misleading.
+  - **Management**: An honest look at the data-driven reality and organizational culture.
+  - **Education**: Demystifying data concepts for all non-experts and decision-makers.
+- **Latest Insights**: Dynamic grid of recent blog posts.
 
-### Sub-Pages
-- **Consistent Header**: Same navigation across all pages
-- **Breadcrumbs**: Clear navigation hierarchy
-- **Content Sections**: Organized with icons and proper spacing
-- **Navigation Footer**: Links to related pages
-- **Professional Layout**: Clean, modern design
+### Blog Posts (`blogs/`)
+- [The 5-Step Framework: Messy Problem to Clean Data Question](blogs/5-step-framework-data-question.html)
+- [How to Solve Practical Problems Using Data](blogs/solving-practical-problems.html)
+- [Cases Where Many People Misinterpret Data](blogs/misinterpreting-data.html)
+- [The Reality of Data-Driven Organizations](blogs/managerial-perspective.html)
+- [Explain Data Concepts to Non-Experts](blogs/data-concepts-for-all.html)
+
+### Assets (`assets/`)
+- **CSS**: Custom styling and design variables for a modern, glassmorphism-inspired UI (`blog.css`, `variables.css`).
+- **Images**: Blog post thumbnails and site assets.
+
+## 🛠️ Technology Stack
+
+- **HTML5**: Semantic and accessible document structure.
+- **CSS3**: Vanilla CSS with modern features like CSS variables, flexbox, grid, and glassmorphism effects.
+- **JavaScript**: Vanilla JS for dynamic content rendering (latest posts) and scroll effects.
+- **Fonts & Icons**: Google Fonts (Inter, Outfit) and Font Awesome 6.
 
 ## 🎯 Target Audience
 
-- **Business Leaders**: Strategic insights and ROI information
-- **Data Scientists**: Technical implementation details
-- **IT Professionals**: System architecture and tools
-- **Decision Makers**: Business impact and benefits
-- **Developers**: Technical specifications and code examples
+- **Data Professionals**: Looking to bridge the gap between algorithms and business value.
+- **Managers & Leaders**: Making strategic decisions based on data.
+- **Non-Experts**: Wanting to understand core data concepts without complex jargon.
 
-## 📞 Contact
+## 📞 Connect
 
 - **LinkedIn**: [Connect with us](https://www.linkedin.com/in/developerjp/)
 - **GitHub**: [View our projects](https://github.com/jpark8215)

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 5-Step Framework to Turn Messy Business Problems into Clean Data Questions | Data-Informed Insights
+    </title>
+
+    <meta name="description"
+        content="Learn the 5-step framework used to turn vague business problems into measurable, clean data questions, featuring a real-world US healthcare data example.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content h3 {
+            margin-top: var(--space-m);
+            font-size: 1.35rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .case-study {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid var(--clr-primary);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="/" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="/" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(16, 185, 129, 0.2); color: var(--clr-secondary);">Practical</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">The 5-Step Framework: Messy Problem to
+                    Clean Data Question</h1>
+                <p style="color: var(--clr-text-muted);">From a vague executive mandate to a measurable, actionable
+                    analytical strategy.</p>
+            </header>
+
+            <img src="https://images.unsplash.com/photo-1551076805-e18690c5e561?auto=format&fit=crop&w=800&q=80"
+                alt="Healthcare Data Analysis" class="post-image">
+
+            <div class="post-content">
+                <p>One of the most common reasons data projects fail isn't bad machine learning models or missing
+                    data—it's that the team solved the wrong problem. Business leaders often approach data teams with
+                    vague frustrations disguised as requests. To build something useful, you have to bridge the gap and
+                    translate everyday business anxiety into measurable, logical data questions.</p>
+
+                <p>Over the years, I've developed a reliable 5-step framework to clarify these situations. To
+                    demonstrate how it works, let’s walk through a critical real-world problem derived from the US
+                    healthcare system.</p>
+
+                <div class="case-study">
+                    <h3>The Messy Business Problem</h3>
+                    <p><em>"Our hospital is bleeding money because of Medicare readmission penalties. We need to stop
+                            patients from coming back so much!"</em></p>
+                </div>
+
+                <h2>Step 1: Unpack the Core Objective</h2>
+                <p>We first need to filter emotion from facts. The hospital isn't just trying to "stop patients from
+                    coming back"—reducing all readmissions indiscriminately might mean turning away patients who
+                    genuinely need critical care, raising mortality rates and liability.</p>
+                <p><strong>The refined objective:</strong> Reduce <em>preventable</em> 30-day readmissions for Medicare
+                    advantage patients to minimize financial penalties without compromising patient health.</p>
+
+                <h2>Step 2: Identify the Actors and Actions</h2>
+                <p>Who is involved, and what can they actually do? If your models predict a patient will return, what
+                    intervention occurs?</p>
+                <p>In our healthcare example, the actors are the discharge nurses and case managers. The actions they
+                    can take include scheduling follow-up calls within 48 hours, arranging transportation to outpatient
+                    clinics, or prescribing an at-home monitoring kit.</p>
+
+                <h2>Step 3: Define the Measurable Outcomes (The "Y")</h2>
+                <p>If we want to reduce readmissions, we need a concrete target variable. In data terms, what exactly
+                    are we predicting or classifying?</p>
+                <p><strong>The outcome definition:</strong> A binary target—1 if a discharged high-risk patient is
+                    readmitted to any hospital facility within 30 days of their initial discharge date, and 0 otherwise.
+                </p>
+
+                <h2>Step 4: Map the Available Information (The "X")</h2>
+                <p>What data is available <em>at the exact moment</em> the decision needs to be made? It doesn't help to
+                    use billing summaries that won't finalize until two weeks after the patient goes home.</p>
+                <p>At the time of discharge, the care team only has access to: EHR admission notes, patient
+                    demographics, historical chronic conditions, vital sign trends during the stay, and the patient's
+                    zip code (for proxying social determinants of health).</p>
+
+                <h2>Step 5: Formulate the Final Data Question</h2>
+                <p>Combine all previous steps into a single, highly specific technical statement that serves as the
+                    guiding star for the entire data project.</p>
+
+                <div class="case-study">
+                    <h3>The Clean Data Question</h3>
+                    <p><em>"Using historical EHR admitting logs, past diagnosis codes, and vital sign trends available
+                            at the time of discharge, can we predict the probability (0-100%) that a Medicare patient
+                            will be readmitted within 30 days, so that case managers can prioritize scheduling 48-hour
+                            follow-up calls for the top 15% highest-risk patients?"</em></p>
+                </div>
+
+                <p>By moving from <em>"stop patients from coming back"</em> to a hyper-specific, actor-driven prediction
+                    bound by exact time constraints, you provide your data engineers, analysts, and scientists with a
+                    clear, achievable target that guarantees business value.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="/" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
