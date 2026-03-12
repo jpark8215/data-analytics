@@ -92,7 +92,8 @@
             box-shadow: var(--shadow-md);
         }
 
-        .data-table th, .data-table td {
+        .data-table th,
+        .data-table td {
             padding: var(--space-s);
             text-align: left;
             border-bottom: 1px solid var(--clr-surface-alt);
@@ -104,8 +105,15 @@
             font-weight: 600;
         }
 
-        .trend-up { color: var(--clr-secondary); font-weight: 600; }
-        .trend-down { color: #f87171; font-weight: 600; }
+        .trend-up {
+            color: var(--clr-secondary);
+            font-weight: 600;
+        }
+
+        .trend-down {
+            color: #f87171;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -131,20 +139,30 @@
             <header class="post-header">
                 <span class="blog-card-tag"
                     style="background: rgba(139, 92, 246, 0.2); color: var(--clr-accent);">Strategic</span>
-                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Beyond Correlation: The Subtle Trap of Simpson's Paradox</h1>
-                <p style="color: var(--clr-text-muted);">Why looking at the "big picture" can sometimes lead you to exactly the wrong conclusion.</p>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Beyond Correlation: The Subtle Trap of
+                    Simpson's Paradox</h1>
+                <p style="color: var(--clr-text-muted);">Why looking at the "big picture" can sometimes lead you to
+                    exactly the wrong conclusion.</p>
             </header>
 
             <img src="../assets/images/simpsons_paradox.png" alt="Simpson's Paradox Illustration" class="post-image">
 
             <div class="post-content">
-                <p>We've all heard the mantra: <em>"Correlation is not causation."</em> It's the first thing taught in any stats 101 class, and most managers have learned to be skeptical of simple relationships. But there is a far more insidious mistake lurking in business data—one that professional data scientists fear and managers frequently miss: <strong>Simpson's Paradox</strong>.</p>
+                <p>We've all heard the mantra: <em>"Correlation is not causation."</em> It's the first thing taught in
+                    any stats 101 class, and most managers have learned to be skeptical of simple relationships. But
+                    there is a far more insidious mistake lurking in business data, one that professional data
+                    scientists fear and managers frequently miss: <strong>Simpson's Paradox</strong>.</p>
 
-                <p>Simpson's Paradox occurs when a trend appears in several different groups of data but disappears or reverses when these groups are combined. It’s the ultimate "blind spot" for anyone relying on aggregated dashboards and high-level KPIs.</p>
+                <p>Simpson's Paradox occurs when a trend appears in several different groups of data but disappears or
+                    reverses when these groups are combined. It’s the ultimate "blind spot" for anyone relying on
+                    aggregated dashboards and high-level KPIs.</p>
 
                 <div class="case-study">
                     <h3>The A/B Test That Lied</h3>
-                    <p>Imagine you're a product manager at a high-growth SaaS company. You're running an A/B test on a new checkout flow. The aggregate data comes in, and version B (the new flow) looks like a clear winner with a higher overall conversion rate. You’re ready to roll it out to 100% of users. But wait...</p>
+                    <p>Imagine you're a product manager at a high-growth SaaS company. You're running an A/B test on a
+                        new checkout flow. The aggregate data comes in, and version B (the new flow) looks like a clear
+                        winner with a higher overall conversion rate. You’re ready to roll it out to 100% of users. But
+                        wait...</p>
                 </div>
 
                 <h2>The Aggregate Deception</h2>
@@ -175,10 +193,13 @@
                     </tbody>
                 </table>
 
-                <p>Beta wins by 0.35%. It seems small, but at scale, that’s thousands of dollars in monthly recurring revenue. However, when you segment the data by device type—a critical dimension for your product—the story flips entirely.</p>
+                <p>Beta wins by 0.35%. It seems small, but at scale, that’s thousands of dollars in monthly recurring
+                    revenue. However, when you segment the data by device type, a critical dimension for your
+                    product,the story flips entirely.</p>
 
                 <h2>The Reversal: Segmenting by Device</h2>
-                <p>When you break down the same 20,000 users by whether they used a Desktop or a Mobile device, the truth emerges:</p>
+                <p>When you break down the same 20,000 users by whether they used a Desktop or a Mobile device, the
+                    truth emerges:</p>
 
                 <table class="data-table">
                     <thead>
@@ -217,13 +238,15 @@
                             <td>Beta</td>
                             <td>95</td>
                             <td>4,000</td>
-                            <td>2.37% (Wait, Beta is higher here too...)</td>
+                            <td>2.37% (Wait, Beta is higher here again...)</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="case-study">
-                    <p><strong>Correction:</strong> Actually, in a classic Simpson's Paradox, the rate for both segments would be higher in Alpha, but the aggregate favors Beta because of the distribution. Let's adjust the numbers to see the paradox clearly.</p>
+                    <p><strong>Correction:</strong> Actually, in a classic Simpson's Paradox, the rate for both segments
+                        would be higher in Alpha, but the aggregate favors Beta because of the distribution. Let's
+                        adjust the numbers to see the paradox clearly.</p>
                 </div>
 
                 <table class="data-table">
@@ -282,19 +305,30 @@
                     </tbody>
                 </table>
 
-                <p>In this corrected example, <strong>Alpha is better on Desktop (10% vs 9%) AND better on Mobile (5% vs 4%)</strong>. Yet, if your traffic distribution was different (more Desktop users got Alpha, more Mobile users got Beta), the aggregate could easily have told you Beta was the winner. This is the hallmark of the paradox: the weights of the segments distort the whole.</p>
+                <p>In this corrected example, <strong>Alpha is better on Desktop (10% vs 9%) AND better on Mobile (5% vs
+                        4%)</strong>. Yet, if your traffic distribution was different (more Desktop users got Alpha,
+                    more Mobile users got Beta), the aggregate could easily have told you Beta was the winner. This is
+                    the hallmark of the paradox: the weights of the segments distort the whole.</p>
 
                 <h2>Why This Happens (and Why Managers Fail)</h2>
-                <p>The mistake isn't mathematical; it's managerial. Most leaders are trained to look at "The Number"—the North Star metric. But The Number is an average, and averages are dangerous because they collapse high-variance segments into a single point. In our example, the version of the site didn't matter nearly as much as the <em>device</em> the user was on.</p>
+                <p>The mistake isn't mathematical; it's managerial. Most leaders are trained to look at "The Number",
+                    the North Star metric. But The Number is an average, and averages are dangerous because they
+                    collapse high-variance segments into a single point. In our example, the version of the site didn't
+                    matter nearly as much as the <em>device</em> the user was on.</p>
 
                 <h2>How to Avoid the Simpson's Trap</h2>
                 <ol>
-                    <li><strong>Identify Hidden Variables:</strong> Always ask, "What other factor could be influencing this?" (Gender, geography, device, plan type).</li>
-                    <li><strong>Segment Before You Summarize:</strong> Never trust an aggregate until you've seen the trend hold across your most important sub-groups.</li>
-                    <li><strong>Beware of Uneven Samples:</strong> If one group has a massive imbalance in their sub-segments (e.g., 80% mobile vs 20% desktop), your aggregate data is likely compromised.</li>
+                    <li><strong>Identify Hidden Variables:</strong> Always ask, "What other factor could be influencing
+                        this?" (Gender, geography, device, plan type).</li>
+                    <li><strong>Segment Before You Summarize:</strong> Never trust an aggregate until you've seen the
+                        trend hold across your most important sub-groups.</li>
+                    <li><strong>Beware of Uneven Samples:</strong> If one group has a massive imbalance in their
+                        sub-segments (e.g., 80% mobile vs 20% desktop), your aggregate data is likely compromised.</li>
                 </ol>
 
-                <p>The next time you see a "clear winner" in a report, don't just ask if the correlation is real. Ask if the story changes when you look closer. Your best decisions are often found in the segments, not the summaries.</p>
+                <p>The next time you see a "clear winner" in a report, don't just ask if the correlation is real. Ask if
+                    the story changes when you look closer. Your best decisions are often found in the segments, not the
+                    summaries.</p>
             </div>
         </article>
     </main>
