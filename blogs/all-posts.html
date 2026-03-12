@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Insights | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Browse all blog posts from Data-Informed Insights, covering data strategy, misinterpretations, and practical solutions.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .all-posts-header {
+            padding: var(--space-xl) 0 var(--space-l);
+            text-align: center;
+            background: radial-gradient(circle at top right, var(--clr-primary-glow), transparent 40%);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="all-posts-header">
+            <div class="container">
+                <a href="../index.html" class="back-link">← Back to Home</a>
+                <h1 class="hero-title" style="font-size: 3.5rem;">All Insights</h1>
+                <p class="hero-subtitle">Our complete collection of articles on data reality, strategy, and analysis.</p>
+            </div>
+        </section>
+
+        <section style="padding: var(--space-l) 0;">
+            <div class="container">
+                <div class="blog-grid" id="all-posts-container">
+                    <!-- Posts will be populated here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Copy the posts array from index.html (In a real app, this would be a shared JS file or API)
+        const posts = [
+            {
+                title: "Beyond Correlation: The Subtle Trap of Simpson's Paradox",
+                tag: "Strategic",
+                excerpt: "Why looking at the 'big picture' can sometimes lead you to exactly the wrong conclusion. Explore the blind spot of aggregated data...",
+                image: "../assets/images/simpsons_paradox.png",
+                slug: "simpsons-paradox"
+            },
+            {
+                title: "The 5-Step Framework: Messy Problem to Clean Data Question",
+                tag: "Practical",
+                excerpt: "Learn the 5-step framework used to turn vague business problems into measurable, clean data questions, featuring a real-world US healthcare data example...",
+                image: "../assets/images/5_step_framework.png",
+                slug: "5-step-framework-data-question"
+            },
+            {
+                title: "How to Solve Practical Problems Using Data",
+                tag: "Practical",
+                excerpt: "Most data science courses focus on algorithms. Here is how you bridge the gap to actual business results...",
+                image: "../assets/images/practical-problems.png",
+                slug: "solving-practical-problems"
+            },
+            {
+                title: "Cases Where Many People Misinterpret Data",
+                tag: "Analysis",
+                excerpt: "Correlation is not causation is just the beginning. We dive deep into simpson's paradox and other traps...",
+                image: "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=800&q=80",
+                slug: "misinterpreting-data"
+            },
+            {
+                title: "The Reality of Data-Driven Organizations",
+                tag: "Management",
+                excerpt: "Managers often say they are data-driven, but the reality is much more complex. Here is the view from the top...",
+                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+                slug: "managerial-perspective"
+            },
+            {
+                title: "Explain Data Concepts to Non-Experts",
+                tag: "Education",
+                excerpt: "Demystifying advanced data topics for non-experts and decision makers to bridge the communication gap...",
+                image: "../assets/images/data-concepts.png",
+                slug: "data-concepts-for-all"
+            }
+        ];
+
+        const container = document.getElementById('all-posts-container');
+        posts.forEach(post => {
+            // Note: slugs are relative to the current directory (blogs/)
+            container.innerHTML += `
+                <article class="blog-card glass">
+                    <div class="blog-card-image">
+                        <img src="${post.image}" alt="${post.title}">
+                    </div>
+                    <div class="blog-card-content">
+                        <span class="blog-card-tag">${post.tag}</span>
+                        <h3 class="blog-card-title"><a href="${post.slug}.html">${post.title}</a></h3>
+                        <p class="blog-card-excerpt">${post.excerpt}</p>
+                    </div>
+                </article>
+            `;
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.site-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+                header.style.background = 'rgba(15, 23, 42, 0.9)';
+            } else {
+                header.classList.remove('scrolled');
+                header.style.background = 'rgba(30, 41, 59, 0.7)';
+            }
+        });
+    </script>
+</body>
+
+</html>
