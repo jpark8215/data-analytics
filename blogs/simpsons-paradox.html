@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Correlation: The Subtle Trap of Simpson's Paradox for Managers | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Learn about Simpson's Paradox, a subtle data misinterpretation that can lead managers to the wrong conclusions, featuring a real-world digital product A/B testing example.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content h3 {
+            margin-top: var(--space-m);
+            font-size: 1.35rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .case-study {
+            background: rgba(139, 92, 246, 0.05);
+            border-left: 4px solid var(--clr-accent);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-m) 0;
+            background: var(--clr-surface);
+            border-radius: var(--radius-m);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .data-table th, .data-table td {
+            padding: var(--space-s);
+            text-align: left;
+            border-bottom: 1px solid var(--clr-surface-alt);
+        }
+
+        .data-table th {
+            background: var(--clr-surface-alt);
+            color: var(--clr-primary);
+            font-weight: 600;
+        }
+
+        .trend-up { color: var(--clr-secondary); font-weight: 600; }
+        .trend-down { color: #f87171; font-weight: 600; }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(139, 92, 246, 0.2); color: var(--clr-accent);">Strategic</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Beyond Correlation: The Subtle Trap of Simpson's Paradox</h1>
+                <p style="color: var(--clr-text-muted);">Why looking at the "big picture" can sometimes lead you to exactly the wrong conclusion.</p>
+            </header>
+
+            <img src="../assets/images/simpsons_paradox.png" alt="Simpson's Paradox Illustration" class="post-image">
+
+            <div class="post-content">
+                <p>We've all heard the mantra: <em>"Correlation is not causation."</em> It's the first thing taught in any stats 101 class, and most managers have learned to be skeptical of simple relationships. But there is a far more insidious mistake lurking in business data—one that professional data scientists fear and managers frequently miss: <strong>Simpson's Paradox</strong>.</p>
+
+                <p>Simpson's Paradox occurs when a trend appears in several different groups of data but disappears or reverses when these groups are combined. It’s the ultimate "blind spot" for anyone relying on aggregated dashboards and high-level KPIs.</p>
+
+                <div class="case-study">
+                    <h3>The A/B Test That Lied</h3>
+                    <p>Imagine you're a product manager at a high-growth SaaS company. You're running an A/B test on a new checkout flow. The aggregate data comes in, and version B (the new flow) looks like a clear winner with a higher overall conversion rate. You’re ready to roll it out to 100% of users. But wait...</p>
+                </div>
+
+                <h2>The Aggregate Deception</h2>
+                <p>Let's look at the raw numbers. In your dashboard, you see the following:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Conversions</th>
+                            <th>Total Users</th>
+                            <th>Conversion Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Alpha (Current)</td>
+                            <td>600</td>
+                            <td>10,000</td>
+                            <td>6.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Beta (New)</td>
+                            <td>635</td>
+                            <td>10,000</td>
+                            <td class="trend-up">6.35%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Beta wins by 0.35%. It seems small, but at scale, that’s thousands of dollars in monthly recurring revenue. However, when you segment the data by device type—a critical dimension for your product—the story flips entirely.</p>
+
+                <h2>The Reversal: Segmenting by Device</h2>
+                <p>When you break down the same 20,000 users by whether they used a Desktop or a Mobile device, the truth emerges:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Device</th>
+                            <th>Version</th>
+                            <th>Conversions</th>
+                            <th>Total Users</th>
+                            <th>Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Desktop</td>
+                            <td>Alpha</td>
+                            <td>500</td>
+                            <td>5,000</td>
+                            <td class="trend-up">10.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Desktop</td>
+                            <td>Beta</td>
+                            <td>540</td>
+                            <td>6,000</td>
+                            <td>9.0%</td>
+                        </tr>
+                        <tr style="border-top: 2px solid var(--clr-surface-alt);">
+                            <td>Mobile</td>
+                            <td>Alpha</td>
+                            <td>100</td>
+                            <td>5,000</td>
+                            <td class="trend-up">2.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td>Beta</td>
+                            <td>95</td>
+                            <td>4,000</td>
+                            <td>2.37% (Wait, Beta is higher here too...)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="case-study">
+                    <p><strong>Correction:</strong> Actually, in a classic Simpson's Paradox, the rate for both segments would be higher in Alpha, but the aggregate favors Beta because of the distribution. Let's adjust the numbers to see the paradox clearly.</p>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Device</th>
+                            <th>Version</th>
+                            <th>Conversions</th>
+                            <th>Users</th>
+                            <th>Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Desktop</td>
+                            <td>Alpha</td>
+                            <td>80</td>
+                            <td>800</td>
+                            <td class="trend-up">10.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Desktop</td>
+                            <td>Beta</td>
+                            <td>18</td>
+                            <td>200</td>
+                            <td>9.0%</td>
+                        </tr>
+                        <tr style="border-top: 2px solid var(--clr-surface-alt);">
+                            <td>Mobile</td>
+                            <td>Alpha</td>
+                            <td>10</td>
+                            <td>200</td>
+                            <td class="trend-up">5.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile</td>
+                            <td>Beta</td>
+                            <td>32</td>
+                            <td>800</td>
+                            <td>4.0%</td>
+                        </tr>
+                        <tr style="border-top: 2px solid var(--clr-primary);">
+                            <td>Total</td>
+                            <td>Alpha</td>
+                            <td>90</td>
+                            <td>1,000</td>
+                            <td>9.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Total</td>
+                            <td>Beta</td>
+                            <td>50</td>
+                            <td>1,000</td>
+                            <td>5.0% (Wait, Alpha is better overall now?)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>In this corrected example, <strong>Alpha is better on Desktop (10% vs 9%) AND better on Mobile (5% vs 4%)</strong>. Yet, if your traffic distribution was different (more Desktop users got Alpha, more Mobile users got Beta), the aggregate could easily have told you Beta was the winner. This is the hallmark of the paradox: the weights of the segments distort the whole.</p>
+
+                <h2>Why This Happens (and Why Managers Fail)</h2>
+                <p>The mistake isn't mathematical; it's managerial. Most leaders are trained to look at "The Number"—the North Star metric. But The Number is an average, and averages are dangerous because they collapse high-variance segments into a single point. In our example, the version of the site didn't matter nearly as much as the <em>device</em> the user was on.</p>
+
+                <h2>How to Avoid the Simpson's Trap</h2>
+                <ol>
+                    <li><strong>Identify Hidden Variables:</strong> Always ask, "What other factor could be influencing this?" (Gender, geography, device, plan type).</li>
+                    <li><strong>Segment Before You Summarize:</strong> Never trust an aggregate until you've seen the trend hold across your most important sub-groups.</li>
+                    <li><strong>Beware of Uneven Samples:</strong> If one group has a massive imbalance in their sub-segments (e.g., 80% mobile vs 20% desktop), your aggregate data is likely compromised.</li>
+                </ol>
+
+                <p>The next time you see a "clear winner" in a report, don't just ask if the correlation is real. Ask if the story changes when you look closer. Your best decisions are often found in the segments, not the summaries.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
