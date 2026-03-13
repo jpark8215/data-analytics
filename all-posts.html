@@ -17,8 +17,8 @@
         rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../assets/css/variables.css">
-    <link rel="stylesheet" href="../assets/css/blog.css">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/blog.css">
 
     <style>
         .all-posts-header {
@@ -45,11 +45,11 @@
 <body>
     <header class="site-header glass">
         <div class="container nav-container">
-            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <a href="index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="../index.html" class="nav-link">Home</a></li>
-                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="index.html#topics" class="nav-link">Topics</a></li>
                 </ul>
             </nav>
             <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
@@ -60,7 +60,7 @@
     <main>
         <section class="all-posts-header">
             <div class="container">
-                <a href="../index.html" class="back-link">← Back to Home</a>
+                <a href="index.html" class="back-link">← Back to Home</a>
                 <h1 class="hero-title" style="font-size: 3.5rem;">All Insights</h1>
                 <p class="hero-subtitle">Our complete collection of articles on data reality, strategy, and analysis.</p>
             </div>
@@ -78,7 +78,7 @@
     <footer
         style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
         <div class="container" style="text-align: center;">
-            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <a href="index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
             <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
                 &copy; 2026 Data Analytics & Beyond. All rights reserved.
@@ -94,29 +94,22 @@
                 title: "Beyond Correlation: The Subtle Trap of Simpson's Paradox",
                 tag: "Strategic",
                 excerpt: "Why looking at the 'big picture' can sometimes lead you to exactly the wrong conclusion. Explore the blind spot of aggregated data...",
-                image: "../assets/images/simpsons_paradox.png",
+                image: "assets/images/simpsons_paradox.png",
                 slug: "simpsons-paradox"
             },
             {
                 title: "The 5-Step Framework: Messy Problem to Clean Data Question",
                 tag: "Practical",
                 excerpt: "Learn the 5-step framework used to turn vague business problems into measurable, clean data questions, featuring a real-world US healthcare data example...",
-                image: "../assets/images/5_step_framework.png",
+                image: "assets/images/5_step_framework.png",
                 slug: "5-step-framework-data-question"
             },
             {
                 title: "How to Solve Practical Problems Using Data",
                 tag: "Practical",
                 excerpt: "Most data science courses focus on algorithms. Here is how you bridge the gap to actual business results...",
-                image: "../assets/images/practical-problems.png",
+                image: "assets/images/practical-problems.png",
                 slug: "solving-practical-problems"
-            },
-            {
-                title: "Cases Where Many People Misinterpret Data",
-                tag: "Analysis",
-                excerpt: "Correlation is not causation is just the beginning. We dive deep into simpson's paradox and other traps...",
-                image: "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=800&q=80",
-                slug: "misinterpreting-data"
             },
             {
                 title: "The Reality of Data-Driven Organizations",
@@ -129,7 +122,7 @@
                 title: "Explain Data Concepts to Non-Experts",
                 tag: "Education",
                 excerpt: "Demystifying advanced data topics for non-experts and decision makers to bridge the communication gap...",
-                image: "../assets/images/data-concepts.png",
+                image: "assets/images/data-concepts.png",
                 slug: "data-concepts-for-all"
             }
         ];
@@ -144,7 +137,7 @@
                     </div>
                     <div class="blog-card-content">
                         <span class="blog-card-tag">${post.tag}</span>
-                        <h3 class="blog-card-title"><a href="${post.slug}.html">${post.title}</a></h3>
+                        <h3 class="blog-card-title"><a href="blogs/${post.slug}.html">${post.title}</a></h3>
                         <p class="blog-card-excerpt">${post.excerpt}</p>
                     </div>
                 </article>
