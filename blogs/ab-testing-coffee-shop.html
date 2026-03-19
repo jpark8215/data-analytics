@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is A/B Testing? (Explained with a Coffee Shop) | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="A simple analogy-driven explainer of A/B testing that non-technical people actually share.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Education</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">What is A/B Testing? (Explained with a
+                    Coffee Shop)</h1>
+                <p style="color: var(--clr-text-muted);">A simple analogy-driven explainer that non-technical people
+                    actually share.</p>
+            </header>
+
+            <img src="../assets/images/ab_testing_coffee_shop.png" alt="Coffee Shop" class="post-image">
+
+            <div class="post-content">
+                <p>Have you ever heard the term "A/B testing" thrown around in meetings and wondered what it actually
+                    means? It sounds like complex data science, but it’s actually incredibly simple. In fact, you've
+                    probably done it yourself without realizing it.</p>
+                <p>To really understand it, let’s forget about websites, algorithms, and conversion rates. Let’s imagine
+                    you own a local coffee shop.</p>
+
+                <h2>The Scenario</h2>
+                <p>Your coffee shop is doing okay, but you want to sell more of your new, high-margin product: the
+                    <em>Caramel Macchiato</em>. Right now, you just have a small chalkboard on the counter that says,
+                    "Try our new Caramel Macchiato."</p>
+                <p>You have a brilliant idea! What if you put a giant, colorful poster with a mouth-watering picture of
+                    the drink right on the front door instead?</p>
+                <p>But printing the posters is expensive, and you aren't 100% sure it will actually work. If you switch
+                    entirely to the poster and sales go down, you lose money. If you don't try it, you might miss out on
+                    a massive opportunity.</p>
+
+                <h2>The A/B Test Approach</h2>
+                <p>Instead of guessing and just hoping for the best, you decide to run a test.</p>
+
+                <p><strong>The "A" (The Control):</strong> This is what you are currently doing. The small counter sign.
+                    This is your baseline.</p>
+                <p><strong>The "B" (The Variant):</strong> This is your new idea. The big colorful poster on the door.
+                </p>
+
+                <p>Now, you need to test them fairly. If you run the counter sign on a slow Tuesday, and the door poster
+                    on a busy Saturday, your results will be entirely meaningless.</p>
+
+                <p>A true A/B test means running them at the same time. Let's say you test it over two weeks. For the
+                    first 100 customers that walk in, 50 of them (randomly chosen, perhaps by flipping a coin before
+                    they enter) are ushered through a side door with the small counter sign. The other 50 walk right
+                    past the new big poster.</p>
+
+                <h2>The Results</h2>
+                <p>Over the two weeks, you track your data, but what exactly are you tracking? You need a
+                    <strong>metric</strong>. Your metric is simple: out of the people who saw each sign, how many
+                    actually bought the Caramel Macchiato?</p>
+
+                <ul>
+                    <li><strong>Group A (Control):</strong> 500 people saw the counter sign. 50 bought the drink. (A 10%
+                        success rate).</li>
+                    <li><strong>Group B (Variant):</strong> 500 people saw the door poster. 100 bought the drink. (A 20%
+                        success rate).</li>
+                </ul>
+
+                <h2>The Decision</h2>
+                <p>The numbers are in! The door poster (Variant B) doubled your sales compared to the counter sign
+                    (Control A). You no longer have to guess what works based on intuition or "gut feeling." The data
+                    proves that the poster is more effective.</p>
+                <p>You can now confidently invest in the posters for all your store locations, knowing it actually
+                    drives business.</p>
+
+                <h2>What If the Test Is Too Expensive? (The "Painted Door" Test)</h2>
+                <p>In our coffee shop example, making a massive, glossy poster just to <em>test</em> if it works might still be too expensive. In the real world (and in software development), we solve this using a <strong>"Painted Door" Test</strong> or a <strong>Low-Fidelity Prototype</strong>.</p>
+                <p>Instead of paying $200 for a professional poster, you could tape four pieces of regular printer paper together and draw the promotion by hand. You just need to test if <em>the placement of an image at the entrance</em> converts customers. The scrappy version is cheap enough to test the core hypothesis.</p>
+                <p>In software, companies often add a button for a feature that doesn't exist yet. When a user clicks it, a pop-up says, <em>"This feature is coming soon!"</em> This lets them measure customer intent before spending months writing the code.</p>
+
+                <h2>Why It Matters</h2>
+                <p>That is A/B testing in a nutshell. Whether you are changing a button on a website from green to red,
+                    rewriting an email subject line, or trying out new pricing models, the core concept remains exactly
+                    the same as our coffee shop.</p>
+                <p>You take your current approach (A), create an alternative (B), test them simultaneously with your
+                    audience, and let the data pick the winner. It's the ultimate tool for turning guesswork into
+                    confident, data-informed decisions.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
