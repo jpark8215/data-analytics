@@ -155,6 +155,13 @@
 		// Sample Data for high traffic
 		const posts = [
 			{
+				title: "We Called Ourselves Data-Driven. We Weren't.",
+				tag: "Management",
+				excerpt: "How HiPPO culture (Highest Paid Person's Opinion) secretly overrides actual data, and how to tell if it's happening to you.",
+				image: "assets/images/hippo-culture.png",
+				slug: "hippo-culture"
+			},
+			{
 				title: "What is A/B Testing? (Explained with a Coffee Shop)",
 				tag: "Education",
 				excerpt: "A simple analogy-driven explainer that non-technical people actually share. Learn the core concepts of A/B testing without the jargon.",
@@ -200,7 +207,7 @@
 
 
 		const container = document.getElementById('posts-container');
-		posts.forEach(post => {
+		posts.slice(0, 6).forEach(post => {
 			container.innerHTML += `
                 <article class="blog-card glass">
                     <div class="blog-card-image">
