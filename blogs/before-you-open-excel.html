@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Before You Open Excel, Do This: The Decision-First Approach | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Stop opening spreadsheets too early. Learn why defining the decision before the data is the secret to impactful analytics.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--clr-primary);
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(59, 130, 246, 0.2); color: var(--clr-primary);">Strategic</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Before You Open Excel, Do This</h1>
+                <p style="color: var(--clr-text-muted);">The "Decision-First" strategy that separates great analysts from spreadsheet junkies.</p>
+            </header>
+
+            <img src="../assets/images/before_you_open_excel.png" alt="Decision Tree on Laptop" class="post-image">
+
+            <div class="post-content">
+                <p>It’s the most common reflex in the corporate world. A manager asks a question like "Why were sales down in Q3?" or "Which marketing channel is best?" and immediately, three people reach for their mice, open Excel, and start hunting for data.</p>
+                
+                <p>But here is the hard truth: <strong>If you start with the data, you’ve already lost.</strong></p>
+                
+                <p>Opening a spreadsheet before you have defined your decision is the fastest way to suffer from analysis paralysis, surface spurious correlations, and build dashboards that nobody actually uses. To be truly impactful, you must practice <strong>Decision-First Analytics</strong>.</p>
+
+                <div class="callout">
+                    "Data is the fuel, but the decision is the destination. You wouldn't start driving without knowing where you are going; why would you start analyzing without knowing what you are deciding?"
+                </div>
+
+                <h2>The "Dataset-First" Trap</h2>
+                <p>Most organizations operate on a "Data-First" model. They collect as much data as possible, throw it into a warehouse, and then ask analysts to "go find some insights."</p>
+                <p>This approach <em>sounds</em> scientific, but it’s actually incredibly inefficient. When you start with a dataset, you are limited by what is already there. You spend hours cleaning columns you don't need, only to realize that the one piece of information that would actually change a decision wasn't even captured.</p>
+
+                <h2>What is Decision-First Analytics?</h2>
+                <p>Decision-first analytics inverts the process. Instead of asking "What does the data say?", you ask:</p>
+                <ol>
+                    <li><strong>What is the specific decision we need to make?</strong> (e.g., "Should we increase the price of Segment A?")</li>
+                    <li><strong>Who is the decision-maker?</strong> (Whose mind are we trying to influence?)</li>
+                    <li><strong>What information would actually change the outcome?</strong></li>
+                </ol>
+                <p>By defining the decision upfront, you create a filter. You only look for the data that matters. Everything else is noise.</p>
+
+                <h2>How to Implement the 3-Step Decision Filter</h2>
+                <p>Before you even click the Excel icon, write down these three things on a physical piece of paper:</p>
+                
+                <h3>1. The "So What?" Test</h3>
+                <p>Imagine you find a trend. Sales are up 5%. Before you show it to anyone, ask: "So what?" If the answer is "Then we just keep doing what we're doing," then it wasn't a decision-driving insight. It was a status update. A real insight leads to an alternative action.</p>
+
+                <h3>2. The Modeling of the Decision</h3>
+                <p>Map out the sub-decisions. If we are deciding whether to launch a new product, we need to know the cost of acquisition (CAC) and the lifetime value (LTV). If CAC > LTV, the decision is "No." Now you know exactly which two metrics to go find. You aren't "exploring" anymore; you are "verifying."</p>
+
+                <h3>3. Defining the Thresholds</h3>
+                <p>Decide <em>beforehand</em> what the data needs to show to trigger an action. "If the conversion rate is below 2%, we kill the project. If it's above 4%, we double the budget." This prevents the "moving the goalposts" phenomenon where managers change their standards after seeing the results.</p>
+
+                <h2>The Result: Less Work, More Impact</h2>
+                <p>When you define the decision first, you’ll find that you actually open Excel *less* often, but when you do, you finish ten times faster. You stop being a "data provider" and start being a "strategic partner."</p>
+                
+                <p>So, the next time you're tempted to dive headfirst into a CSV file, stop. Close your laptop. Define the decision. Then—and only then—open the data.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
