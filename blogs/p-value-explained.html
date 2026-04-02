@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P-Value Explained in 60 Seconds (No Formulas) | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="A simple, intuition-based explanation of P-values using the luck vs. real framing. No math required.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .quote-box {
+            background: var(--clr-surface-alt);
+            border-left: 4px solid var(--clr-primary);
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Education</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">P-Value Explained in 60 Seconds</h1>
+                <p style="color: var(--clr-text-muted);">Is that 20% lift in sales "real" or just a lucky streak?</p>
+            </header>
+
+            <img src="../assets/images/p_value_explained.png" alt="Luck vs Real coin flip" class="post-image">
+
+            <div class="post-content">
+                <p>If you've ever looked at a dashboard or an A/B test result, you've seen it: the dreaded P-value. It’s
+                    the most common way to decide if a result is "statistically significant," yet it remains one of the
+                    most misunderstood concepts in data science.</p>
+                <p>Let's strip away the math and the jargon. To understand a P-value, you only need to understand one
+                    question: <strong>"Is this result luck or real?"</strong></p>
+
+                <h2>The Coin Flip Test</h2>
+                <p>Imagine I hand you a coin and claim it’s "rigged" to land on heads. You aren't sure, so you decide to
+                    test it. You flip it once. It lands on heads.</p>
+                <p>Are you convinced? Probably not. Even a fair coin does that 50% of the time. That’s pure
+                    <strong>luck</strong>.</p>
+                <p>You flip it again. Heads again. Then again. And again. After 10 flips, it has landed on heads
+                    <strong>10 times in a row</strong>.</p>
+                <p>Now, how do you feel? You’re likely thinking, "There is no way a normal coin would do that. This
+                    thing is definitely rigged."</p>
+
+                <div class="quote-box">
+                    "The P-value is simply the probability that a fair coin would produce a result as extreme as the one
+                    you just saw."
+                </div>
+
+                <h2>Luck vs. Real</h2>
+                <p>In our coin example, the chance of a fair coin landing on heads 10 times in a row is about
+                    <strong>0.001</strong> (or 0.1%).</p>
+                <p>That 0.001 is your P-value.</p>
+                <ul>
+                    <li><strong>Small P-value (e.g., 0.001):</strong> It is incredibly unlikely that "luck" produced
+                        this result. Therefore, the result is likely "real" (the coin is rigged).</li>
+                    <li><strong>Large P-value (e.g., 0.50):</strong> Luck could easily explain this result. You
+                        shouldn't assume anything special is happening.</li>
+                </ul>
+
+                <h2>The "0.05" Rule</h2>
+                <p>In the business world, we usually draw an arbitrary line at <strong>0.05</strong>. If the P-value is
+                    less than 0.05, we say it’s "statistically significant."</p>
+                <p>This is just a fancy way of saying: "There is less than a 5% chance that this result was just a lucky
+                    coincidence."</p>
+
+                <h2>Why This Matters for Decisions</h2>
+                <p>Imagine your marketing team runs a new ad campaign, and sales go up by 20%. Everyone is celebrating.
+                    But then the data analyst comes in and says the P-value is 0.40.</p>
+                <p>What does that mean? It means there is a <strong>40% chance</strong> that sales went up simply
+                    because of random noise, maybe it was a sunny day, or a competitor's site was down.</p>
+                <p>If you invest $1M based on a result with a P-value of 0.40, you are essentially betting on a coin
+                    flip. If the P-value was 0.01, you’d be betting on a near-certainty.</p>
+
+                <h2>The Bottom Line</h2>
+                <p>A P-value doesn't tell you if a feature is good or if a campaign was a success. It only tells you
+                    <strong>how surprised you should be</strong> if the result was just luck.</p>
+                <p>Next time you see a P-value, don't look for formulas. Just ask: "How much am I willing to bet that
+                    this result wasn't just a lucky streak?"</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
