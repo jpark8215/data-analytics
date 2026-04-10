@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How a Client Saved $200K by Asking a Better Question | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="A client saved $200K not by finding new data, but by asking a better question about data they already had. Read this storytelling post with a concrete before and after.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--clr-primary);
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            font-style: italic;
+        }
+
+        .before-after {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: var(--space-l) 0;
+        }
+
+        @media (min-width: 768px) {
+            .before-after {
+                flex-direction: row;
+            }
+        }
+
+        .ba-column {
+            flex: 1;
+            padding: var(--space-m);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--clr-surface-alt);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .ba-column.before {
+            border-left: 4px solid #ef4444;
+        }
+
+        .ba-column.after {
+            border-left: 4px solid #10b981;
+        }
+
+        .ba-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Practical</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">How a Client Saved $200K by Asking a
+                    Better Question</h1>
+                <p style="color: var(--clr-text-muted);">How reframing their search within data they already had
+                    completely changed their business trajectory.</p>
+            </header>
+
+            <img src="../assets/images/asking_better_questions.png"
+                alt="A glowing path contrasting with messy data nodes" class="post-image">
+
+            <div class="post-content">
+                <p>Six months ago, a client's logistics team was staring at a burning $200,000 problem. Due to what they
+                    thought were unpredictable supply chain delays, expedite fees for their premium product lines were
+                    skyrocketing. If they missed shipping deadlines for these VIP clients, they faced contract
+                    penalties. The knee-jerk reaction? Spend resources heavily to investigate global shipping lane
+                    delays.</p>
+
+                <p>They hired an external consultancy and pulled months of port delay records, weather patterns, and
+                    supplier lead times to build a massive dashboard predicting "when delays would happen."</p>
+
+                <p>The result? A beautifully complex model that did absolutely nothing to solve their problem. The
+                    delays were macro-level issues out of their control. Knowing a delay was happening didn't stop them
+                    from having to pay the $200K in expedite fees to overcome it.</p>
+
+                <div class="callout">
+                    "They were looking at the right problem but asking the entirely wrong question of their data."
+                </div>
+
+                <h2>The Pivot: Looking Inward, Not Outward</h2>
+                <p>Frustrated, they brought the problem back to their internal data team. Instead of asking, <em>"Why
+                        are shipments delayed?"</em>, one analyst reframed the entire investigation.</p>
+
+                <p>She asked: <strong>"Do these delayed VIP orders actually *need* to go out on rushed shipping to avoid
+                        penalties?"</strong></p>
+
+                <p>This shifted their focus from macro-level port delays to their own internal CRM and customer contract
+                    data, data they had possessed the entire time but had completely ignored in this context.</p>
+
+                <h2>The Discovery They Missed</h2>
+                <p>It turned out the data they needed wasn't in global shipping APIs; it was sitting quietly in their
+                    Salesforce instance.</p>
+                <p>By analyzing the Service Level Agreements (SLAs) of the VIP clients, they found a fascinating
+                    discrepancy. The system had a hardcoded rule to default all VIP orders to "Overnight Air" if they
+                    fell behind schedule. But their data showed that 70% of those specific VIP contracts allowed for a
+                    flexible 5-day delivery window if notified in advance.</p>
+
+                <div class="before-after">
+                    <div class="ba-column before">
+                        <div class="ba-title" style="color: #ef4444;">Before (The Wrong Question)</div>
+                        <p><strong>Question:</strong> How can we predict global supply chain delays to warn the
+                            logistics team?</p>
+                        <p><strong>Action:</strong> Building complex predictive models on external data.</p>
+                        <p><strong>Result:</strong> Realized delays were unavoidable. Paid $200K in overnight shipping
+                            fees anyway.</p>
+                    </div>
+                    <div class="ba-column after">
+                        <div class="ba-title" style="color: #10b981;">After (The Right Question)</div>
+                        <p><strong>Question:</strong> Which delayed VIP orders actually legally require expedited
+                            shipping?</p>
+                        <p><strong>Action:</strong> Merged shipping pipeline data with contract SLA data in CRM.</p>
+                        <p><strong>Result:</strong> Switched 70% of delayed orders to standard ground shipping. Saved
+                            the $200K entirely.</p>
+                    </div>
+                </div>
+
+                <h2>The Takeaway: Question Your Questions</h2>
+                <p>Organizations often fall into the trap of believing that new problems require new data. We assume
+                    that if we just buy another dataset, API, or dashboard, the answer will reveal itself.</p>
+
+                <p>But more often than not, the solution lies in recombining the data you already have to answer a more
+                    targeted, actionable question. The next time you face a costly operational issue, before you buy new
+                    data, ask yourself:</p>
+
+                <ul>
+                    <li>Are you treating a symptom (unavoidable delays) or investigating the actual cost driver (your
+                        policy reaction)?</li>
+                    <li>What internal data do you have that defines the <em>rules</em> of your reaction?</li>
+                </ul>
+
+                <p>Sometimes, saving $200K isn't about outsmarting the global supply chain. It's about realizing your
+                    own system is rushing packages that nobody asked to be rushed.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why "The Average Customer" Doesn't Exist | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="How mathematical averages hide reality, mask bimodal distributions, and lead companies to design products for a customer that doesn't actually exist.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--clr-primary);
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(59, 130, 246, 0.2); color: var(--clr-primary);">Analysis</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Why "The Average Customer" Doesn't Exist</h1>
+                <p style="color: var(--clr-text-muted);">How averages hide the distribution and lead to fatal product and marketing decisions.</p>
+            </header>
+
+            <img src="../assets/images/average_customer.png" alt="A bimodal distribution showing the mathematical average falling into an empty valley" class="post-image">
+
+            <div class="post-content">
+                <p>In the late 1940s, the US Air Force had a serious problem: their pilots could not control their aircraft properly. Despite rigorous training, pilots were constantly making fatal errors. When researchers finally investigated the cockpits, they discovered a systemic, mathematical flaw.</p>
+
+                <p>The cockpit had been designed for the <strong>"average pilot"</strong>. The military had taken the physical dimensions of 4,000 pilots, calculated the exact mean for arm length, leg length, and torso height, and built a cockpit perfectly fitted to those dimensions.</p>
+
+                <p>When researcher Gilbert S. Daniels actually measured the 4,000 pilots against that mathematical "average," he found a shocking truth: <strong>Out of 4,000 pilots, exactly zero fit the average profile.</strong> By designing an airplane for the average pilot, the Air Force had designed an airplane for no one.</p>
+
+                <div class="callout">
+                    "When you design a product or a marketing campaign for the 'average' customer, you are almost always designing it for a person who does not exist."
+                </div>
+
+                <h2>The Flaw of Averages in Business</h2>
+                <p>Despite this historical lesson, businesses make the "average customer" mistake every single day. Look at any corporate presentation, and you will see statements like:</p>
+                <ul>
+                    <li>"Our average customer spends $45 per visit."</li>
+                    <li>"The average user logs in 3 times a week."</li>
+                    <li>"Our customers are average age 34."</li>
+                </ul>
+                <p>This sounds precise. It sounds data-driven. But what if your data is hiding a <strong>bimodal distribution</strong>?</p>
+
+                <h2>The Bimodal Trap</h2>
+                <p>A bimodal distribution is when your data has two distinct, separate peaks. Imagine a restaurant analyzing their customer spending. The data says the average ticket size is $45.</p>
+                <p>The marketing team gets to work. They design promotions offering "$10 off your $50 purchase" to naturally nudge that $45 average up to $50. But the campaign fails miserably.</p>
+                
+                <p>Why? Because when a data scientist finally plots the distribution, they see the truth: there are no $45 orders. Instead, there are two distinct groups:</p>
+                <ol>
+                    <li>College students buying a quick lunch ($15 average).</li>
+                    <li>Families of four coming in for dinner ($75 average).</li>
+                </ol>
+
+                <p>The mathematical mean is $45, but that number falls into a completely empty valley. The $10 off $50 promotion was irrelevant to the students (who would never spend that much) and felt like a tiny drop in the bucket to the families (who were already spending $75). By targeting the average, they targeted no one.</p>
+
+                <h2>Stop Reporting Averages. Start Reporting Segments.</h2>
+                <p>If you only report averages, you wipe out variability. You assume that your customers cluster tightly around the mean in a perfectly symmetrical bell curve. In real-world businesses, this is exceedingly rare.</p>
+
+                <p>To avoid the flaw of averages, you need to change your data habits:</p>
+                
+                <ul>
+                    <li><strong>Always look at the shape of the data:</strong> Never blindly trust a mean. Always plot a histogram. Check the median and the mode. If the mean and median are wildly different, you have an outlier problem. If the histogram has multiple humps, you have a segmentation problem.</li>
+                    <li><strong>Adopt a Persona-First Strategy:</strong> Define distinct customer segments based on behaviors, not arbitrary demographics. Build for the extreme edges of your product use cases rather than the mushy middle.</li>
+                    <li><strong>Design for Adjustability:</strong> The US Air Force solved their cockpit problem not by finding better averages, but by inventing adjustable seats and pedals. In business, this means offering modular products, dynamic pricing tiers, and personalization.</li>
+                </ul>
+
+                <p>The math is simple, but the reality is complex. Stop obsessing over the mathematical center, and start paying attention to the edges. That's where your actual customers live.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
