@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Difference Between a Metric and a KPI | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="A short, punchy guide with practical examples to help you understand why all KPIs are metrics, but not all metrics are KPIs.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Education</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">The Difference Between a Metric and a
+                    KPI</h1>
+            </header>
+
+            <img src="../assets/images/metric_vs_kpi.png" alt="Metric vs KPI concept" class="post-image">
+
+            <div class="post-content">
+                <p>If you've ever sat in a meeting where someone presented a spreadsheet with 50 "KPIs", you've
+                    witnessed a core misunderstanding of data. The reality is simple, but often ignored: <strong>All
+                        KPIs are metrics, but not all metrics are KPIs.</strong></p>
+
+                <p>Mixing them up leads to reporting fatigue, lost focus, and teams optimizing for the wrong outcomes.
+                    Let's break down the actual difference.</p>
+
+                <h2>What is a Metric?</h2>
+                <p>A <strong>metric</strong> is any quantifiable measure used to track and assess the status of a
+                    specific business process or activity. Think of metrics as the raw building blocks of your data
+                    environment. They tell you <em>what</em> is happening in "business as usual."</p>
+                <p><em>Examples of Metrics:</em> Number of website visitors, social media likes, database uptime, or
+                    emails sent.</p>
+
+                <h2>What is a KPI (Key Performance Indicator)?</h2>
+                <p>A <strong>KPI</strong>, on the other hand, is exclusively linked to a strategic business goal. It's
+                    the critical gauge of whether you are actually winning or losing. If a metric doesn't directly
+                    measure progress toward your primary objectives, it is not "Key," and therefore, not a KPI.</p>
+
+                <h2>The Practical Difference</h2>
+                <p>Imagine your company has a strategic goal: <strong>"Increase total recurring revenue by 20% this
+                        quarter."</strong></p>
+                <ul>
+                    <li><strong>Your KPI:</strong> Monthly Recurring Revenue (MRR). This directly and unequivocally
+                        measures your progress toward that strategic 20% growth goal.</li>
+                    <li><strong>Your Metrics:</strong> Website traffic, email open rates, and free trial signups. While
+                        these are highly useful for your marketing team to monitor daily operations, they do not
+                        directly define the success of the overarching business goal. You could double your website
+                        traffic (Metric goes up) and still miss your revenue target (KPI goes down or stays flat).</li>
+                </ul>
+
+                <h2>The Litmus Test</h2>
+                <p>The next time you are building a dashboard, ask yourself this question for each data point: <em>"If
+                        this number changes significantly, do we need to fundamentally alter our strategy?"</em></p>
+                <p>If the answer is yes, you've found your KPI. If the answer is "no, but it's nice to know," it belongs
+                    on an operational report as a metric, not on the executive dashboard.</p>
+
+                <p><em>Conclusion:</em> Focus your leadership on 3-5 true KPIs. Leave the rest of the metrics to the
+                    specific departments managing the day-to-day operations.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
