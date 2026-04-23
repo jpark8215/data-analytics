@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Most teams skip Step 1 of data problem-solving | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Before analyzing data, teams must define what 'success' looks like. Learn why skipping this foundational step leads to wasted resources and how to fix it.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag"
+                    style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Strategic</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Most teams skip Step 1 of data problem-solving</h1>
+            </header>
+
+            <img src="../assets/images/step_1_success.png" alt="Abstract illustration of a glowing north star" class="post-image">
+
+            <div class="post-content">
+                <p>It’s a common scenario in many organizations: a business leader asks a vague question, and the data team immediately dives into SQL, pulling tables, cleaning data, and building models. Days or weeks later, they present their findings, only to hear, "This is interesting, but it doesn't help me make a decision."</p>
+
+                <p>This happens because the team skipped the most critical part of data problem-solving: <strong>Step 1 is defining what "success" looks like before any analysis begins.</strong></p>
+
+                <h2>The Danger of the "Just Look at the Data" Approach</h2>
+                <p>Without a clear, shared definition of success, you are essentially navigating without a compass. This lack of direction leads to several major pitfalls:</p>
+                <ul>
+                    <li><strong>Misaligned Objectives:</strong> Analysts focus on metrics that are easy to calculate rather than what actually matters to the business.</li>
+                    <li><strong>Wasted Resources:</strong> Teams spend hours wrangling datasets that end up being completely irrelevant to the core issue.</li>
+                    <li><strong>Vanity Metrics:</strong> The tendency to report on numbers that look good (like total signups) instead of actionable KPIs (like activation rate).</li>
+                </ul>
+
+                <h2>How to Define Success (The North Star)</h2>
+                <p>Defining success means achieving stakeholder alignment <em>before</em> a single line of code is written. Here’s how successful teams do it:</p>
+
+                <p><strong>1. Ask the "Why" and "What Next"</strong><br>
+                Before touching the data, ask your stakeholders: "What specific decision will you make based on this analysis?" If the answer is vague ("I just want to understand the landscape"), push harder. Data should drive action.</p>
+
+                <p><strong>2. Establish Key Performance Indicators (KPIs) Upfront</strong><br>
+                Agree on the specific metrics that will determine whether a project or intervention was successful. Deciding on the metrics beforehand prevents "cherry-picking" data later to support a predetermined narrative.</p>
+
+                <p><strong>3. Use the 5W1H Framework</strong><br>
+                Ask Who, What, Where, When, Why, and How. deeply understand the context of the problem. Who is the end-user? What are their constraints? How will the solution be integrated into their workflow?</p>
+
+                <h2>The Takeaway</h2>
+                <p>Treat the problem-definition phase as an investment, not a delay. A few hours spent clarifying goals and defining success will save weeks of wasted analytical effort. The next time you receive a data request, stop, put the spreadsheet away, and make sure everyone agrees on the destination before you start driving.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
