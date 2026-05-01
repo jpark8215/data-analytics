@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Think of a machine learning model like a new employee | Data-Informed Insights</title>
+
+    <meta name="description"
+        content="Demystifying AI by comparing machine learning models to new employees: they learn from examples, make mistakes early, and need constant feedback to improve.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Education</span>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Think of a machine learning model like a new employee</h1>
+            </header>
+
+            <img src="../assets/images/ml_new_employee.png" alt="Illustration comparing an AI model to a new employee" class="post-image">
+
+            <div class="post-content">
+                <p>When business leaders hear "Machine Learning" (ML) or "Artificial Intelligence" (AI), they often imagine a flawless, omniscient oracle. They expect to plug in raw data, press a button, and immediately receive perfect predictions. When the model inevitably makes a mistake on day one, trust evaporates, and the project is often abandoned.</p>
+
+                <p>This expectation gap occurs because we fundamentally misunderstand how these systems learn. If you want to successfully integrate machine learning into your business, the best analogy is not a calculator—it's a <strong>new employee</strong>.</p>
+
+                <h2>The Onboarding Process (Training Phase)</h2>
+                <p>Imagine hiring a brilliant new analyst who has never worked in your specific industry. You wouldn't just sit them at a desk on their first day and expect them to make million-dollar strategic decisions. You have to train them.</p>
+                <p>In the ML world, this is the training phase. Just as you would give a new employee historical reports, past examples, and case studies to study, data scientists feed historical data into the algorithm. The model looks for patterns in this data, trying to figure out "how things are done around here." If you give the new employee bad examples, they will learn the wrong lessons. Similarly, if you feed a model biased or dirty data, its predictions will be fundamentally flawed (the classic "garbage in, garbage out" principle).</p>
+
+                <h2>The First Few Weeks: Expecting Mistakes</h2>
+                <p>Even the best new hire will make mistakes during their first few weeks as they encounter edge cases they didn't see in training. A machine learning model is exactly the same.</p>
+                <p>When a model is deployed into the real world (production), it will face situations that look slightly different from its training data. It <em>will</em> make mistakes. This isn't a sign that the AI is broken; it's a natural part of the learning curve. Expecting 100% accuracy from day one is as unreasonable as expecting a junior analyst to know the CEO's unspoken preferences on their first day.</p>
+
+                <h2>The Critical Role of Feedback Loops</h2>
+                <p>If your new employee makes a mistake and no one corrects them, they will continue making that mistake forever. They need a manager to say, "Actually, in this specific case, we do it <em>this</em> way because of X."</p>
+                <p>Machine learning models require exactly the same management. This is known as the "feedback loop." When a model makes a wrong prediction (e.g., classifying a normal transaction as fraudulent), the system needs a way for a human to flag that error. This corrected example is then fed back into the model, allowing it to "learn from its mistakes" and update its understanding. Without a mechanism to capture and integrate feedback, a model will slowly degrade in performance over time—a concept known as "model drift."</p>
+
+                <h2>Why This Analogy Matters</h2>
+                <p>Treating ML models like new employees changes how an organization approaches AI initiatives:</p>
+                <ul>
+                    <li><strong>Patience:</strong> Leaders give models the necessary time to learn and adapt, rather than pulling the plug at the first error.</li>
+                    <li><strong>Investment in Training:</strong> Teams understand that curating high-quality training data is just as important as writing good onboarding documentation.</li>
+                    <li><strong>Continuous Management:</strong> It becomes clear that deploying a model isn't the end of the project. Like an employee, a model requires ongoing management, performance reviews, and continuous feedback to reach its full potential.</li>
+                </ul>
+                <p>Machine learning isn't magic. It's just a very fast, very scalable new hire. Manage it accordingly.</p>
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics & Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
