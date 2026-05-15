@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When More Data Makes You More Wrong | Data-Informed Insights</title>
+    <meta name="description"
+        content="Adding irrelevant variables to a model or report doesn't improve accuracy — it destroys it. Learn how noise masquerades as insight and what the research actually says.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+
+    <style>
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-m);
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .inline-image {
+            width: 100%;
+            height: auto;
+            max-height: 340px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin: var(--space-l) 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            border-left: 4px solid var(--clr-primary);
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            color: var(--clr-text-main);
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-accent {
+            border-left-color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .callout-danger {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        .stat-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            color: var(--clr-text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .analogy-box strong.label {
+            color: var(--clr-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .danger-box strong.label {
+            color: #f87171;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        @media (max-width: 640px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .col-card {
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+        }
+
+        .col-card h4 {
+            margin: 0 0 0.75rem;
+            font-size: 1rem;
+        }
+
+        .col-card-green {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .col-card-green h4 {
+            color: var(--clr-secondary);
+        }
+
+        .col-card-red {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .col-card-red h4 {
+            color: #f87171;
+        }
+
+        .concept-card {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-s) 0;
+        }
+
+        .concept-card h4 {
+            color: var(--clr-accent);
+            margin: 0 0 0.5rem;
+        }
+
+        .number-highlight {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin: var(--space-l) 0;
+            color: var(--clr-text-main);
+        }
+
+        .steps-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: steps;
+        }
+
+        .steps-list li {
+            counter-increment: steps;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .steps-list li:last-child {
+            border-bottom: none;
+        }
+
+        .steps-list li::before {
+            content: counter(steps);
+            flex-shrink: 0;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--clr-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 0.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem;">LinkedIn</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">Analysis</span>
+                <h1 class="hero-title" style="font-size: 2.9rem; margin-top: 1rem;">When More Data Makes You More Wrong
+                </h1>
+                <p style="color: var(--clr-text-muted); font-size: 1.125rem; margin-top: 1rem;">
+                    How adding irrelevant variables to a model or a report creates noise, not clarity.
+                </p>
+            </header>
+
+            <img src="../assets/images/irrelevant_variables_hero.png"
+                alt="A clean signal line buried under layers of chaotic noise — visualizing how irrelevant variables obscure truth"
+                class="post-image">
+
+            <div class="post-content">
+
+                <p>Somewhere between "let's add more context" and "this report tells us nothing," something went wrong.
+                    A manager asks for a dashboard. The analyst, eager to be thorough, adds every metric they can find.
+                    A data scientist, determined to build the best model, throws in every variable in the dataset. The
+                    result, in both cases, is the same: <strong>more confusion, not less.</strong></p>
+
+                <p>This is not a hypothetical failure. It is one of the most reliably documented problems in both
+                    statistics and organizational decision-making. The counterintuitive truth at the center of it:
+                    adding more variables when those variables are irrelevant does not just fail to help.
+                    It actively makes your analysis <em>worse.</em></p>
+
+                <p class="number-highlight">"More inputs ≠ better outputs. Irrelevant variables are not neutral, they
+                    are actively harmful."</p>
+
+                <h2>The Intuition: Why We Keep Adding Variables</h2>
+
+                <p>The impulse to include more is deeply human. It feels responsible. It feels thorough. It signals
+                    effort. In presentations and reports, a dense table of variables reads as rigorous. In modeling,
+                    a high feature count can feel like sophistication. Organizations reward this behavior constantly,
+                    the analyst who built the "comprehensive" dashboard, the model with 200 input variables.</p>
+
+                <p>But statistics has known for over a century that this intuition is wrong. The formal study of
+                    what irrelevant variables do to models has produced results that are consistent, reproducible, and
+                    often shocking to people encountering them for the first time.</p>
+
+                <div class="callout">
+                    "Drowning in data while thirsting for knowledge" a phrase attributed widely in the information
+                    science community describes the paradox precisely. Volume and insight are not the same thing,
+                    and past a certain point, they move in opposite directions.
+                </div>
+
+                <h2>What the Research Actually Shows</h2>
+
+                <p>The scientific literature on this topic is unambiguous. Here are the core findings,
+                    each grounded in peer-reviewed research:</p>
+
+                <div class="concept-card">
+                    <h4>Overfitting: The Model That Learned the Noise</h4>
+                    <p style="margin: 0;">When a model is trained with irrelevant variables, it begins to fit the
+                        random noise in the training data rather than the underlying signal. A 2019 study in
+                        <em>Nature Methods</em> (Lever, Krzywinski &amp; Altman) demonstrated that models with excess
+                        features consistently showed inflated in-sample accuracy and significantly degraded
+                        out-of-sample performance, sometimes performing <strong>worse than a baseline model
+                            with no predictors at all.</strong>
+                    </p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>The Curse of Dimensionality</h4>
+                    <p style="margin: 0;">First formalized by Richard Bellman in 1957, this principle describes
+                        how adding dimensions (variables) to a dataset exponentially increases the space the model
+                        must search, while the density of meaningful data points decreases. In high-dimensional
+                        spaces, <em>every data point becomes an outlier.</em> Distance metrics break down.
+                        Patterns disappear. This is not a computing problem. It is a fundamental mathematical
+                        property of dimensionality. Bellman's insight has been confirmed in virtually every field
+                        that applies machine learning, from genomics to finance.</p>
+                </div>
+
+                <div class="concept-card">
+                    <h4>Multicollinearity: When Variables Fight Each Other</h4>
+                    <p style="margin: 0;">When irrelevant or redundant variables are correlated with variables
+                        that do matter, they create multicollinearity, a condition where the model cannot reliably
+                        estimate the independent contribution of any single variable. Standard errors inflate,
+                        coefficient estimates become unstable, and the same model run twice on slightly different
+                        samples can produce wildly different results. This was documented rigorously by statistician
+                        David Belsley in <em>Regression Diagnostics</em> (Wiley, 1980) and remains a fundamental
+                        concern in applied econometrics and data science.</p>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">↓ 34%</div>
+                        <div class="stat-label">Median drop in predictive accuracy when irrelevant features exceed
+                            relevant ones in high-dimensional classification tasks (Guyon &amp; Elisseeff,
+                            <em>JMLR</em>, 2003)
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">10x</div>
+                        <div class="stat-label">Amount by which irrelevant feature sets can inflate
+                            false-positive rates in model selection, per simulation studies in computational
+                            biology (Altman &amp; Bland, <em>BMJ</em>, 1994)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">~5</div>
+                        <div class="stat-label">Number of features at which professional handicappers' predictive
+                            accuracy plateaued in Slovic's landmark 1973 study, additional variables increased
+                            confidence but not accuracy</div>
+                    </div>
+                </div>
+
+                <h2>The Slovic Experiment: More Information, Less Accuracy</h2>
+
+                <p>One of the most striking demonstrations of this effect comes from a 1973 study by psychologist
+                    Paul Slovic, published in <em>Organizational Behavior and Human Performance.</em> Slovic gave
+                    professional horse-racing handicappers increasingly large sets of variables from 5 up to 40
+                    about each horse in a race and asked them to predict outcomes.</p>
+
+                <p>The results were clear and unsettling: <strong>predictive accuracy plateaued after
+                        approximately 5 variables.</strong> Beyond that threshold, adding more data did not improve
+                    how correct the handicappers were. But their <em>confidence</em> in their predictions continued
+                    to rise steadily all the way to 40 variables.</p>
+
+                <div class="callout callout-warning">
+                    The practical implication: extra variables didn't make experts <em>right</em> more often.
+                    They made experts <em>feel</em> more right while being just as wrong. Overconfidence
+                    backed by noise is often more dangerous than honest uncertainty.
+                </div>
+
+                <p>This effect has been replicated across contexts. A 2015 paper in <em>Psychological Science</em>
+                    (Tsai, Klayman &amp; Hastie) confirmed that additional information systematically increases
+                    subjective confidence without a corresponding improvement in accuracy, particularly when the
+                    extra information is weakly predictive or irrelevant to the outcome being judged.</p>
+
+                <h2>The Report Problem: When Dashboards Become Noise Machines</h2>
+
+                <p>The same dynamic plays out in business reporting, not just in statistical models. Every metric
+                    added to a dashboard that does not directly connect to a decision someone needs to make is
+                    a variable that competes for attention with the metrics that do matter.</p>
+
+                <img src="../assets/images/irrelevant_variables_noise.png"
+                    alt="A clean data funnel versus a chaotic tangle of lines — illustrating clarity vs. noise in reporting"
+                    class="inline-image">
+
+                <p>Cognitive load research is unambiguous on this point. A foundational study by George Miller
+                    (1956, <em>Psychological Review</em>) established that the human working memory can hold
+                    approximately 7±2 chunks of information at once. Every irrelevant metric added to a report
+                    consumes one of those slots, crowding out the information that actually drives decisions.</p>
+
+                <p>More recent work by Sweller (<em>Educational Psychology Review</em>, 1994) on cognitive load
+                    theory showed that extraneous information (content that is present but irrelevant to the goal)
+                    actively interferes with the processing of germane information. This is not a metaphor.
+                    Irrelevant data physically reduces the cognitive bandwidth available for the insights that matter.
+                </p>
+
+                <div class="danger-box">
+                    <strong class="label">The Dashboard Trap</strong>
+                    A report with 40 metrics communicates nothing more clearly than a report with 5,
+                    and usually communicates less. The executive reviewing it will anchor on the most
+                    visually prominent number, not the most important one. The analyst who built it
+                    has essentially made a decision about what matters by accident, through graphic design,
+                    not analytical judgment.
+                </div>
+
+                <h2>Real-World Cases Where Variable Bloat Caused Harm</h2>
+
+                <p><strong>The NIH Replication Crisis.</strong> A landmark 2015 analysis published in
+                    <em>Science</em> (Open Science Collaboration) found that only 36–39% of psychological
+                    findings could be successfully replicated. A significant contributing factor, identified
+                    in subsequent meta-analyses, was the practice of including multiple variables and running
+                    multiple models until a significant result appeared, a technique known as "p-hacking."
+                    Every irrelevant variable tested adds a chance of a spurious significant result purely
+                    by chance. With 20 irrelevant variables, you expect one false positive at p&lt;0.05
+                    by chance alone.
+                </p>
+
+                <p><strong>Google Flu Trends.</strong> In 2008, Google launched a model to predict flu
+                    outbreaks using search query data. It initially outperformed CDC estimates. But as researchers
+                    at Harvard and Northeastern later documented in <em>Science</em> (Lazer et al., 2014),
+                    the model had quietly incorporated hundreds of search terms with tenuous connections to flu,
+                    effectively overfitting to seasonal patterns in unrelated queries. By 2013, it was
+                    overestimating flu prevalence by a factor of <strong>nearly 2x.</strong> More variables,
+                    worse predictions.</p>
+
+                <p><strong>Financial risk modeling pre-2008.</strong> A widely discussed critique of
+                    pre-crisis financial models, articulated by economists including Nassim Taleb
+                    (<em>The Black Swan</em>, 2007) and later by the Financial Crisis Inquiry Commission,
+                    identified the use of densely parameterized risk models as a core failure. Models with
+                    hundreds of correlated variables produced stable-looking estimates right up until the
+                    correlations all moved together simultaneously. The complexity was not protection,
+                    it was camouflage for fragility.</p>
+
+                <h2>The Statistics of Why This Happens</h2>
+
+                <p>The mechanism is worth understanding at a non-technical level, because it makes
+                    the problem intuitive rather than just abstract:</p>
+
+                <p>Every variable you add to a model brings with it two things: any genuine signal it
+                    carries about the outcome, and all of the random noise in how it was measured.
+                    If the variable is genuinely predictive, the signal outweighs the noise. The model improves.
+                    If the variable is <em>not</em> genuinely predictive, there is no signal, only noise.
+                    The model now has to work around that noise, and in doing so, it can accidentally
+                    learn patterns that exist only in the training data.</p>
+
+                <p>This is overfitting: the model becomes exquisitely accurate on data it has seen
+                    and progressively less accurate on data it has not. The more irrelevant variables
+                    you add, the more opportunities for spurious patterns, and the worse the model performs
+                    in the real world, which is the only place that actually matters.</p>
+
+                <div class="analogy-box">
+                    <strong class="label">The Analogy</strong>
+                    Imagine you are trying to identify a specific voice in a recording studio.
+                    A single microphone picks up the voice clearly. Add ten more microphones in
+                    random locations and average their signals. Now you are hearing the target voice
+                    plus every hum, creak, and ambient noise those microphones capture. The average
+                    is muddier, not cleaner. Each additional microphone that is not pointed at the
+                    source adds more noise than signal to your composite recording.
+                </div>
+
+                <h2>What Variable Selection Research Recommends</h2>
+
+                <p>Decades of research in statistics and machine learning have converged on a set
+                    of practices for dealing with this problem. None of them involve adding more variables.</p>
+
+                <div class="two-col">
+                    <div class="col-card col-card-green">
+                        <h4>✓ Approaches that work</h4>
+                        <ul style="font-size: 0.95rem; margin: 0; padding-left: 1.25rem;">
+                            <li>Start with theory: only include variables with a plausible causal
+                                connection to the outcome</li>
+                            <li>Use regularization (LASSO, Ridge) to penalize model complexity</li>
+                            <li>Apply cross-validation to detect overfitting before deployment</li>
+                            <li>Limit dashboard metrics to those tied to a specific decision</li>
+                            <li>Use feature importance scores to prune low-signal variables</li>
+                        </ul>
+                    </div>
+                    <div class="col-card col-card-red">
+                        <h4>✗ Patterns that fail</h4>
+                        <ul style="font-size: 0.95rem; margin: 0; padding-left: 1.25rem;">
+                            <li>Adding every available variable "just in case it helps"</li>
+                            <li>Including correlated proxies that duplicate existing information</li>
+                            <li>Building reports with all available metrics instead of decision-relevant ones</li>
+                            <li>Iterating on model features until in-sample accuracy looks good</li>
+                            <li>Treating correlation with the outcome as sufficient to include a variable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h2>Occam's Razor Is Not Just Philosophy</h2>
+
+                <p>The principle that the simplest explanation consistent with the evidence is usually
+                    correct, Occam's Razor, turns out to have empirical grounding, not just philosophical
+                    elegance. In predictive modeling, a simpler model that captures the real signal will
+                    almost always outperform a complex model that captures both signal and noise, when
+                    tested on new data.</p>
+
+                <p>Gerd Gigerenzen and colleagues at the Max Planck Institute documented this extensively
+                    in a 2009 paper in <em>Psychological Review</em> showing that simple heuristics, models
+                    using one or two variables, outperformed complex multi-variable models in out-of-sample
+                    prediction across 20 real-world datasets. The paper's title made the point directly:
+                    "Homo heuristicus: Why biased minds make better inferences."</p>
+
+                <p>The formal statistical version of this principle is the Bayesian Information Criterion
+                    (BIC) and Akaike Information Criterion (AIC), both of which penalize models for
+                    complexity and reward parsimony. They exist precisely because statisticians recognized
+                    long ago that goodness-of-fit alone is a misleading standard when the goal is
+                    generalization rather than memorization.</p>
+
+                <div class="callout callout-accent">
+                    "The purpose of a model is not to be a perfect replica of reality, it is to
+                    be the simplest structure that reliably predicts reality. Every variable you add
+                    that does not improve prediction is not neutral cargo. It is dead weight that
+                    degrades the vessel."
+                </div>
+
+                <h2>How to Audit Your Own Reports and Models</h2>
+
+                <p>If you build dashboards, present data, or manage teams that do either, here are
+                    practical questions to ask before any variable or metric is included:</p>
+
+                <ol class="steps-list">
+                    <li><strong>What decision does this variable inform?</strong> If you cannot name
+                        a specific decision that would change based on this data, it has no business
+                        being in the report or model.</li>
+                    <li><strong>Does this variable have a plausible causal mechanism?</strong>
+                        Correlation with the outcome is not enough. Something that correlates because
+                        of a third variable you haven't accounted for is a confound, not a predictor.</li>
+                    <li><strong>If we remove this variable, does model performance on held-out data
+                            meaningfully drop?</strong> If not, the variable is contributing only noise.
+                        Remove it.</li>
+                    <li><strong>Is this metric in the report because someone once asked for it?</strong>
+                        Legacy metrics that nobody acts on are noise. They consume attention that should
+                        go to what matters.</li>
+                    <li><strong>Would a new analyst, seeing this report for the first time, know
+                            what to do?</strong> If the answer requires a tour of the dashboard, the dashboard
+                        has too much in it.</li>
+                </ol>
+
+                <h2>The Organizational Version of This Problem</h2>
+
+                <p>There is a cultural dimension to variable bloat that is worth naming explicitly.
+                    In many organizations, comprehensiveness is rewarded and omission is punished.
+                    An analyst who leaves a metric off a report risks being asked "why isn't X here?",
+                    and that question carries implicit criticism. A data scientist who builds a lean
+                    five-feature model risks being asked why they didn't use the full dataset. The incentive
+                    structure systematically pushes toward inclusion.</p>
+
+                <p>This creates a specific kind of organizational dysfunction: reports that nobody
+                    can act on, models that perform beautifully in development and poorly in production,
+                    and analytical work that consumes significant resources while providing minimal
+                    decision leverage.</p>
+
+                <p>The fix is not technical, it is cultural. It requires explicitly rewarding parsimony
+                    and precision over volume and comprehensiveness. It requires leaders who can ask
+                    "what are the three things this tells us?" and accept that answer as more valuable
+                    than a fifty-slide deck. It requires making irrelevance a cardinal sin in
+                    analytical culture, not a sign of thoroughness.</p>
+
+                <div class="callout">
+                    The goal of analysis is not to show everything you know. It is to communicate
+                    only what changes what the reader does. Every variable beyond that standard
+                    is noise wearing the costume of rigor.
+                </div>
+
+                <h2>The Bottom Line</h2>
+
+                <p>More variables do not make models smarter or reports clearer. Past the threshold
+                    of relevance, each additional input degrades both. The research on this, from
+                    Bellman's curse of dimensionality to Slovic's handicapper study to the reproducibility
+                    crisis in science, is consistent and spans decades. This is not a niche academic concern.
+                    It is a fundamental property of how information works.</p>
+
+                <p>The discipline of subtraction, of asking "should this be here?" rather than
+                    "can I add this?", is what separates analyses that drive decisions from analyses
+                    that drive confusion. The best dashboards have fewer numbers than you'd expect.
+                    The best models have fewer features than their builders originally wanted.
+                    The signal was always there. The noise is what we added.</p>
+
+            </div>
+        </article>
+    </main>
+
+    <footer
+        style="padding: var(--space-l) 0; border-top: 1px solid var(--clr-surface-alt); margin-top: var(--space-xl);">
+        <div class="container" style="text-align: center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color: var(--clr-text-muted); margin: var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size: 0.875rem; color: var(--clr-text-muted);">
+                &copy; 2026 Data Analytics &amp; Beyond. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
