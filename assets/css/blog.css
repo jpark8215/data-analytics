@@ -15,9 +15,21 @@
 }
 
 .nav-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+}
+
+.nav-container > :first-child {
+    justify-self: start;
+}
+
+.nav-container > :nth-child(2) {
+    justify-self: center;
+}
+
+.nav-container > :last-child {
+    justify-self: end;
 }
 
 .logo {
