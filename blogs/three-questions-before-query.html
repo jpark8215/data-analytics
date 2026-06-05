@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 3 Questions to Ask Before You Run a Single Query | Data-Informed Insights</title>
+    <meta name="description" content="Before writing a single line of SQL or opening a dataset, three questions determine whether your analysis will actually matter: Who will act on this? By when? What would change their mind?">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+    <style>
+        .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
+        .post-header { text-align: center; margin-bottom: var(--space-l); }
+        .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
+        .post-content h2 { margin-top: var(--space-l); font-size: 1.875rem; }
+        .post-content p { margin-bottom: var(--space-m); }
+        .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 1.5rem; }
+        .post-content li { margin-bottom: 0.5rem; }
+        .post-image { width: 100%; height: auto; max-height: 440px; object-fit: cover; border-radius: var(--radius-l); margin-bottom: var(--space-l); box-shadow: var(--shadow-lg); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-m); color: var(--clr-text-muted); font-weight: 500; }
+        .back-link:hover { color: var(--clr-primary); }
+        .callout { border-left: 4px solid var(--clr-primary); background: rgba(59,130,246,0.08); border-radius: 0 var(--radius-m) var(--radius-m) 0; padding: var(--space-m); margin: var(--space-l) 0; font-style: italic; color: var(--clr-text-main); font-size: 1.2rem; line-height: 1.7; }
+        .callout-warning { border-left-color: #f59e0b; background: rgba(245,158,11,0.08); }
+        .callout-accent { border-left-color: var(--clr-accent); background: rgba(139,92,246,0.08); }
+        .callout-green { border-left-color: #10b981; background: rgba(16,185,129,0.08); }
+        .callout-danger { border-left-color: #ef4444; background: rgba(239,68,68,0.08); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-m); margin: var(--space-l) 0; }
+        .stat-card { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); border-radius: var(--radius-m); padding: var(--space-m); text-align: center; }
+        .stat-card .stat-number { font-size: 2.25rem; font-weight: 800; color: var(--clr-primary); font-family: 'Outfit', sans-serif; line-height: 1.1; }
+        .stat-card .stat-label { font-size: 0.875rem; color: var(--clr-text-muted); margin-top: 0.35rem; }
+        .question-block { border-radius: var(--radius-l); padding: var(--space-m) var(--space-m) var(--space-m) calc(var(--space-m) + 0.25rem); margin: var(--space-l) 0; position: relative; overflow: hidden; }
+        .question-block::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: var(--radius-l) 0 0 var(--radius-l); }
+        .q-blue { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); }
+        .q-blue::before { background: var(--clr-primary); }
+        .q-green { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); }
+        .q-green::before { background: #10b981; }
+        .q-amber { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); }
+        .q-amber::before { background: #f59e0b; }
+        .q-num { font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+        .q-blue .q-num { color: var(--clr-primary); }
+        .q-green .q-num { color: #10b981; }
+        .q-amber .q-num { color: #f59e0b; }
+        .question-block h3 { font-size: 1.5rem; margin: 0 0 0.75rem; }
+        .question-block p { margin-bottom: 0.75rem; font-size: 1rem; }
+        .question-block p:last-child { margin-bottom: 0; }
+        .bad-good { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-m); margin: var(--space-m) 0; }
+        @media (max-width: 620px) { .bad-good { grid-template-columns: 1fr; } }
+        .bg-card { border-radius: var(--radius-m); padding: var(--space-m); font-size: 0.95rem; }
+        .bg-bad { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.18); }
+        .bg-bad .bg-label { color: #f87171; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 0.5rem; }
+        .bg-good { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.18); }
+        .bg-good .bg-label { color: #10b981; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 0.5rem; }
+        .bg-card p { margin: 0; color: var(--clr-text-muted); }
+        .analogy-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
+        .analogy-box strong.label { color: var(--clr-secondary); display: block; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .checklist { list-style: none; padding: 0; }
+        .checklist li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .checklist li:last-child { border-bottom: none; }
+        .check-icon { flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; margin-top: 0.15rem; }
+        .ci-blue { background: rgba(59,130,246,0.2); color: var(--clr-primary); }
+        .ci-green { background: rgba(16,185,129,0.2); color: #10b981; }
+        .ci-amber { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .highlight-box { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
+        .highlight-box h4 { color: var(--clr-accent); margin: 0 0 0.6rem; }
+    </style>
+</head>
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag" style="background:rgba(59,130,246,0.2);color:var(--clr-primary);">Practical</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">The 3 Questions to Ask Before You Run a Single Query</h1>
+                <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+                    Who will act on this? By when? What would change their mind? Answer these first and the analysis almost writes itself.
+                </p>
+            </header>
+
+            <img src="../assets/images/three_questions_before_query.png"
+                alt="Three glowing geometric shapes connected by beams of light, representing the three foundational questions that frame any analysis"
+                class="post-image">
+
+            <div class="post-content">
+
+                <p>There is a version of analytical work that feels productive but produces almost nothing of value. The analyst opens the database, runs a series of queries, produces a set of charts, writes up the findings, and sends them to the stakeholder. The stakeholder reads the email, says "interesting," and does nothing differently. The analysis was technically correct. It changed no decision. It solved no problem. It was invisible the moment it was delivered.</p>
+
+                <p>This pattern is not rare. Research by Gartner consistently finds that a substantial majority of analytical projects fail to change organizational behavior in any measurable way. The cause is almost never bad methodology or poor data quality. It is that the analysis was built without a clear answer to three questions that determine whether any analysis is worth doing at all.</p>
+
+                <p>These questions sound simple. They are deceptively difficult to answer well. And asking them before writing a single line of SQL or opening a single spreadsheet is one of the highest-leverage habits any analyst or analytical leader can build.</p>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">80%</div>
+                        <div class="stat-label">of analytics projects fail to deliver measurable business impact, most often because the business question was not clearly defined before work began (Gartner, 2020)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">35-50%</div>
+                        <div class="stat-label">of total analytical project time is consumed by rework caused by ambiguous or misunderstood problem definitions (Llave, <em>International Journal of Information Management</em>, 2017)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3x</div>
+                        <div class="stat-label">higher rate of actionable outcomes from analyses with a named decision-maker and a pre-defined decision threshold, compared to open-ended exploratory analyses (Kohavi et al., <em>Trustworthy Online Controlled Experiments</em>, Cambridge, 2020)</div>
+                    </div>
+                </div>
+
+                <div class="callout">
+                    "The formulation of a problem is often more essential than its solution, which may be merely a matter of mathematical or experimental skill. To raise new questions, new possibilities, to regard old problems from a new angle, requires creative imagination and marks real advance in science."
+                    <br><span style="font-size:0.9rem;color:var(--clr-text-muted);font-style:normal;">Albert Einstein and Leopold Infeld, <em>The Evolution of Physics</em>, 1938</span>
+                </div>
+
+                <p>The three questions below are not original inventions. They are distilled from decades of research on analytical effectiveness, decision science, and organizational behavior. What is original is the discipline of insisting on answers to all three before any technical work begins.</p>
+
+                <h2>Question 1: Who Will Act on This?</h2>
+
+                <div class="question-block q-blue">
+                    <div class="q-num">Question One</div>
+                    <h3>Who will act on this?</h3>
+                    <p>Name a specific person, in a specific role, who has the authority and the intent to make a decision based on this analysis. Not "the business," not "the team," not "leadership." A name and a role.</p>
+                    <p>If you cannot name this person before you start, the analysis does not yet have a purpose.</p>
+                </div>
+
+                <p>This question does more work than it appears to. It forces two things simultaneously: identification of a real decision-maker, and identification of a real decision. Analyses built for unnamed audiences tend to be built for everyone, which means they are optimized for no one. They include too many metrics, hedge every conclusion, and arrive formatted for a reader who does not actually exist.</p>
+
+                <p>Research on analytical communication by Nancy Duarte, whose work on presenting data has been cited in Harvard Business Review and adopted widely in analytical organizations, makes this point directly: the single most common reason that well-constructed analyses fail to produce action is that they were not designed for a specific person's decision context. An analysis built for the CMO has different scope, different level of detail, and different framing than the same underlying data built for a regional sales manager. Treating them as interchangeable guarantees that neither is well-served.</p>
+
+                <p>There is a second function this question performs. It surfaces accountability. Research by Chip Heath and Dan Heath in <em>Decisive</em> (Crown Business, 2013), a synthesis of decision science literature, documents what they call the "responsibility gap" in organizational decisions: when nobody specifically owns a decision, it tends not to get made, or gets made inconsistently across teams. An analysis that names a decision-maker creates a person who is accountable for acting on it. That accountability changes behavior on both sides: the analyst builds something more precisely useful, and the stakeholder takes the output more seriously because they know it was built specifically for them.</p>
+
+                <div class="bad-good">
+                    <div class="bg-card bg-bad">
+                        <div class="bg-label">Weak answer to Question 1</div>
+                        <p>"The business wants to understand churn better."</p>
+                    </div>
+                    <div class="bg-card bg-good">
+                        <div class="bg-label">Strong answer to Question 1</div>
+                        <p>"Sarah, VP of Customer Success, is deciding whether to expand the proactive outreach program to the mid-market segment in Q3. She needs this by June 15."</p>
+                    </div>
+                </div>
+
+                <p>The strong version identifies a person, a role, a decision, a scope, and a deadline. Every one of those five pieces of information shapes how the analysis should be built. The weak version gives you none of them, which is why analyses built to "understand churn better" tend to produce comprehensive churn reports that sit in inboxes unread.</p>
+
+                <div class="analogy-box">
+                    <strong class="label">The Analogy</strong>
+                    A lawyer who prepares a legal brief without knowing which judge will hear the case, in which jurisdiction, under which procedural rules, and by which deadline, is not preparing a legal brief. They are writing something that might be a legal brief in some hypothetical context. Analytical work built without a named decision-maker and a specific decision is the same kind of document: technically competent, situationally useless.
+                </div>
+
+                <h2>Question 2: By When?</h2>
+
+                <div class="question-block q-green">
+                    <div class="q-num">Question Two</div>
+                    <h3>By when?</h3>
+                    <p>What is the actual deadline, stated in terms of the decision that must be made, not the analysis that must be delivered? When does the window for this decision close?</p>
+                    <p>If the answer is "as soon as possible," the question has not been answered.</p>
+                </div>
+
+                <p>Deadlines do more than define delivery timelines. They define the appropriate scope, depth, and precision of the analysis itself. An analysis needed in two hours to inform a meeting is a fundamentally different product than an analysis that will inform a quarterly planning process with three weeks of runway. Building the wrong version is not just inefficient. It actively undermines the analytical function's credibility: an analysis that arrives at the right depth but two days after the decision was made has zero value.</p>
+
+                <p>The research on this is consistent. A 2019 report by Bain and Company on decision effectiveness found that decision speed was one of the top three determinants of whether analytical outputs actually influenced decisions. Organizations where analytical work reliably arrived within the decision window achieved measurably better outcomes from their analytical investments than organizations where high-quality work arrived after the fact. The quality of the analysis was less important than its timing relative to the decision.</p>
+
+                <p>This has direct implications for how analysts should respond when a deadline is vague. "As soon as possible" is not a deadline. It is an expression of impatience. The appropriate response is not to work faster. It is to ask: "When does the decision actually need to be made, and what happens if it is delayed?" Those two questions surface the real deadline, the real consequences of lateness, and the real scope of what is needed.</p>
+
+                <p>Cognitive science research by Gollwitzer and Sheeran, published in <em>Advances in Experimental Social Psychology</em> (2006), documented the strong effect of implementation intentions on follow-through. An "implementation intention" is a specific plan that includes a time: "I will make this decision by Thursday's 2 p.m. planning meeting." People who form implementation intentions are significantly more likely to follow through on decisions than people with vague intentions to decide "soon." An analyst who asks for and records a specific deadline is helping the stakeholder form a real implementation intention, not just scheduling their own delivery.</p>
+
+                <div class="bad-good">
+                    <div class="bg-card bg-bad">
+                        <div class="bg-label">Weak answer to Question 2</div>
+                        <p>"We need this ASAP. It's been on our radar for a while."</p>
+                    </div>
+                    <div class="bg-card bg-good">
+                        <div class="bg-label">Strong answer to Question 2</div>
+                        <p>"The budget committee meets on June 20. Sarah needs the analysis by June 17 to have time to prepare. If she does not have it by then, the mid-market expansion decision moves to Q4."</p>
+                    </div>
+                </div>
+
+                <p>The strong version tells the analyst three critical things: the real external deadline (June 20 committee meeting), the working deadline (June 17), and the consequence of missing it (decision deferred by a quarter). Each of those pieces of information shapes how the analyst prioritizes the work relative to other requests in their queue.</p>
+
+                <div class="callout callout-warning">
+                    "As soon as possible" is the most expensive phrase in analytics. It collapses priority signaling, prevents scope calibration, and ensures that analysts optimize for speed rather than fitness for purpose. Replace it with a specific date tied to a specific decision event.
+                </div>
+
+                <h2>Question 3: What Would Change Their Mind?</h2>
+
+                <div class="question-block q-amber">
+                    <div class="q-num">Question Three</div>
+                    <h3>What would change their mind?</h3>
+                    <p>Before the analysis begins, ask the decision-maker: what finding would lead you to a different conclusion than the one you are currently leaning toward? What specific data point, threshold, or pattern would cause you to change direction?</p>
+                    <p>If there is no answer, the analysis may not be necessary.</p>
+                </div>
+
+                <p>This question is the most powerful of the three and the most frequently skipped. It does something that no amount of analytical sophistication can do after the fact: it tests whether the analysis is actually capable of changing behavior before it is built.</p>
+
+                <p>The problem it addresses is well-documented in behavioral science. Confirmation bias, the tendency to seek, interpret, and remember information in ways that confirm existing beliefs, is one of the most reliably demonstrated phenomena in cognitive psychology. Its foundational documentation goes back to Peter Wason's 1960 selection task experiments, which showed that people systematically fail to seek out evidence that would falsify their beliefs. In organizational decision-making, this manifests as a specific failure mode: an analysis is requested not to inform a decision but to justify one that has already been made.</p>
+
+                <p>Research by Russo and Schoemaker in <em>Decision Traps</em> (Doubleday, 1989) identified "shooting from the hip" and "confirming evidence" as two of the ten most common decision traps in organizations. Both are directly addressed by asking "what would change your mind?" before analysis begins. A stakeholder who can articulate a specific threshold or finding that would reverse their current direction is genuinely open to being informed. A stakeholder who cannot name any finding that would change their conclusion is seeking confirmation, not analysis.</p>
+
+                <div class="highlight-box">
+                    <h4>The Pre-Mortem Technique</h4>
+                    <p style="margin:0 0 0.75rem;">Psychologist Gary Klein, whose research on naturalistic decision-making was published in <em>Sources of Power</em> (MIT Press, 1998) and popularized in Harvard Business Review, developed a related technique called the "pre-mortem." Before a project begins, participants imagine it has failed and work backward to explain why. Applied to analysis, the equivalent is: "Imagine we run this analysis and the finding leads us to the wrong decision. What would the data have shown that misled us?" This question surfaces hidden assumptions, identifies which findings should trigger caution rather than action, and helps analysts design analysis that is resistant to misinterpretation.</p>
+                </div>
+
+                <p>The "what would change your mind" question also functions as a falsifiability test borrowed from the philosophy of science. Karl Popper's principle of falsifiability, introduced in <em>The Logic of Scientific Discovery</em> (1934, translated 1959), holds that a statement is scientifically meaningful only if it can, in principle, be shown to be false. Applied to business analysis: an analytical question is meaningful only if there exists a possible finding that would lead to a different action. If all possible findings lead to the same action, the analysis adds no decision value.</p>
+
+                <div class="bad-good">
+                    <div class="bg-card bg-bad">
+                        <div class="bg-label">Weak answer to Question 3</div>
+                        <p>"We want to make sure we have the data to support the expansion before we go to the board."</p>
+                    </div>
+                    <div class="bg-card bg-good">
+                        <div class="bg-label">Strong answer to Question 3</div>
+                        <p>"If month-6 retention in the mid-market segment is below 65%, we would hold the expansion. If churn in months 3 to 5 is driven by price rather than product fit, we would reprice rather than expand. Either finding changes the recommendation entirely."</p>
+                    </div>
+                </div>
+
+                <p>The weak answer describes using analysis as a confidence-building exercise for a decision already made. The strong answer names two specific findings that would produce two specific alternative decisions. That specificity means the analysis has a real function: it can actually change what happens.</p>
+
+                <h2>Why These Three Questions Are Foundational</h2>
+
+                <p>Together, these three questions form a pre-analysis contract between analyst and stakeholder. They define the audience (Question 1), the timeline (Question 2), and the decision threshold (Question 3). Each one constrains the scope of the analysis in a way that makes it more useful, not less comprehensive.</p>
+
+                <p>Thomas H. Davenport, in <em>Competing on Analytics</em> (Harvard Business School Press, 2007), argues that the distinguishing characteristic of organizations that generate measurable value from their analytical investments is not the sophistication of their tools or the size of their data teams. It is what he calls "analytical discipline": the consistent practice of defining the decision before designing the analysis. His case studies of high-performing analytical organizations at companies including Capital One, Marriott, and the Boston Red Sox all show the same pattern: analytical work is not started until the decision it will inform is explicitly defined.</p>
+
+                <p>Provost and Fawcett, in <em>Data Science for Business</em> (O'Reilly, 2013), make the same point from a machine learning perspective. Their "CRISP-DM" framework, which has become one of the most widely adopted analytical project management frameworks in industry, places "business understanding" as the first and most critical phase. The framework explicitly requires a written business objective, a written analytical objective, and a success criterion before any data work begins. These map directly to the three questions: who will act and what decision will they make (business objective), what will the analysis produce (analytical objective), and what constitutes a good outcome (success criterion, which requires asking what would change their mind).</p>
+
+                <div class="callout callout-accent">
+                    Analysis designed around these three questions is not shorter or simpler. It is more precisely useful. The difference is the difference between a map that shows you everything and a map that shows you how to get where you are going.
+                </div>
+
+                <h2>What Happens When You Skip These Questions</h2>
+
+                <p>The failure modes from skipping each question are distinct and predictable:</p>
+
+                <ul>
+                    <li><strong>Skipping Question 1</strong> produces analyses built for a generic audience that are too broad to be actionable for any specific person. They become "interesting" rather than "useful." They are shared widely and acted on by nobody.</li>
+                    <li><strong>Skipping Question 2</strong> produces analyses delivered at the wrong moment. They arrive after the decision window has closed, or they arrive on time but at the wrong depth because the analyst had no way to calibrate scope without knowing the actual deadline and consequence of lateness.</li>
+                    <li><strong>Skipping Question 3</strong> produces analyses that confirm rather than inform. They answer the question the stakeholder wanted answered rather than the question that would have changed their behavior. They are technically correct and organizationally inert.</li>
+                </ul>
+
+                <p>The compounding effect of skipping all three is what produces the statistic at the top of this piece: 80% of analytical projects that fail to deliver measurable business impact. Not because the analysis was wrong. Because the analysis was built without a decision-maker, a real deadline, or a falsifiable threshold for changing direction.</p>
+
+                <h2>A Practical Intake Template</h2>
+
+                <p>The most efficient way to institutionalize these questions is to embed them in the analytical intake process. Before an analyst begins any project, the following five fields should be completed by the requesting stakeholder:</p>
+
+                <ul class="checklist">
+                    <li>
+                        <span class="check-icon ci-blue">1</span>
+                        <span><strong>Decision-maker:</strong> Name and role of the person who will use this analysis to make a decision. If more than one person, who has final authority?</span>
+                    </li>
+                    <li>
+                        <span class="check-icon ci-blue">2</span>
+                        <span><strong>Decision to be made:</strong> What specific choice is this person making? Frame it as an "or": expand or hold, reprice or restructure, hire or automate.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon ci-green">3</span>
+                        <span><strong>Decision event:</strong> What meeting, deadline, or external event marks the close of the decision window? What happens if the decision is delayed past that date?</span>
+                    </li>
+                    <li>
+                        <span class="check-icon ci-green">4</span>
+                        <span><strong>Working deadline:</strong> What date does the analysis need to be delivered to give the decision-maker sufficient time to review it before the decision event?</span>
+                    </li>
+                    <li>
+                        <span class="check-icon ci-amber">5</span>
+                        <span><strong>Decision threshold:</strong> What specific finding would change the decision-maker's current direction? Name at least one data point, metric value, or pattern that would lead to a different recommendation than the one currently expected.</span>
+                    </li>
+                </ul>
+
+                <p>This intake process takes three to five minutes to complete for a typical request. Research by Llave (2017) found that organizations that implemented structured analytical intake processes reduced project rework by an average of 40% and reduced time-to-insight by 28%, without adding analytical headcount or changing analytical tools.</p>
+
+                <div class="callout callout-green">
+                    The three minutes you spend answering these questions before starting are worth more than the three hours you save by skipping them. The first path ends with analysis that changes a decision. The second path ends with an email that says "interesting."
+                </div>
+
+                <h2>The Bottom Line</h2>
+
+                <p>The most expensive analytical work is work that is done well and then ignored. It consumes the same resources as useful work, produces the same artifacts, and generates none of the outcomes that justify the investment. The gap between ignored analysis and impactful analysis is almost never technical. It is upstream.</p>
+
+                <p>Before you open a database, before you write a query, before you decide which metrics to include: find out who will act on this, find out by when, and find out what finding would change their mind.</p>
+
+                <p>If you cannot answer all three questions, the analysis is not ready to be built. Go back to the stakeholder. Get the answers. The five minutes that conversation takes will save hours of work that would otherwise produce nothing.</p>
+
+                <p>And if the stakeholder cannot answer Question 3, take that seriously. An analysis where no possible finding would change the decision is not an analysis. It is a budget justification. That is a different document entirely, and it should be built by a different person.</p>
+
+            </div>
+        </article>
+    </main>
+
+    <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+        <div class="container" style="text-align:center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>
