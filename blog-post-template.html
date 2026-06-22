@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Blog Post Title | Data-Informed Insights</title>
+    <meta name="description" content="A 1-2 sentence description of your blog post. This will appear in search results and social media cards.">
+    
+    <!-- Fonts and Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+    
+    <!-- SEO & JSON-LD Schema (Update title, description, image, and url) -->
+    <meta property="og:title" content="Your Blog Post Title">
+    <meta property="og:description" content="A 1-2 sentence description of your blog post.">
+    <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/your-image.png">
+    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/your-post-filename.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/your-post-filename.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Your Blog Post Title",
+      "description": "A 1-2 sentence description of your blog post.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/your-image.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer and Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="site-header glass">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+                </ul>
+            </nav>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <a href="../index.html" class="back-link">← Back to Insights</a>
+
+        <article>
+            <header class="post-header">
+                <span class="blog-card-tag" style="background:rgba(59,130,246,0.2);color:var(--clr-primary);">Category</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Your Blog Post Title</h1>
+                <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+                    Your sub-heading or short intro paragraph goes here.
+                </p>
+            </header>
+
+            <img src="../assets/images/your-image.png"
+                alt="A descriptive alt text for your hero image"
+                class="post-image">
+
+            <div class="post-content">
+                <p>Start writing your post content here.</p>
+                
+                <h2>Heading 2</h2>
+                <p>More content...</p>
+            </div>
+            
+            <!-- Compact Author Bio Section -->
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-m); border-left: 3px solid var(--clr-primary); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                <div>
+                    <h3 style="margin: 0 0 0.25rem 0; font-size: 1rem; color: var(--clr-text-main);">About the Author</h3>
+                    <p style="font-size: 0.85rem; color: var(--clr-text-muted); line-height: 1.4; margin: 0;">
+                        <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
+                    </p>
+                </div>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: 4px; font-weight: 500; white-space: nowrap;">Connect on LinkedIn</a>
+            </div>
+        </article>
+    </main>
+
+    <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+        <div class="container" style="text-align:center;">
+            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+            <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
