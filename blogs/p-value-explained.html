@@ -79,6 +79,31 @@
             border-radius: 0 var(--radius-m) var(--radius-m) 0;
         }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="P-Value Explained in 60 Seconds (No Formulas)">
+    <meta property="og:description"
+        content="A simple, intuition-based explanation of P-values using the luck vs. real framing. No math required.">
+    <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/p_value_explained.png">
+    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/p-value-explained.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/p-value-explained.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "P-Value Explained in 60 Seconds (No Formulas)",
+      "description": "A simple, intuition-based explanation of P-values using the luck vs. real framing. No math required.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/p_value_explained.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
 
 <body>
@@ -120,9 +145,11 @@
                 <p>Imagine I hand you a coin and claim it’s "rigged" to land on heads. You aren't sure, so you decide to
                     test it. You flip it once. It lands on heads.</p>
                 <p>Are you convinced? Probably not. Even a fair coin does that 50% of the time. That’s pure
-                    <strong>luck</strong>.</p>
+                    <strong>luck</strong>.
+                </p>
                 <p>You flip it again. Heads again. Then again. And again. After 10 flips, it has landed on heads
-                    <strong>10 times in a row</strong>.</p>
+                    <strong>10 times in a row</strong>.
+                </p>
                 <p>Now, how do you feel? You’re likely thinking, "There is no way a normal coin would do that. This
                     thing is definitely rigged."</p>
 
@@ -133,7 +160,8 @@
 
                 <h2>Luck vs. Real</h2>
                 <p>In our coin example, the chance of a fair coin landing on heads 10 times in a row is about
-                    <strong>0.001</strong> (or 0.1%).</p>
+                    <strong>0.001</strong> (or 0.1%).
+                </p>
                 <p>That 0.001 is your P-value.</p>
                 <ul>
                     <li><strong>Small P-value (e.g., 0.001):</strong> It is incredibly unlikely that "luck" produced
@@ -158,10 +186,26 @@
 
                 <h2>The Bottom Line</h2>
                 <p>A P-value doesn't tell you if a feature is good or if a campaign was a success. It only tells you
-                    <strong>how surprised you should be</strong> if the result was just luck.</p>
+                    <strong>how surprised you should be</strong> if the result was just luck.
+                </p>
                 <p>Next time you see a P-value, don't look for formulas. Just ask: "How much am I willing to bet that
                     this result wasn't just a lucky streak?"</p>
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 

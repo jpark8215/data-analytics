@@ -1,66 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Metric That Looked Great Until We Segmented It | Data-Informed Insights</title>
-    <meta name="description" content="Aggregated numbers feel reassuring. They are also regularly wrong. When you segment a healthy-looking metric, the stories hiding inside it can completely reverse what you thought you knew.">
+    <meta name="description"
+        content="Aggregated numbers feel reassuring. They are also regularly wrong. When you segment a healthy-looking metric, the stories hiding inside it can completely reverse what you thought you knew.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/blog.css">
     <style>
-        .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-        .post-header { text-align: center; margin-bottom: var(--space-l); }
-        .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-        .post-content h2 { margin-top: var(--space-l); font-size: 1.875rem; }
-        .post-content p { margin-bottom: var(--space-m); }
-        .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 1.5rem; }
-        .post-content li { margin-bottom: 0.5rem; }
-        .post-image { width: 100%; height: auto; max-height: 440px; object-fit: cover; border-radius: var(--radius-l); margin-bottom: var(--space-l); box-shadow: var(--shadow-lg); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-m); color: var(--clr-text-muted); font-weight: 500; }
-        .back-link:hover { color: var(--clr-primary); }
-        .callout { border-left: 4px solid var(--clr-primary); background: rgba(59,130,246,0.08); border-radius: 0 var(--radius-m) var(--radius-m) 0; padding: var(--space-m); margin: var(--space-l) 0; font-style: italic; color: var(--clr-text-main); font-size: 1.2rem; line-height: 1.7; }
-        .callout-warning { border-left-color: #f59e0b; background: rgba(245,158,11,0.08); }
-        .callout-accent { border-left-color: var(--clr-accent); background: rgba(139,92,246,0.08); }
-        .callout-green { border-left-color: #10b981; background: rgba(16,185,129,0.08); }
-        .callout-danger { border-left-color: #ef4444; background: rgba(239,68,68,0.08); }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-m); margin: var(--space-l) 0; }
-        .stat-card { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); border-radius: var(--radius-m); padding: var(--space-m); text-align: center; }
-        .stat-card .stat-number { font-size: 2.25rem; font-weight: 800; color: var(--clr-primary); font-family: 'Outfit', sans-serif; line-height: 1.1; }
-        .stat-card .stat-label { font-size: 0.875rem; color: var(--clr-text-muted); margin-top: 0.35rem; }
-        .scenario-card { border-radius: var(--radius-l); padding: var(--space-m); margin: var(--space-m) 0; }
-        .sc-danger { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2); }
-        .sc-amber { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); }
-        .sc-purple { background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.2); }
-        .scenario-card .sc-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 0.5rem; }
-        .sc-danger .sc-label { color: #f87171; }
-        .sc-amber .sc-label { color: #fbbf24; }
-        .sc-purple .sc-label { color: var(--clr-accent); }
-        .scenario-card h4 { margin: 0 0 0.5rem; font-size: 1.1rem; }
-        .scenario-card p { margin: 0 0 0.5rem; font-size: 0.97rem; color: var(--clr-text-muted); }
-        .scenario-card p:last-child { margin: 0; }
-        .segment-table { width: 100%; border-collapse: collapse; margin: var(--space-m) 0; font-size: 0.95rem; border-radius: var(--radius-m); overflow: hidden; }
-        .segment-table th { background: rgba(59,130,246,0.15); color: var(--clr-primary); padding: 0.65rem 1rem; text-align: left; font-weight: 600; }
-        .segment-table td { padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--clr-text-muted); }
-        .segment-table tr:last-child td { border-bottom: none; }
-        .segment-table .good { color: #10b981; font-weight: 600; }
-        .segment-table .bad { color: #f87171; font-weight: 600; }
-        .segment-table .neutral { color: #fbbf24; font-weight: 600; }
-        .analogy-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
-        .analogy-box strong.label { color: var(--clr-secondary); display: block; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.06em; }
-        .seg-dimension-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-m); margin: var(--space-l) 0; }
-        .seg-dim-card { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.18); border-radius: var(--radius-m); padding: var(--space-m); }
-        .seg-dim-card h4 { color: var(--clr-accent); margin: 0 0 0.5rem; font-size: 0.95rem; }
-        .seg-dim-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--clr-text-muted); }
-        .seg-dim-card li { margin-bottom: 0.3rem; }
-        .checklist { list-style: none; padding: 0; }
-        .checklist li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .checklist li:last-child { border-bottom: none; }
-        .check-icon { flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(16,185,129,0.2); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; margin-top: 0.15rem; }
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-m);
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 440px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            border-left: 4px solid var(--clr-primary);
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            color: var(--clr-text-main);
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-accent {
+            border-left-color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .callout-green {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .callout-danger {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        .stat-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            color: var(--clr-text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .scenario-card {
+            border-radius: var(--radius-l);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .sc-danger {
+            background: rgba(239, 68, 68, 0.07);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .sc-amber {
+            background: rgba(245, 158, 11, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .sc-purple {
+            background: rgba(139, 92, 246, 0.07);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .scenario-card .sc-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .sc-danger .sc-label {
+            color: #f87171;
+        }
+
+        .sc-amber .sc-label {
+            color: #fbbf24;
+        }
+
+        .sc-purple .sc-label {
+            color: var(--clr-accent);
+        }
+
+        .scenario-card h4 {
+            margin: 0 0 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .scenario-card p {
+            margin: 0 0 0.5rem;
+            font-size: 0.97rem;
+            color: var(--clr-text-muted);
+        }
+
+        .scenario-card p:last-child {
+            margin: 0;
+        }
+
+        .segment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-m) 0;
+            font-size: 0.95rem;
+            border-radius: var(--radius-m);
+            overflow: hidden;
+        }
+
+        .segment-table th {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--clr-primary);
+            padding: 0.65rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .segment-table td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--clr-text-muted);
+        }
+
+        .segment-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .segment-table .good {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .segment-table .bad {
+            color: #f87171;
+            font-weight: 600;
+        }
+
+        .segment-table .neutral {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .analogy-box strong.label {
+            color: var(--clr-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .seg-dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        .seg-dim-card {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.18);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+        }
+
+        .seg-dim-card h4 {
+            color: var(--clr-accent);
+            margin: 0 0 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .seg-dim-card ul {
+            margin: 0;
+            padding-left: 1.1rem;
+            font-size: 0.88rem;
+            color: var(--clr-text-muted);
+        }
+
+        .seg-dim-card li {
+            margin-bottom: 0.3rem;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="The Metric That Looked Great Until We Segmented It">
+    <meta property="og:description"
+        content="Aggregated numbers feel reassuring. They are also regularly wrong. When you segment a healthy-looking metric, the stories hiding inside it can completely reverse what you thought you knew.">
+    <meta property="og:image"
+        content="https://jpark8215.github.io/data-analytics/assets/images/segmentation_hidden_stories.png">
+    <meta property="og:url"
+        content="https://jpark8215.github.io/data-analytics/blogs/metric-segmentation-hidden-stories.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical"
+        href="https://jpark8215.github.io/data-analytics/blogs/metric-segmentation-hidden-stories.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "The Metric That Looked Great Until We Segmented It",
+      "description": "Aggregated numbers feel reassuring. They are also regularly wrong. When you segment a healthy-looking metric, the stories hiding inside it can completely reverse what you thought you knew.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/segmentation_hidden_stories.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
+
 <body>
     <header class="site-header glass">
         <div class="container nav-container">
@@ -71,7 +353,8 @@
                     <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
                 </ul>
             </nav>
-            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline"
+                style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
         </div>
     </header>
 
@@ -80,8 +363,10 @@
 
         <article>
             <header class="post-header">
-                <span class="blog-card-tag" style="background:rgba(139,92,246,0.2);color:var(--clr-accent);">Analysis</span>
-                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">The Metric That Looked Great Until We Segmented It</h1>
+                <span class="blog-card-tag"
+                    style="background:rgba(139,92,246,0.2);color:var(--clr-accent);">Analysis</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">The Metric That Looked Great Until We
+                    Segmented It</h1>
                 <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
                     Aggregated numbers are hiding stories your business needs to hear.
                 </p>
@@ -93,44 +378,75 @@
 
             <div class="post-content">
 
-                <p>The quarterly review looks clean. Customer satisfaction: 4.2 out of 5. Net Promoter Score: 42. Monthly active users: up 8% year over year. Revenue per customer: holding steady. The leadership team nods. Things are going well.</p>
+                <p>The quarterly review looks clean. Customer satisfaction: 4.2 out of 5. Net Promoter Score: 42.
+                    Monthly active users: up 8% year over year. Revenue per customer: holding steady. The leadership
+                    team nods. Things are going well.</p>
 
-                <p>Then someone runs a segmentation. They break satisfaction by customer tenure. Among customers in their first 90 days, the score is 4.7. Among customers who have been with the company for over two years, it is 3.1.</p>
+                <p>Then someone runs a segmentation. They break satisfaction by customer tenure. Among customers in
+                    their first 90 days, the score is 4.7. Among customers who have been with the company for over two
+                    years, it is 3.1.</p>
 
-                <p>That single aggregated number, the one that said everything was fine, was concealing a retention crisis among the company's most valuable customers. The average was not wrong. It was just answering a question nobody actually needed answered.</p>
+                <p>That single aggregated number, the one that said everything was fine, was concealing a retention
+                    crisis among the company's most valuable customers. The average was not wrong. It was just answering
+                    a question nobody actually needed answered.</p>
 
-                <p>This pattern has a name in statistics: Simpson's Paradox, and its cousins, aggregation bias and ecological fallacy. But the problem it creates is not primarily statistical. It is organizational. Leaders make decisions based on aggregated metrics that look healthy while problems grow quietly inside the segments those aggregates obscure.</p>
+                <p>This pattern has a name in statistics: Simpson's Paradox, and its cousins, aggregation bias and
+                    ecological fallacy. But the problem it creates is not primarily statistical. It is organizational.
+                    Leaders make decisions based on aggregated metrics that look healthy while problems grow quietly
+                    inside the segments those aggregates obscure.</p>
 
                 <div class="callout callout-danger">
-                    An aggregate metric is a compression. Every compression loses information. The question is not whether information was lost. It is whether the lost information mattered for the decision at hand.
+                    An aggregate metric is a compression. Every compression loses information. The question is not
+                    whether information was lost. It is whether the lost information mattered for the decision at hand.
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-card">
                         <div class="stat-number">62%</div>
-                        <div class="stat-label">of business leaders report making at least one significant strategic error in the past year that retrospective segmentation analysis revealed could have been avoided with earlier segment-level visibility (McKinsey Global Survey, 2021)</div>
+                        <div class="stat-label">of business leaders report making at least one significant strategic
+                            error in the past year that retrospective segmentation analysis revealed could have been
+                            avoided with earlier segment-level visibility (McKinsey Global Survey, 2021)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">3-5x</div>
-                        <div class="stat-label">greater revenue impact from churn interventions targeted at specific high-risk segments compared to broad interventions based on aggregate churn rates (Bain and Company, "Customer Loyalty in Telecom," 2019)</div>
+                        <div class="stat-label">greater revenue impact from churn interventions targeted at specific
+                            high-risk segments compared to broad interventions based on aggregate churn rates (Bain and
+                            Company, "Customer Loyalty in Telecom," 2019)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">Simpson's</div>
-                        <div class="stat-label">Paradox: a trend that appears in aggregated data can disappear or reverse when the data is segmented. First formally described by statistician Edward Simpson in 1951, it now has documented cases in medicine, education, sports analytics, and business strategy.</div>
+                        <div class="stat-label">Paradox: a trend that appears in aggregated data can disappear or
+                            reverse when the data is segmented. First formally described by statistician Edward Simpson
+                            in 1951, it now has documented cases in medicine, education, sports analytics, and business
+                            strategy.</div>
                     </div>
                 </div>
 
                 <h2>What Aggregation Does and Why We Rely on It</h2>
 
-                <p>Aggregation is not a flaw in analytical practice. It is a necessity. No organization can monitor every individual data point for every customer, product, region, and time period simultaneously. Summarizing data into aggregate metrics, averages, totals, rates, and ratios is how humans make large datasets legible and actionable at scale.</p>
+                <p>Aggregation is not a flaw in analytical practice. It is a necessity. No organization can monitor
+                    every individual data point for every customer, product, region, and time period simultaneously.
+                    Summarizing data into aggregate metrics, averages, totals, rates, and ratios is how humans make
+                    large datasets legible and actionable at scale.</p>
 
-                <p>The problem is not aggregation itself. It is the implicit assumption that travels with it: that the aggregate accurately represents the behavior of the underlying population. This assumption is true when the population is homogeneous. It fails, often severely, when the population contains meaningfully different subgroups that are behaving in opposite directions.</p>
+                <p>The problem is not aggregation itself. It is the implicit assumption that travels with it: that the
+                    aggregate accurately represents the behavior of the underlying population. This assumption is true
+                    when the population is homogeneous. It fails, often severely, when the population contains
+                    meaningfully different subgroups that are behaving in opposite directions.</p>
 
-                <p>A 2018 paper in the <em>Journal of Marketing Research</em> by Ascarza, Neslin, and colleagues, which studied customer churn prediction across four industries, found that aggregate churn rates concealed subgroup churn rates that differed by as much as 400%. The overall churn rate appeared manageable; the churn rate among recently acquired customers in certain product categories was existential. Both numbers were mathematically accurate. Only one was actionable.</p>
+                <p>A 2018 paper in the <em>Journal of Marketing Research</em> by Ascarza, Neslin, and colleagues, which
+                    studied customer churn prediction across four industries, found that aggregate churn rates concealed
+                    subgroup churn rates that differed by as much as 400%. The overall churn rate appeared manageable;
+                    the churn rate among recently acquired customers in certain product categories was existential. Both
+                    numbers were mathematically accurate. Only one was actionable.</p>
 
                 <div class="analogy-box">
                     <strong class="label">The Analogy</strong>
-                    A hospital's average patient recovery time is 4.8 days. This number tells administrators almost nothing useful. Recovery times for cardiac patients, surgical patients, and observation-only patients differ dramatically and respond to entirely different interventions. Treating those populations as a single group for resource allocation purposes would be malpractice. Treating customer segments as a single group for strategic purposes is the business equivalent.
+                    A hospital's average patient recovery time is 4.8 days. This number tells administrators almost
+                    nothing useful. Recovery times for cardiac patients, surgical patients, and observation-only
+                    patients differ dramatically and respond to entirely different interventions. Treating those
+                    populations as a single group for resource allocation purposes would be malpractice. Treating
+                    customer segments as a single group for strategic purposes is the business equivalent.
                 </div>
 
                 <h2>Three Real-World Cases Where Aggregates Masked the Truth</h2>
@@ -138,28 +454,55 @@
                 <div class="scenario-card sc-danger">
                     <div class="sc-label">Case Study 1</div>
                     <h4>UC Berkeley Gender Bias Admission Study (1975)</h4>
-                    <p>This is one of the most cited real-world examples of Simpson's Paradox. When researchers examined aggregate admission data at UC Berkeley, men appeared to be admitted at a higher rate than women, suggesting potential gender bias. When the same data was segmented by department, the paradox reversed: women were admitted at equal or higher rates than men in most individual departments. The aggregate disparity existed because women disproportionately applied to more competitive departments with lower admission rates for all applicants. The aggregate suggested discrimination. The segmented data told a more complex and accurate story.</p>
-                    <p>The original analysis was published by Bickel, Hammel, and O'Connell in <em>Science</em> (1975) and remains a standard case study in statistics courses precisely because the aggregate and the segmented picture pointed in opposite directions.</p>
+                    <p>This is one of the most cited real-world examples of Simpson's Paradox. When researchers examined
+                        aggregate admission data at UC Berkeley, men appeared to be admitted at a higher rate than
+                        women, suggesting potential gender bias. When the same data was segmented by department, the
+                        paradox reversed: women were admitted at equal or higher rates than men in most individual
+                        departments. The aggregate disparity existed because women disproportionately applied to more
+                        competitive departments with lower admission rates for all applicants. The aggregate suggested
+                        discrimination. The segmented data told a more complex and accurate story.</p>
+                    <p>The original analysis was published by Bickel, Hammel, and O'Connell in <em>Science</em> (1975)
+                        and remains a standard case study in statistics courses precisely because the aggregate and the
+                        segmented picture pointed in opposite directions.</p>
                 </div>
 
                 <div class="scenario-card sc-amber">
                     <div class="sc-label">Case Study 2</div>
                     <h4>A/B Test Aggregate Win That Segment Analysis Reversed</h4>
-                    <p>In a well-documented pattern from experimentation practice at technology companies, including cases described by Kohavi, Tang, and Xu in <em>Trustworthy Online Controlled Experiments</em> (Cambridge University Press, 2020), aggregate A/B test results showing a positive treatment effect can conceal segment-level losses. A feature change that improves average click-through rates by 3% may simultaneously be degrading click-through for mobile users by 12% while improving desktop users by 8%. The aggregate shows a win. The segment analysis shows a product decision that is actively damaging the faster-growing user base.</p>
-                    <p>Kohavi and colleagues identified segment-level analysis of A/B test results as one of the most consistently underutilized analytical practices in the technology industry, and one of the highest-return analytical investments organizations can make.</p>
+                    <p>In a well-documented pattern from experimentation practice at technology companies, including
+                        cases described by Kohavi, Tang, and Xu in <em>Trustworthy Online Controlled Experiments</em>
+                        (Cambridge University Press, 2020), aggregate A/B test results showing a positive treatment
+                        effect can conceal segment-level losses. A feature change that improves average click-through
+                        rates by 3% may simultaneously be degrading click-through for mobile users by 12% while
+                        improving desktop users by 8%. The aggregate shows a win. The segment analysis shows a product
+                        decision that is actively damaging the faster-growing user base.</p>
+                    <p>Kohavi and colleagues identified segment-level analysis of A/B test results as one of the most
+                        consistently underutilized analytical practices in the technology industry, and one of the
+                        highest-return analytical investments organizations can make.</p>
                 </div>
 
                 <div class="scenario-card sc-purple">
                     <div class="sc-label">Case Study 3</div>
                     <h4>National Test Score Aggregates and the Yule-Simpson Effect in Education</h4>
-                    <p>A 1998 paper by Kane and Staiger in the <em>Journal of Economic Perspectives</em> documented systematic misleading aggregation in educational performance metrics. Average test scores for schools in certain districts appeared to be improving. Segment analysis by socioeconomic status revealed that scores were improving for higher-income student populations while declining for lower-income ones. The improving students were a growing share of the total population being tested, which drove the aggregate upward even as outcomes for the most vulnerable students deteriorated. Policy decisions made on the aggregate led to resources being directed away from the groups that needed them most.</p>
+                    <p>A 1998 paper by Kane and Staiger in the <em>Journal of Economic Perspectives</em> documented
+                        systematic misleading aggregation in educational performance metrics. Average test scores for
+                        schools in certain districts appeared to be improving. Segment analysis by socioeconomic status
+                        revealed that scores were improving for higher-income student populations while declining for
+                        lower-income ones. The improving students were a growing share of the total population being
+                        tested, which drove the aggregate upward even as outcomes for the most vulnerable students
+                        deteriorated. Policy decisions made on the aggregate led to resources being directed away from
+                        the groups that needed them most.</p>
                 </div>
 
                 <h2>The Mathematics of Why Aggregates Mislead</h2>
 
-                <p>Understanding why this happens requires a brief look at what averages actually compute. A weighted average of subgroups is only equal to the overall average when the subgroups are the same size or when they are weighted equally in both the numerator and denominator. In practice, neither condition holds for most business metrics.</p>
+                <p>Understanding why this happens requires a brief look at what averages actually compute. A weighted
+                    average of subgroups is only equal to the overall average when the subgroups are the same size or
+                    when they are weighted equally in both the numerator and denominator. In practice, neither condition
+                    holds for most business metrics.</p>
 
-                <p>Consider a simplified version of the customer satisfaction example from the opening. Imagine two segments: new customers (fewer than 90 days) and long-tenured customers (more than two years).</p>
+                <p>Consider a simplified version of the customer satisfaction example from the opening. Imagine two
+                    segments: new customers (fewer than 90 days) and long-tenured customers (more than two years).</p>
 
                 <table class="segment-table">
                     <thead>
@@ -192,31 +535,62 @@
                     </tbody>
                 </table>
 
-                <p>The aggregate score of 4.38 reads as "good." But the business context matters enormously: long-tenured customers are almost always more profitable (they have lower acquisition cost amortized over a longer relationship), more likely to refer new customers, and more likely to expand their relationship. A 3.1 satisfaction score in this segment is a churn and revenue risk that the 4.38 aggregate does not communicate at all.</p>
+                <p>The aggregate score of 4.38 reads as "good." But the business context matters enormously:
+                    long-tenured customers are almost always more profitable (they have lower acquisition cost amortized
+                    over a longer relationship), more likely to refer new customers, and more likely to expand their
+                    relationship. A 3.1 satisfaction score in this segment is a churn and revenue risk that the 4.38
+                    aggregate does not communicate at all.</p>
 
-                <p>The mathematical reason is straightforward: new customers outnumber long-tenured customers 4 to 1, so their higher satisfaction score dominates the average regardless of business importance. The aggregate weights by headcount. The business should weight by revenue, lifetime value, or strategic importance. These are rarely the same thing.</p>
+                <p>The mathematical reason is straightforward: new customers outnumber long-tenured customers 4 to 1, so
+                    their higher satisfaction score dominates the average regardless of business importance. The
+                    aggregate weights by headcount. The business should weight by revenue, lifetime value, or strategic
+                    importance. These are rarely the same thing.</p>
 
                 <div class="callout callout-warning">
-                    An average weights all observations equally by default. Your customers, products, regions, and channels are not equal in business importance. The gap between equal weighting and business-importance weighting is where aggregate metrics consistently mislead.
+                    An average weights all observations equally by default. Your customers, products, regions, and
+                    channels are not equal in business importance. The gap between equal weighting and
+                    business-importance weighting is where aggregate metrics consistently mislead.
                 </div>
 
                 <h2>The Most Dangerous Aggregate Metrics in Business</h2>
 
-                <p>Some metrics are more dangerous as aggregates than others. The following consistently hide high-impact segment-level divergences in organizational data:</p>
+                <p>Some metrics are more dangerous as aggregates than others. The following consistently hide
+                    high-impact segment-level divergences in organizational data:</p>
 
-                <p><strong>Overall customer satisfaction or NPS.</strong> As demonstrated above, satisfaction aggregates often blend growing cohorts of new customers with declining satisfaction among long-tenured ones. The aggregate looks stable while the retention problem compounds. A 2020 study by Reichheld and Markey published in the Harvard Business Review found that NPS aggregates at the company level often diverged by 40 to 60 points from NPS scores in specific product lines or customer tenure bands.</p>
+                <p><strong>Overall customer satisfaction or NPS.</strong> As demonstrated above, satisfaction aggregates
+                    often blend growing cohorts of new customers with declining satisfaction among long-tenured ones.
+                    The aggregate looks stable while the retention problem compounds. A 2020 study by Reichheld and
+                    Markey published in the Harvard Business Review found that NPS aggregates at the company level often
+                    diverged by 40 to 60 points from NPS scores in specific product lines or customer tenure bands.</p>
 
-                <p><strong>Average revenue per user (ARPU).</strong> ARPU across a growing user base can remain flat while power users dramatically increase their spend and the majority of new users generate very little revenue. The flat aggregate obscures both the opportunity (the expanding power user segment) and the risk (the low-monetization majority that is growing faster).</p>
+                <p><strong>Average revenue per user (ARPU).</strong> ARPU across a growing user base can remain flat
+                    while power users dramatically increase their spend and the majority of new users generate very
+                    little revenue. The flat aggregate obscures both the opportunity (the expanding power user segment)
+                    and the risk (the low-monetization majority that is growing faster).</p>
 
-                <p><strong>Aggregate churn rate.</strong> A stable overall churn rate of 5% can conceal 1% churn among long-tenured high-value customers and 18% churn among recently acquired customers in a specific acquisition channel. The aggregate rate does not tell you that the acquisition channel is broken or that long-tenured customers are sticky. Both facts are essential for prioritizing resources.</p>
+                <p><strong>Aggregate churn rate.</strong> A stable overall churn rate of 5% can conceal 1% churn among
+                    long-tenured high-value customers and 18% churn among recently acquired customers in a specific
+                    acquisition channel. The aggregate rate does not tell you that the acquisition channel is broken or
+                    that long-tenured customers are sticky. Both facts are essential for prioritizing resources.</p>
 
-                <p><strong>Average order value or conversion rate.</strong> Aggregate conversion rates blend desktop and mobile, new and returning visitors, different traffic sources, and different product categories. A flat average conversion rate while mobile conversion deteriorates and desktop conversion improves is directionally the wrong signal: mobile is growing faster. The business decision that results from the flat aggregate is different from the one that results from the segmented view.</p>
+                <p><strong>Average order value or conversion rate.</strong> Aggregate conversion rates blend desktop and
+                    mobile, new and returning visitors, different traffic sources, and different product categories. A
+                    flat average conversion rate while mobile conversion deteriorates and desktop conversion improves is
+                    directionally the wrong signal: mobile is growing faster. The business decision that results from
+                    the flat aggregate is different from the one that results from the segmented view.</p>
 
-                <p><strong>Employee engagement scores.</strong> An aggregate engagement score of 72% looks like a reasonably healthy organization. Segment by department, tenure, or manager and you routinely find departments with scores below 50% sitting next to departments above 85%. The 72% does not help anyone. The segment breakdown shows exactly where to intervene.</p>
+                <p><strong>Employee engagement scores.</strong> An aggregate engagement score of 72% looks like a
+                    reasonably healthy organization. Segment by department, tenure, or manager and you routinely find
+                    departments with scores below 50% sitting next to departments above 85%. The 72% does not help
+                    anyone. The segment breakdown shows exactly where to intervene.</p>
 
                 <h2>The Right Segmentation Dimensions</h2>
 
-                <p>Not every segmentation produces useful insight. The choice of segmentation dimension matters as much as the decision to segment. Research by Ascarza and colleagues (2018) and by Wedel and Kamakura in <em>Market Segmentation: Conceptual and Methodological Foundations</em> (Springer, 2000) identifies the characteristics that make a segmentation analytically useful:</p>
+                <p>Not every segmentation produces useful insight. The choice of segmentation dimension matters as much
+                    as the decision to segment. Research by Ascarza and colleagues (2018) and by Wedel and Kamakura in
+                    <em>Market Segmentation: Conceptual and Methodological Foundations</em> (Springer, 2000) identifies
+                    the characteristics that make a segmentation analytically useful:
+                </p>
 
                 <div class="seg-dimension-grid">
                     <div class="seg-dim-card">
@@ -261,82 +635,157 @@
                     </div>
                 </div>
 
-                <p>The most useful segmentation dimensions are those that produce segments with different behavior and different responses to interventions. A segmentation that produces groups with the same metrics is descriptively interesting but strategically useless. The goal is actionable heterogeneity: groups that are different in ways that require different decisions.</p>
+                <p>The most useful segmentation dimensions are those that produce segments with different behavior and
+                    different responses to interventions. A segmentation that produces groups with the same metrics is
+                    descriptively interesting but strategically useless. The goal is actionable heterogeneity: groups
+                    that are different in ways that require different decisions.</p>
 
                 <h2>Cohort Analysis: The Most Underused Form of Segmentation</h2>
 
-                <p>Of all segmentation approaches, cohort analysis is the one most consistently capable of surfacing trends that aggregate metrics obscure. A cohort is a group defined by a shared starting event: all customers who signed up in January 2024, all users who first used a specific feature in Q2, all employees hired during a particular growth phase.</p>
+                <p>Of all segmentation approaches, cohort analysis is the one most consistently capable of surfacing
+                    trends that aggregate metrics obscure. A cohort is a group defined by a shared starting event: all
+                    customers who signed up in January 2024, all users who first used a specific feature in Q2, all
+                    employees hired during a particular growth phase.</p>
 
-                <p>Cohort analysis tracks how each group's behavior changes over time from their starting point rather than measuring the entire population at a single moment. This distinction is critical. An aggregate retention rate measured at one point in time blends cohorts in completely different stages of their lifecycle. A cohort retention chart shows whether each new cohort retains better or worse than previous cohorts at the same tenure point, which directly answers the question: is the product or service getting better or worse for the people experiencing it for the first time?</p>
+                <p>Cohort analysis tracks how each group's behavior changes over time from their starting point rather
+                    than measuring the entire population at a single moment. This distinction is critical. An aggregate
+                    retention rate measured at one point in time blends cohorts in completely different stages of their
+                    lifecycle. A cohort retention chart shows whether each new cohort retains better or worse than
+                    previous cohorts at the same tenure point, which directly answers the question: is the product or
+                    service getting better or worse for the people experiencing it for the first time?</p>
 
-                <p>Eric Ries popularized cohort analysis in a business context through <em>The Lean Startup</em> (Crown Business, 2011), noting that aggregate metrics can show "good" numbers even as the underlying cohort-level experience degrades. He called aggregate metrics that conceal cohort-level deterioration "vanity metrics" precisely because they allow organizations to feel good about numbers that are not tracking the health of the underlying business.</p>
+                <p>Eric Ries popularized cohort analysis in a business context through <em>The Lean Startup</em> (Crown
+                    Business, 2011), noting that aggregate metrics can show "good" numbers even as the underlying
+                    cohort-level experience degrades. He called aggregate metrics that conceal cohort-level
+                    deterioration "vanity metrics" precisely because they allow organizations to feel good about numbers
+                    that are not tracking the health of the underlying business.</p>
 
-                <p>Research by Gupta, Lehmann, and Stuart, published in the <em>Journal of Marketing Research</em> (2004), demonstrated that cohort-level retention curves, not aggregate retention rates, are the most predictive input to customer lifetime value calculations. Organizations that track cohort retention rather than aggregate retention make systematically better predictions about future revenue.</p>
+                <p>Research by Gupta, Lehmann, and Stuart, published in the <em>Journal of Marketing Research</em>
+                    (2004), demonstrated that cohort-level retention curves, not aggregate retention rates, are the most
+                    predictive input to customer lifetime value calculations. Organizations that track cohort retention
+                    rather than aggregate retention make systematically better predictions about future revenue.</p>
 
                 <div class="callout callout-accent">
-                    Aggregate metrics tell you where you are. Cohort analysis tells you whether you are getting better or worse at the thing that determines where you will be. These are different questions with different answers, and most organizations only track the first one.
+                    Aggregate metrics tell you where you are. Cohort analysis tells you whether you are getting better
+                    or worse at the thing that determines where you will be. These are different questions with
+                    different answers, and most organizations only track the first one.
                 </div>
 
                 <h2>How to Build Segmentation Into Analytical Routine</h2>
 
-                <p>Segmentation is not a one-time diagnostic exercise. It is a habit that should be embedded in how metrics are reviewed, reported, and acted on. The following practices are grounded in research on high-performing analytical organizations:</p>
+                <p>Segmentation is not a one-time diagnostic exercise. It is a habit that should be embedded in how
+                    metrics are reviewed, reported, and acted on. The following practices are grounded in research on
+                    high-performing analytical organizations:</p>
 
                 <ul class="checklist">
                     <li>
                         <span class="check-icon">1</span>
-                        <span><strong>Never report an aggregate metric without its distribution.</strong> Alongside every average, show the range or the segment breakdown that reveals whether that average is hiding divergence. A satisfaction score of 4.2 reported next to a range of 3.1 to 4.7 tells a different story than a standalone 4.2.</span>
+                        <span><strong>Never report an aggregate metric without its distribution.</strong> Alongside
+                            every average, show the range or the segment breakdown that reveals whether that average is
+                            hiding divergence. A satisfaction score of 4.2 reported next to a range of 3.1 to 4.7 tells
+                            a different story than a standalone 4.2.</span>
                     </li>
                     <li>
                         <span class="check-icon">2</span>
-                        <span><strong>Ask "who is performing well and who is not?" for every metric.</strong> Make this a standard question in every analytical review meeting. The answer is rarely "everyone equally," and finding the groups at the extremes is almost always where the most valuable insight lives.</span>
+                        <span><strong>Ask "who is performing well and who is not?" for every metric.</strong> Make this
+                            a standard question in every analytical review meeting. The answer is rarely "everyone
+                            equally," and finding the groups at the extremes is almost always where the most valuable
+                            insight lives.</span>
                     </li>
                     <li>
                         <span class="check-icon">3</span>
-                        <span><strong>Weight metrics by business importance, not headcount.</strong> When multiple segments contribute to an aggregate, consider weighting the aggregate by revenue, lifetime value, or margin contribution rather than equal weighting. This produces a number more aligned with business impact than a simple average.</span>
+                        <span><strong>Weight metrics by business importance, not headcount.</strong> When multiple
+                            segments contribute to an aggregate, consider weighting the aggregate by revenue, lifetime
+                            value, or margin contribution rather than equal weighting. This produces a number more
+                            aligned with business impact than a simple average.</span>
                     </li>
                     <li>
                         <span class="check-icon">4</span>
-                        <span><strong>Track cohort behavior alongside point-in-time metrics.</strong> For any metric related to customer or user behavior, maintain a cohort view alongside the aggregate. At minimum, this means tracking whether new cohorts are retaining at the same rate as previous cohorts at the same tenure point.</span>
+                        <span><strong>Track cohort behavior alongside point-in-time metrics.</strong> For any metric
+                            related to customer or user behavior, maintain a cohort view alongside the aggregate. At
+                            minimum, this means tracking whether new cohorts are retaining at the same rate as previous
+                            cohorts at the same tenure point.</span>
                     </li>
                     <li>
                         <span class="check-icon">5</span>
-                        <span><strong>When a metric looks suspiciously stable, segment it.</strong> Perfect stability in an aggregate is often a signal that opposing trends are canceling each other out. Real stability in complex systems is rare. Investigate it rather than celebrating it.</span>
+                        <span><strong>When a metric looks suspiciously stable, segment it.</strong> Perfect stability in
+                            an aggregate is often a signal that opposing trends are canceling each other out. Real
+                            stability in complex systems is rare. Investigate it rather than celebrating it.</span>
                     </li>
                     <li>
                         <span class="check-icon">6</span>
-                        <span><strong>Design dashboards with drill-down as a first-class feature.</strong> Aggregate metrics at the top level should be clickable into segment breakdowns. An executive who sees a flat NPS should be able to reach a segment view in one interaction, not a separate analytical request with a multi-day turnaround.</span>
+                        <span><strong>Design dashboards with drill-down as a first-class feature.</strong> Aggregate
+                            metrics at the top level should be clickable into segment breakdowns. An executive who sees
+                            a flat NPS should be able to reach a segment view in one interaction, not a separate
+                            analytical request with a multi-day turnaround.</span>
                     </li>
                 </ul>
 
                 <h2>The Practical Test: Is Your Aggregate Hiding Something?</h2>
 
-                <p>For any aggregate metric your organization tracks, run this diagnostic. It takes less than an hour and consistently surfaces hidden stories:</p>
+                <p>For any aggregate metric your organization tracks, run this diagnostic. It takes less than an hour
+                    and consistently surfaces hidden stories:</p>
 
                 <ol>
-                    <li>Segment the metric by customer or user tenure (under 30 days, 30 to 90 days, 90 days to one year, over one year). Do the segments agree in direction and magnitude, or do they diverge?</li>
-                    <li>Segment by acquisition channel or source. Are customers from different channels behaving the same way, or are some channels producing a systematically different customer profile?</li>
-                    <li>Segment by product or feature usage tier. Heavy users and light users of your core product almost always have different satisfaction, retention, and revenue profiles. Are yours different in ways that are strategically important?</li>
-                    <li>Segment by geography or market. Regional performance differences, when obscured by aggregate numbers, routinely hide both the strongest markets to invest in and the weakest markets that are quietly consuming disproportionate resources.</li>
-                    <li>Plot the metric as a cohort curve rather than a point in time. Is the cohort curve for your most recent cohort above or below the curve for cohorts from 12 months ago at the same age?</li>
+                    <li>Segment the metric by customer or user tenure (under 30 days, 30 to 90 days, 90 days to one
+                        year, over one year). Do the segments agree in direction and magnitude, or do they diverge?</li>
+                    <li>Segment by acquisition channel or source. Are customers from different channels behaving the
+                        same way, or are some channels producing a systematically different customer profile?</li>
+                    <li>Segment by product or feature usage tier. Heavy users and light users of your core product
+                        almost always have different satisfaction, retention, and revenue profiles. Are yours different
+                        in ways that are strategically important?</li>
+                    <li>Segment by geography or market. Regional performance differences, when obscured by aggregate
+                        numbers, routinely hide both the strongest markets to invest in and the weakest markets that are
+                        quietly consuming disproportionate resources.</li>
+                    <li>Plot the metric as a cohort curve rather than a point in time. Is the cohort curve for your most
+                        recent cohort above or below the curve for cohorts from 12 months ago at the same age?</li>
                 </ol>
 
-                <p>If any of these segmentations produces a significantly different picture than the aggregate, the aggregate was misleading you. Not through any error in the data, but through the natural information loss of compression.</p>
+                <p>If any of these segmentations produces a significantly different picture than the aggregate, the
+                    aggregate was misleading you. Not through any error in the data, but through the natural information
+                    loss of compression.</p>
 
                 <div class="callout callout-green">
-                    The goal of segmentation is not to make reporting more complicated. It is to make the stories the data contains legible. An aggregate that obscures a crisis is not simpler than a segmented view that surfaces it. It is just slower to recognize.
+                    The goal of segmentation is not to make reporting more complicated. It is to make the stories the
+                    data contains legible. An aggregate that obscures a crisis is not simpler than a segmented view that
+                    surfaces it. It is just slower to recognize.
                 </div>
 
                 <h2>The Bottom Line</h2>
 
-                <p>Aggregated numbers feel authoritative. They reduce complexity to a single figure. They are easy to track, easy to communicate, and easy to benchmark. They are also regularly wrong about what they appear to describe, because the population they summarize is almost never the homogeneous group that aggregation implicitly assumes.</p>
+                <p>Aggregated numbers feel authoritative. They reduce complexity to a single figure. They are easy to
+                    track, easy to communicate, and easy to benchmark. They are also regularly wrong about what they
+                    appear to describe, because the population they summarize is almost never the homogeneous group that
+                    aggregation implicitly assumes.</p>
 
-                <p>The metric that looks great at the aggregate level may be hiding a deteriorating core customer segment, a broken acquisition channel, a product experience that works for one user type and fails another, or a regional performance gap that is growing faster than the aggregate improvements that mask it.</p>
+                <p>The metric that looks great at the aggregate level may be hiding a deteriorating core customer
+                    segment, a broken acquisition channel, a product experience that works for one user type and fails
+                    another, or a regional performance gap that is growing faster than the aggregate improvements that
+                    mask it.</p>
 
-                <p>Segmentation is not a secondary analytical technique for when something looks wrong. It is the primary way to determine whether what looks right actually is. Every aggregate metric should come with a standing question: what is this hiding?</p>
+                <p>Segmentation is not a secondary analytical technique for when something looks wrong. It is the
+                    primary way to determine whether what looks right actually is. Every aggregate metric should come
+                    with a standing question: what is this hiding?</p>
 
-                <p>Because it is almost always hiding something. And what it hides is almost always more important than what it shows.</p>
+                <p>Because it is almost always hiding something. And what it hides is almost always more important than
+                    what it shows.</p>
 
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 
@@ -344,10 +793,12 @@
         <div class="container" style="text-align:center;">
             <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
-            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+                rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>

@@ -79,6 +79,31 @@
             font-style: italic;
         }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="Why " The Average Customer" Doesn't Exist">
+    <meta property="og:description"
+        content="How mathematical averages hide reality, mask bimodal distributions, and lead companies to design products for a customer that doesn">
+    <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/average_customer.png">
+    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/average-customer.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/average-customer.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Why "The Average Customer" Doesn't Exist",
+      "description": "How mathematical averages hide reality, mask bimodal distributions, and lead companies to design products for a customer that doesn",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/average_customer.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
 
 <body>
@@ -103,57 +128,101 @@
             <header class="post-header">
                 <span class="blog-card-tag"
                     style="background: rgba(59, 130, 246, 0.2); color: var(--clr-primary);">Analysis</span>
-                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Why "The Average Customer" Doesn't Exist</h1>
-                <p style="color: var(--clr-text-muted);">How averages hide the distribution and lead to fatal product and marketing decisions.</p>
+                <h1 class="hero-title" style="font-size: 3rem; margin-top: 1rem;">Why "The Average Customer" Doesn't
+                    Exist</h1>
+                <p style="color: var(--clr-text-muted);">How averages hide the distribution and lead to fatal product
+                    and marketing decisions.</p>
             </header>
 
-            <img src="../assets/images/average_customer.png" alt="A bimodal distribution showing the mathematical average falling into an empty valley" class="post-image">
+            <img src="../assets/images/average_customer.png"
+                alt="A bimodal distribution showing the mathematical average falling into an empty valley"
+                class="post-image">
 
             <div class="post-content">
-                <p>In the late 1940s, the US Air Force had a serious problem: their pilots could not control their aircraft properly. Despite rigorous training, pilots were constantly making fatal errors. When researchers finally investigated the cockpits, they discovered a systemic, mathematical flaw.</p>
+                <p>In the late 1940s, the US Air Force had a serious problem: their pilots could not control their
+                    aircraft properly. Despite rigorous training, pilots were constantly making fatal errors. When
+                    researchers finally investigated the cockpits, they discovered a systemic, mathematical flaw.</p>
 
-                <p>The cockpit had been designed for the <strong>"average pilot"</strong>. The military had taken the physical dimensions of 4,000 pilots, calculated the exact mean for arm length, leg length, and torso height, and built a cockpit perfectly fitted to those dimensions.</p>
+                <p>The cockpit had been designed for the <strong>"average pilot"</strong>. The military had taken the
+                    physical dimensions of 4,000 pilots, calculated the exact mean for arm length, leg length, and torso
+                    height, and built a cockpit perfectly fitted to those dimensions.</p>
 
-                <p>When researcher Gilbert S. Daniels actually measured the 4,000 pilots against that mathematical "average," he found a shocking truth: <strong>Out of 4,000 pilots, exactly zero fit the average profile.</strong> By designing an airplane for the average pilot, the Air Force had designed an airplane for no one.</p>
+                <p>When researcher Gilbert S. Daniels actually measured the 4,000 pilots against that mathematical
+                    "average," he found a shocking truth: <strong>Out of 4,000 pilots, exactly zero fit the average
+                        profile.</strong> By designing an airplane for the average pilot, the Air Force had designed an
+                    airplane for no one.</p>
 
                 <div class="callout">
-                    "When you design a product or a marketing campaign for the 'average' customer, you are almost always designing it for a person who does not exist."
+                    "When you design a product or a marketing campaign for the 'average' customer, you are almost always
+                    designing it for a person who does not exist."
                 </div>
 
                 <h2>The Flaw of Averages in Business</h2>
-                <p>Despite this historical lesson, businesses make the "average customer" mistake every single day. Look at any corporate presentation, and you will see statements like:</p>
+                <p>Despite this historical lesson, businesses make the "average customer" mistake every single day. Look
+                    at any corporate presentation, and you will see statements like:</p>
                 <ul>
                     <li>"Our average customer spends $45 per visit."</li>
                     <li>"The average user logs in 3 times a week."</li>
                     <li>"Our customers are average age 34."</li>
                 </ul>
-                <p>This sounds precise. It sounds data-driven. But what if your data is hiding a <strong>bimodal distribution</strong>?</p>
+                <p>This sounds precise. It sounds data-driven. But what if your data is hiding a <strong>bimodal
+                        distribution</strong>?</p>
 
                 <h2>The Bimodal Trap</h2>
-                <p>A bimodal distribution is when your data has two distinct, separate peaks. Imagine a restaurant analyzing their customer spending. The data says the average ticket size is $45.</p>
-                <p>The marketing team gets to work. They design promotions offering "$10 off your $50 purchase" to naturally nudge that $45 average up to $50. But the campaign fails miserably.</p>
-                
-                <p>Why? Because when a data scientist finally plots the distribution, they see the truth: there are no $45 orders. Instead, there are two distinct groups:</p>
+                <p>A bimodal distribution is when your data has two distinct, separate peaks. Imagine a restaurant
+                    analyzing their customer spending. The data says the average ticket size is $45.</p>
+                <p>The marketing team gets to work. They design promotions offering "$10 off your $50 purchase" to
+                    naturally nudge that $45 average up to $50. But the campaign fails miserably.</p>
+
+                <p>Why? Because when a data scientist finally plots the distribution, they see the truth: there are no
+                    $45 orders. Instead, there are two distinct groups:</p>
                 <ol>
                     <li>College students buying a quick lunch ($15 average).</li>
                     <li>Families of four coming in for dinner ($75 average).</li>
                 </ol>
 
-                <p>The mathematical mean is $45, but that number falls into a completely empty valley. The $10 off $50 promotion was irrelevant to the students (who would never spend that much) and felt like a tiny drop in the bucket to the families (who were already spending $75). By targeting the average, they targeted no one.</p>
+                <p>The mathematical mean is $45, but that number falls into a completely empty valley. The $10 off $50
+                    promotion was irrelevant to the students (who would never spend that much) and felt like a tiny drop
+                    in the bucket to the families (who were already spending $75). By targeting the average, they
+                    targeted no one.</p>
 
                 <h2>Stop Reporting Averages. Start Reporting Segments.</h2>
-                <p>If you only report averages, you wipe out variability. You assume that your customers cluster tightly around the mean in a perfectly symmetrical bell curve. In real-world businesses, this is exceedingly rare.</p>
+                <p>If you only report averages, you wipe out variability. You assume that your customers cluster tightly
+                    around the mean in a perfectly symmetrical bell curve. In real-world businesses, this is exceedingly
+                    rare.</p>
 
                 <p>To avoid the flaw of averages, you need to change your data habits:</p>
-                
+
                 <ul>
-                    <li><strong>Always look at the shape of the data:</strong> Never blindly trust a mean. Always plot a histogram. Check the median and the mode. If the mean and median are wildly different, you have an outlier problem. If the histogram has multiple humps, you have a segmentation problem.</li>
-                    <li><strong>Adopt a Persona-First Strategy:</strong> Define distinct customer segments based on behaviors, not arbitrary demographics. Build for the extreme edges of your product use cases rather than the mushy middle.</li>
-                    <li><strong>Design for Adjustability:</strong> The US Air Force solved their cockpit problem not by finding better averages, but by inventing adjustable seats and pedals. In business, this means offering modular products, dynamic pricing tiers, and personalization.</li>
+                    <li><strong>Always look at the shape of the data:</strong> Never blindly trust a mean. Always plot a
+                        histogram. Check the median and the mode. If the mean and median are wildly different, you have
+                        an outlier problem. If the histogram has multiple humps, you have a segmentation problem.</li>
+                    <li><strong>Adopt a Persona-First Strategy:</strong> Define distinct customer segments based on
+                        behaviors, not arbitrary demographics. Build for the extreme edges of your product use cases
+                        rather than the mushy middle.</li>
+                    <li><strong>Design for Adjustability:</strong> The US Air Force solved their cockpit problem not by
+                        finding better averages, but by inventing adjustable seats and pedals. In business, this means
+                        offering modular products, dynamic pricing tiers, and personalization.</li>
                 </ul>
 
-                <p>The math is simple, but the reality is complex. Stop obsessing over the mathematical center, and start paying attention to the edges. That's where your actual customers live.</p>
+                <p>The math is simple, but the reality is complex. Stop obsessing over the mathematical center, and
+                    start paying attention to the edges. That's where your actual customers live.</p>
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 
@@ -172,4 +241,3 @@
 </body>
 
 </html>
-

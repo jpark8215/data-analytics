@@ -1,73 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What Does a Data Analyst Actually Do All Day? | Data-Informed Insights</title>
-    <meta name="description" content="For business stakeholders who wonder what analysts actually do between requests: a clear, honest breakdown of the real workflow, the hidden work, and how to collaborate with analysts more effectively.">
+    <meta name="description"
+        content="For business stakeholders who wonder what analysts actually do between requests: a clear, honest breakdown of the real workflow, the hidden work, and how to collaborate with analysts more effectively.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/blog.css">
     <style>
-        .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-        .post-header { text-align: center; margin-bottom: var(--space-l); }
-        .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-        .post-content h2 { margin-top: var(--space-l); font-size: 1.875rem; }
-        .post-content p { margin-bottom: var(--space-m); }
-        .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 1.5rem; }
-        .post-content li { margin-bottom: 0.5rem; }
-        .post-image { width: 100%; height: auto; max-height: 420px; object-fit: cover; border-radius: var(--radius-l); margin-bottom: var(--space-l); box-shadow: var(--shadow-lg); }
-        .inline-image { width: 100%; height: auto; max-height: 340px; object-fit: cover; border-radius: var(--radius-l); margin: var(--space-l) 0; box-shadow: var(--shadow-lg); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-m); color: var(--clr-text-muted); font-weight: 500; }
-        .back-link:hover { color: var(--clr-primary); }
-        .callout { border-left: 4px solid var(--clr-primary); background: rgba(59,130,246,0.08); border-radius: 0 var(--radius-m) var(--radius-m) 0; padding: var(--space-m); margin: var(--space-l) 0; font-style: italic; color: var(--clr-text-main); font-size: 1.2rem; line-height: 1.7; }
-        .callout-warning { border-left-color: #f59e0b; background: rgba(245,158,11,0.08); }
-        .callout-accent { border-left-color: var(--clr-accent); background: rgba(139,92,246,0.08); }
-        .callout-green { border-left-color: #10b981; background: rgba(16,185,129,0.08); }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-m); margin: var(--space-l) 0; }
-        .stat-card { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); border-radius: var(--radius-m); padding: var(--space-m); text-align: center; }
-        .stat-card .stat-number { font-size: 2.25rem; font-weight: 800; color: var(--clr-primary); font-family: 'Outfit', sans-serif; line-height: 1.1; }
-        .stat-card .stat-label { font-size: 0.875rem; color: var(--clr-text-muted); margin-top: 0.35rem; }
-        .phase-card { border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: flex-start; }
-        .phase-number { font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800; line-height: 1; flex-shrink: 0; }
-        .phase-blue { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
-        .phase-blue .phase-number { color: var(--clr-primary); }
-        .phase-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
-        .phase-green .phase-number { color: var(--clr-secondary); }
-        .phase-purple { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); }
-        .phase-purple .phase-number { color: var(--clr-accent); }
-        .phase-amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
-        .phase-amber .phase-number { color: #fbbf24; }
-        .phase-red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); }
-        .phase-red .phase-number { color: #f87171; }
-        .phase-card h4 { margin: 0 0 0.4rem; font-size: 1.05rem; }
-        .phase-card p { margin: 0; font-size: 0.97rem; color: var(--clr-text-muted); }
-        .myth-box { border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
-        .myth-box .myth-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 0.4rem; }
-        .myth-box .myth-text { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.6rem; }
-        .myth-box .reality-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 0.4rem; color: var(--clr-secondary); }
-        .myth-box .reality-text { font-size: 0.97rem; color: var(--clr-text-muted); }
-        .myth-red { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.18); }
-        .myth-red .myth-label { color: #f87171; }
-        .myth-red .myth-text { color: #f87171; }
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-m); margin: var(--space-l) 0; }
-        @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } .phase-card { grid-template-columns: 1fr; } .phase-number { font-size: 1.8rem; } }
-        .col-card { border-radius: var(--radius-m); padding: var(--space-m); }
-        .col-card h4 { margin: 0 0 0.75rem; font-size: 1rem; }
-        .col-card-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
-        .col-card-green h4 { color: var(--clr-secondary); }
-        .col-card-red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); }
-        .col-card-red h4 { color: #f87171; }
-        .analogy-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
-        .analogy-box strong.label { color: var(--clr-secondary); display: block; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.06em; }
-        .tip-list { list-style: none; padding: 0; }
-        .tip-list li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .tip-list li:last-child { border-bottom: none; }
-        .tip-icon { flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(16,185,129,0.2); color: var(--clr-secondary); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; margin-top: 0.15rem; }
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-m);
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .inline-image {
+            width: 100%;
+            height: auto;
+            max-height: 340px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin: var(--space-l) 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            border-left: 4px solid var(--clr-primary);
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            color: var(--clr-text-main);
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-accent {
+            border-left-color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .callout-green {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        .stat-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            color: var(--clr-text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .phase-card {
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .phase-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .phase-blue {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .phase-blue .phase-number {
+            color: var(--clr-primary);
+        }
+
+        .phase-green {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .phase-green .phase-number {
+            color: var(--clr-secondary);
+        }
+
+        .phase-purple {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .phase-purple .phase-number {
+            color: var(--clr-accent);
+        }
+
+        .phase-amber {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .phase-amber .phase-number {
+            color: #fbbf24;
+        }
+
+        .phase-red {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .phase-red .phase-number {
+            color: #f87171;
+        }
+
+        .phase-card h4 {
+            margin: 0 0 0.4rem;
+            font-size: 1.05rem;
+        }
+
+        .phase-card p {
+            margin: 0;
+            font-size: 0.97rem;
+            color: var(--clr-text-muted);
+        }
+
+        .myth-box {
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .myth-box .myth-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .myth-box .myth-text {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .myth-box .reality-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--clr-secondary);
+        }
+
+        .myth-box .reality-text {
+            font-size: 0.97rem;
+            color: var(--clr-text-muted);
+        }
+
+        .myth-red {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.18);
+        }
+
+        .myth-red .myth-label {
+            color: #f87171;
+        }
+
+        .myth-red .myth-text {
+            color: #f87171;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        @media (max-width: 640px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-card {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-number {
+                font-size: 1.8rem;
+            }
+        }
+
+        .col-card {
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+        }
+
+        .col-card h4 {
+            margin: 0 0 0.75rem;
+            font-size: 1rem;
+        }
+
+        .col-card-green {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .col-card-green h4 {
+            color: var(--clr-secondary);
+        }
+
+        .col-card-red {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .col-card-red h4 {
+            color: #f87171;
+        }
+
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .analogy-box strong.label {
+            color: var(--clr-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .tip-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tip-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tip-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--clr-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="What Does a Data Analyst Actually Do All Day?">
+    <meta property="og:description"
+        content="For business stakeholders who wonder what analysts actually do between requests: a clear, honest breakdown of the real workflow, the hidden work, and how to collaborate with analysts more effectively.">
+    <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/analyst_day_hero.png">
+    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/what-analysts-do.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/what-analysts-do.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "What Does a Data Analyst Actually Do All Day?",
+      "description": "For business stakeholders who wonder what analysts actually do between requests: a clear, honest breakdown of the real workflow, the hidden work, and how to collaborate with analysts more effectively.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/analyst_day_hero.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
+
 <body>
     <header class="site-header glass">
         <div class="container nav-container">
@@ -78,7 +396,8 @@
                     <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
                 </ul>
             </nav>
-            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline"
+                style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
         </div>
     </header>
 
@@ -87,8 +406,10 @@
 
         <article>
             <header class="post-header">
-                <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:var(--clr-secondary);">Practical</span>
-                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">What Does a Data Analyst Actually Do All Day?</h1>
+                <span class="blog-card-tag"
+                    style="background:rgba(16,185,129,0.2);color:var(--clr-secondary);">Practical</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">What Does a Data Analyst Actually Do
+                    All Day?</h1>
                 <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
                     Demystifying the role for business stakeholders who want to work with analysts more effectively.
                 </p>
@@ -100,29 +421,42 @@
 
             <div class="post-content">
 
-                <p>The request arrives at 9:15 a.m.: "Can you pull the numbers on Q2 retention by region?" By 4:30 p.m., the analyst has not yet sent anything back. The stakeholder is frustrated. The analyst is exhausted. Neither fully understands why the gap exists.</p>
+                <p>The request arrives at 9:15 a.m.: "Can you pull the numbers on Q2 retention by region?" By 4:30 p.m.,
+                    the analyst has not yet sent anything back. The stakeholder is frustrated. The analyst is exhausted.
+                    Neither fully understands why the gap exists.</p>
 
-                <p>This scenario plays out in organizations of every size and sector. Business stakeholders and data analysts consistently misunderstand each other's work, timelines, and constraints. The result is friction, frustration, and analytical output that arrives too late, addresses the wrong question, or gets set aside because the business context has already shifted.</p>
+                <p>This scenario plays out in organizations of every size and sector. Business stakeholders and data
+                    analysts consistently misunderstand each other's work, timelines, and constraints. The result is
+                    friction, frustration, and analytical output that arrives too late, addresses the wrong question, or
+                    gets set aside because the business context has already shifted.</p>
 
-                <p>This post is a plain-language breakdown of what a data analyst actually does between the moment a request arrives and the moment an answer goes back. It is written for the manager, the director, and the executive who wants to work better with their analyst, not just submit requests and wait.</p>
+                <p>This post is a plain-language breakdown of what a data analyst actually does between the moment a
+                    request arrives and the moment an answer goes back. It is written for the manager, the director, and
+                    the executive who wants to work better with their analyst, not just submit requests and wait.</p>
 
                 <div class="callout">
-                    "The single biggest source of wasted analytical effort is not bad tools or poor skills. It is the gap between what a stakeholder thinks they asked and what an analyst understood them to ask."
-                    <br><span style="font-size:0.9rem;color:var(--clr-text-muted);font-style:normal;">Thomas H. Davenport, "Competing on Analytics," Harvard Business School Press, 2007</span>
+                    "The single biggest source of wasted analytical effort is not bad tools or poor skills. It is the
+                    gap between what a stakeholder thinks they asked and what an analyst understood them to ask."
+                    <br><span style="font-size:0.9rem;color:var(--clr-text-muted);font-style:normal;">Thomas H.
+                        Davenport, "Competing on Analytics," Harvard Business School Press, 2007</span>
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-card">
                         <div class="stat-number">45%</div>
-                        <div class="stat-label">of a data analyst's time is spent on data gathering, cleaning, and preparation before any analysis begins (Anaconda State of Data Science, 2020, n=2,360)</div>
+                        <div class="stat-label">of a data analyst's time is spent on data gathering, cleaning, and
+                            preparation before any analysis begins (Anaconda State of Data Science, 2020, n=2,360)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">80%</div>
-                        <div class="stat-label">of analytics projects fail to deliver on their stated business objectives, primarily due to misalignment between analysts and stakeholders (Gartner, 2020)</div>
+                        <div class="stat-label">of analytics projects fail to deliver on their stated business
+                            objectives, primarily due to misalignment between analysts and stakeholders (Gartner, 2020)
+                        </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">Only 26%</div>
-                        <div class="stat-label">of working time is spent on actual modeling, analysis, and generating insight — the work stakeholders assume fills the entire day (Anaconda, 2020)</div>
+                        <div class="stat-label">of working time is spent on actual modeling, analysis, and generating
+                            insight — the work stakeholders assume fills the entire day (Anaconda, 2020)</div>
                     </div>
                 </div>
 
@@ -132,13 +466,25 @@
                     alt="Abstract pipeline from chaotic raw data on the left, filtered through stages, to a single precise insight on the right"
                     class="inline-image">
 
-                <p>Most stakeholders picture the analytical workflow as a single step: the analyst opens the database, runs a query, and produces a chart. In reality, a well-executed analysis involves five distinct phases. Each has its own time cost, its own failure mode, and its own dependency on stakeholder input that most stakeholders do not realize they need to provide.</p>
+                <p>Most stakeholders picture the analytical workflow as a single step: the analyst opens the database,
+                    runs a query, and produces a chart. In reality, a well-executed analysis involves five distinct
+                    phases. Each has its own time cost, its own failure mode, and its own dependency on stakeholder
+                    input that most stakeholders do not realize they need to provide.</p>
 
                 <div class="phase-card phase-blue">
                     <div class="phase-number">01</div>
                     <div>
                         <h4>Question Clarification</h4>
-                        <p>Before any data is touched, the analyst must translate the business question into an answerable analytical question. "What is our Q2 retention by region?" is a business question. The analytical version requires defining: what counts as retention, what time window defines Q2 for this metric, which regions are in scope, whether the question is about rates or absolute numbers, and what decision the answer will inform. Each of these has a correct answer the stakeholder already knows. But it has to be surfaced. A 2017 study in the <em>International Journal of Information Management</em> (Llave) found that ambiguous problem definition is the leading cause of rework in analytical projects, responsible for 35 to 50 percent of total project time in organizations without structured intake processes.</p>
+                        <p>Before any data is touched, the analyst must translate the business question into an
+                            answerable analytical question. "What is our Q2 retention by region?" is a business
+                            question. The analytical version requires defining: what counts as retention, what time
+                            window defines Q2 for this metric, which regions are in scope, whether the question is about
+                            rates or absolute numbers, and what decision the answer will inform. Each of these has a
+                            correct answer the stakeholder already knows. But it has to be surfaced. A 2017 study in the
+                            <em>International Journal of Information Management</em> (Llave) found that ambiguous
+                            problem definition is the leading cause of rework in analytical projects, responsible for 35
+                            to 50 percent of total project time in organizations without structured intake processes.
+                        </p>
                     </div>
                 </div>
 
@@ -146,7 +492,13 @@
                     <div class="phase-number">02</div>
                     <div>
                         <h4>Data Location and Access</h4>
-                        <p>Once the question is clear, the analyst must find the data that will answer it. In most organizations, relevant data lives across multiple systems: a CRM, a data warehouse, a marketing platform, an ERP, and possibly manual spreadsheets maintained by individual teams. Identifying which sources are authoritative for which metrics, obtaining access permissions where needed, and verifying that the data is current are all steps that consume real time. In organizations without a well-maintained data catalog, this phase alone can take hours or days for an unfamiliar dataset.</p>
+                        <p>Once the question is clear, the analyst must find the data that will answer it. In most
+                            organizations, relevant data lives across multiple systems: a CRM, a data warehouse, a
+                            marketing platform, an ERP, and possibly manual spreadsheets maintained by individual teams.
+                            Identifying which sources are authoritative for which metrics, obtaining access permissions
+                            where needed, and verifying that the data is current are all steps that consume real time.
+                            In organizations without a well-maintained data catalog, this phase alone can take hours or
+                            days for an unfamiliar dataset.</p>
                     </div>
                 </div>
 
@@ -154,7 +506,14 @@
                     <div class="phase-number">03</div>
                     <div>
                         <h4>Data Cleaning and Preparation</h4>
-                        <p>Raw data is almost never ready for analysis. Duplicates, null values, inconsistent formatting, mismatched join keys, and historical schema changes all require manual inspection and correction before analysis can proceed. The Anaconda research cited above found that this phase alone consumes an average of 45 percent of a data professional's working time. Research by CrowdFlower (now Figure Eight), surveying 80 data scientists in 2016, found that 76 percent rated data cleaning as the least enjoyable part of their work and the most time-consuming. The stakeholder who assumes their analyst is analyzing is often watching their analyst fix a CSV file with 14 different date formats.</p>
+                        <p>Raw data is almost never ready for analysis. Duplicates, null values, inconsistent
+                            formatting, mismatched join keys, and historical schema changes all require manual
+                            inspection and correction before analysis can proceed. The Anaconda research cited above
+                            found that this phase alone consumes an average of 45 percent of a data professional's
+                            working time. Research by CrowdFlower (now Figure Eight), surveying 80 data scientists in
+                            2016, found that 76 percent rated data cleaning as the least enjoyable part of their work
+                            and the most time-consuming. The stakeholder who assumes their analyst is analyzing is often
+                            watching their analyst fix a CSV file with 14 different date formats.</p>
                     </div>
                 </div>
 
@@ -162,7 +521,14 @@
                     <div class="phase-number">04</div>
                     <div>
                         <h4>Analysis and Interpretation</h4>
-                        <p>This is the phase stakeholders imagine fills the entire day. In practice, it is often the shortest. Once the data is clean and structured, the actual analytical work, writing queries, building models, computing aggregations, testing hypotheses, frequently takes less time than the preceding three phases combined. The intellectual difficulty is real: a skilled analyst is simultaneously looking for the answer to the stated question, checking for anomalies that suggest data problems, and watching for unexpected patterns that might be more interesting than the original question. But the elapsed clock time for this phase, in a typical request, is measured in hours, not days.</p>
+                        <p>This is the phase stakeholders imagine fills the entire day. In practice, it is often the
+                            shortest. Once the data is clean and structured, the actual analytical work, writing
+                            queries, building models, computing aggregations, testing hypotheses, frequently takes less
+                            time than the preceding three phases combined. The intellectual difficulty is real: a
+                            skilled analyst is simultaneously looking for the answer to the stated question, checking
+                            for anomalies that suggest data problems, and watching for unexpected patterns that might be
+                            more interesting than the original question. But the elapsed clock time for this phase, in a
+                            typical request, is measured in hours, not days.</p>
                     </div>
                 </div>
 
@@ -170,28 +536,63 @@
                     <div class="phase-number">05</div>
                     <div>
                         <h4>Communication and Presentation</h4>
-                        <p>The analysis is complete. The answer is known. This is not the end of the work. Translating a quantitative finding into a form that a business stakeholder can act on is a distinct skill from the analysis itself. The right visualization, the right framing, the right level of technical detail for the audience, the appropriate caveats about data limitations, and the connection between the finding and the original business question all require explicit attention. Research by Davenport and Patil, published in the Harvard Business Review's landmark 2012 article "Data Scientist: The Sexiest Job of the 21st Century," identified communication as the most undervalued skill in analytical roles, precisely because it is the phase least visible to stakeholders who only see the final output.</p>
+                        <p>The analysis is complete. The answer is known. This is not the end of the work. Translating a
+                            quantitative finding into a form that a business stakeholder can act on is a distinct skill
+                            from the analysis itself. The right visualization, the right framing, the right level of
+                            technical detail for the audience, the appropriate caveats about data limitations, and the
+                            connection between the finding and the original business question all require explicit
+                            attention. Research by Davenport and Patil, published in the Harvard Business Review's
+                            landmark 2012 article "Data Scientist: The Sexiest Job of the 21st Century," identified
+                            communication as the most undervalued skill in analytical roles, precisely because it is the
+                            phase least visible to stakeholders who only see the final output.</p>
                     </div>
                 </div>
 
                 <div class="callout callout-warning">
-                    When a stakeholder says "the analyst took three days to answer a simple question," they are usually seeing phase 5 and assuming it was the whole project. The three days were phases 1 through 4. Phase 5 was the email.
+                    When a stakeholder says "the analyst took three days to answer a simple question," they are usually
+                    seeing phase 5 and assuming it was the whole project. The three days were phases 1 through 4. Phase
+                    5 was the email.
                 </div>
 
                 <h2>The Work That Never Appears on Any Request</h2>
 
-                <p>Beyond the five phases of any individual analysis, analysts carry a category of work that is entirely invisible to stakeholders because it is not attached to any specific deliverable. This background work is what makes future analyses possible. When it is neglected because of constant ad-hoc request volume, analytical quality degrades over time without any single point of failure that stakeholders can identify.</p>
+                <p>Beyond the five phases of any individual analysis, analysts carry a category of work that is entirely
+                    invisible to stakeholders because it is not attached to any specific deliverable. This background
+                    work is what makes future analyses possible. When it is neglected because of constant ad-hoc request
+                    volume, analytical quality degrades over time without any single point of failure that stakeholders
+                    can identify.</p>
 
                 <ul>
-                    <li><strong>Data documentation.</strong> Analysts who care about their work invest time in documenting what data sources exist, what each field means, what known quality issues are present, and what queries produce which standard metrics. This work is the organizational knowledge that prevents every new request from requiring a full investigation from scratch. A 2018 paper in the <em>Journal of Information Science</em> (Faniel and Jacobsen) found that undocumented analytical assets are the primary source of inconsistency across reports in the same organization.</li>
-                    <li><strong>Metric consistency work.</strong> In organizations without a shared metric layer, the same business term ("active customer," "revenue," "churn") may be calculated differently by different teams and different analysts. Maintaining consistency requires ongoing coordination work that is entirely invisible until two reports contradict each other in a leadership meeting.</li>
-                    <li><strong>Pipeline maintenance.</strong> Automated reports and dashboards do not maintain themselves. Data sources change, schemas update, and systems break. The analyst who built the executive dashboard three months ago is spending time every week ensuring it still runs correctly. This work has no deliverable and generates no credit.</li>
-                    <li><strong>Self-directed learning.</strong> The analytical landscape changes rapidly. New tools, new techniques, and new data sources require ongoing investment in learning. Analysts who are given no time for professional development quickly fall behind, and the organization pays for this in slower, less sophisticated analyses over time.</li>
+                    <li><strong>Data documentation.</strong> Analysts who care about their work invest time in
+                        documenting what data sources exist, what each field means, what known quality issues are
+                        present, and what queries produce which standard metrics. This work is the organizational
+                        knowledge that prevents every new request from requiring a full investigation from scratch. A
+                        2018 paper in the <em>Journal of Information Science</em> (Faniel and Jacobsen) found that
+                        undocumented analytical assets are the primary source of inconsistency across reports in the
+                        same organization.</li>
+                    <li><strong>Metric consistency work.</strong> In organizations without a shared metric layer, the
+                        same business term ("active customer," "revenue," "churn") may be calculated differently by
+                        different teams and different analysts. Maintaining consistency requires ongoing coordination
+                        work that is entirely invisible until two reports contradict each other in a leadership meeting.
+                    </li>
+                    <li><strong>Pipeline maintenance.</strong> Automated reports and dashboards do not maintain
+                        themselves. Data sources change, schemas update, and systems break. The analyst who built the
+                        executive dashboard three months ago is spending time every week ensuring it still runs
+                        correctly. This work has no deliverable and generates no credit.</li>
+                    <li><strong>Self-directed learning.</strong> The analytical landscape changes rapidly. New tools,
+                        new techniques, and new data sources require ongoing investment in learning. Analysts who are
+                        given no time for professional development quickly fall behind, and the organization pays for
+                        this in slower, less sophisticated analyses over time.</li>
                 </ul>
 
                 <div class="analogy-box">
                     <strong class="label">The Analogy</strong>
-                    Imagine a hospital surgeon who is asked why they spent Tuesday afternoon reviewing literature and practicing techniques rather than operating. The visible work is in the operating room. The invisible work is what makes the operating room work safe. An analyst spending time on data documentation and pipeline maintenance is doing the equivalent of surgical preparation. The stakeholder who only counts operations completed will systematically underinvest in this work, to eventual visible cost.
+                    Imagine a hospital surgeon who is asked why they spent Tuesday afternoon reviewing literature and
+                    practicing techniques rather than operating. The visible work is in the operating room. The
+                    invisible work is what makes the operating room work safe. An analyst spending time on data
+                    documentation and pipeline maintenance is doing the equivalent of surgical preparation. The
+                    stakeholder who only counts operations completed will systematically underinvest in this work, to
+                    eventual visible cost.
                 </div>
 
                 <h2>Common Myths About What Analysts Do</h2>
@@ -200,28 +601,51 @@
                     <div class="myth-label">Myth</div>
                     <div class="myth-text">"It should only take a few minutes to pull that number."</div>
                     <div class="reality-label">Reality</div>
-                    <div class="reality-text">Pulling a number from a clean, well-documented system with clear definitions and no data quality issues might take minutes. In most organizations, none of those conditions fully hold. The phrase "pull a number" conceals the entire five-phase workflow described above. A request with a 10-minute analytical core can have a 4-hour preparation cost.</div>
+                    <div class="reality-text">Pulling a number from a clean, well-documented system with clear
+                        definitions and no data quality issues might take minutes. In most organizations, none of those
+                        conditions fully hold. The phrase "pull a number" conceals the entire five-phase workflow
+                        described above. A request with a 10-minute analytical core can have a 4-hour preparation cost.
+                    </div>
                 </div>
 
                 <div class="myth-box myth-red">
                     <div class="myth-label">Myth</div>
-                    <div class="myth-text">"If the analyst does not know the answer immediately, they are not doing their job."</div>
+                    <div class="myth-text">"If the analyst does not know the answer immediately, they are not doing
+                        their job."</div>
                     <div class="reality-label">Reality</div>
-                    <div class="reality-text">Most analytical questions do not have cached answers. An analyst who instantly produces a number for every question is probably working in a limited domain with pre-built reports. An analyst who pauses and says "let me verify that" before answering is demonstrating quality control, not incompetence. Research by Stein and Pinfield (2015, <em>Journal of the American Society for Information Science</em>) found that analytical professionals who took time to verify before responding produced outputs with significantly fewer downstream errors.</div>
+                    <div class="reality-text">Most analytical questions do not have cached answers. An analyst who
+                        instantly produces a number for every question is probably working in a limited domain with
+                        pre-built reports. An analyst who pauses and says "let me verify that" before answering is
+                        demonstrating quality control, not incompetence. Research by Stein and Pinfield (2015,
+                        <em>Journal of the American Society for Information Science</em>) found that analytical
+                        professionals who took time to verify before responding produced outputs with significantly
+                        fewer downstream errors.
+                    </div>
                 </div>
 
                 <div class="myth-box myth-red">
                     <div class="myth-label">Myth</div>
-                    <div class="myth-text">"The analyst just needs to give me the data and I'll figure out the rest."</div>
+                    <div class="myth-text">"The analyst just needs to give me the data and I'll figure out the rest."
+                    </div>
                     <div class="reality-label">Reality</div>
-                    <div class="reality-text">Raw data without context is usually misleading. An analyst's job is not to transfer data from one location to another. It is to interpret what the data means in the context of the business question. When a stakeholder bypasses interpretation and works with raw exports, they systematically underutilize the analytical function and frequently reach conclusions that trained analysts would have flagged as problematic before they reached the presentation stage.</div>
+                    <div class="reality-text">Raw data without context is usually misleading. An analyst's job is not to
+                        transfer data from one location to another. It is to interpret what the data means in the
+                        context of the business question. When a stakeholder bypasses interpretation and works with raw
+                        exports, they systematically underutilize the analytical function and frequently reach
+                        conclusions that trained analysts would have flagged as problematic before they reached the
+                        presentation stage.</div>
                 </div>
 
                 <div class="myth-box myth-red">
                     <div class="myth-label">Myth</div>
                     <div class="myth-text">"Analysts work independently; I should let them do their thing."</div>
                     <div class="reality-label">Reality</div>
-                    <div class="reality-text">Analytical work is deeply dependent on stakeholder input at multiple points in the process. The question definition, the business context, the decision the analysis will inform, the acceptable tradeoffs between speed and precision: all of these require information only the stakeholder holds. An analyst working without this input is guessing at what the business needs. The most productive analyst-stakeholder relationships involve regular, brief touchpoints throughout a project, not a single request followed by radio silence.</div>
+                    <div class="reality-text">Analytical work is deeply dependent on stakeholder input at multiple
+                        points in the process. The question definition, the business context, the decision the analysis
+                        will inform, the acceptable tradeoffs between speed and precision: all of these require
+                        information only the stakeholder holds. An analyst working without this input is guessing at
+                        what the business needs. The most productive analyst-stakeholder relationships involve regular,
+                        brief touchpoints throughout a project, not a single request followed by radio silence.</div>
                 </div>
 
                 <h2>What a Good Day Looks Like for an Analyst</h2>
@@ -230,55 +654,93 @@
                     alt="A glowing bridge of light connecting two distinct islands, representing the analyst as a bridge between business and data"
                     class="inline-image">
 
-                <p>A productive analyst day is not one in which an analyst answered the most requests. It is one in which the right questions were answered well enough to actually change a decision. Those two things are often in tension.</p>
+                <p>A productive analyst day is not one in which an analyst answered the most requests. It is one in
+                    which the right questions were answered well enough to actually change a decision. Those two things
+                    are often in tension.</p>
 
-                <p>Research on analytical productivity published in <em>MIS Quarterly</em> (Kohavi, Longbotham et al., 2009) found that organizations with a high volume of ad-hoc analytical requests and low investment in analytical infrastructure systematically produced less business value from their analytics functions than organizations with fewer but better-defined analytical projects. Quality of analytical output is more predictive of business impact than quantity.</p>
+                <p>Research on analytical productivity published in <em>MIS Quarterly</em> (Kohavi, Longbotham et al.,
+                    2009) found that organizations with a high volume of ad-hoc analytical requests and low investment
+                    in analytical infrastructure systematically produced less business value from their analytics
+                    functions than organizations with fewer but better-defined analytical projects. Quality of
+                    analytical output is more predictive of business impact than quantity.</p>
 
                 <p>A genuinely productive analyst day might include:</p>
 
                 <ul>
-                    <li>One or two well-scoped analyses completed fully, with verification and clear business interpretation</li>
+                    <li>One or two well-scoped analyses completed fully, with verification and clear business
+                        interpretation</li>
                     <li>One stakeholder conversation to clarify an incoming request before starting work</li>
                     <li>Maintenance and documentation of existing analytical assets</li>
-                    <li>One proactive observation: a pattern the analyst noticed in the data that no one asked for but that is relevant to a current business question</li>
+                    <li>One proactive observation: a pattern the analyst noticed in the data that no one asked for but
+                        that is relevant to a current business question</li>
                 </ul>
 
-                <p>That last item is worth particular emphasis. The most valuable analytical work is often not the work that was requested. It is the finding that the analyst surfaced because they were paying attention to the data while answering the question someone else asked. This is the difference between an analyst as a query engine and an analyst as a thinking partner. The latter requires time, trust, and sufficient freedom from reactive request volume to actually look around in the data.</p>
+                <p>That last item is worth particular emphasis. The most valuable analytical work is often not the work
+                    that was requested. It is the finding that the analyst surfaced because they were paying attention
+                    to the data while answering the question someone else asked. This is the difference between an
+                    analyst as a query engine and an analyst as a thinking partner. The latter requires time, trust, and
+                    sufficient freedom from reactive request volume to actually look around in the data.</p>
 
                 <h2>How to Work With an Analyst More Effectively</h2>
 
-                <p>The following recommendations are based on research on analytical collaboration and stakeholder-analyst alignment, including Davenport and Harris's <em>Competing on Analytics</em> (2007), the Gartner report "Building a Business-Centric Data and Analytics Team" (2021), and IBM's research on "The Analytics Advantage" (2013).</p>
+                <p>The following recommendations are based on research on analytical collaboration and
+                    stakeholder-analyst alignment, including Davenport and Harris's <em>Competing on Analytics</em>
+                    (2007), the Gartner report "Building a Business-Centric Data and Analytics Team" (2021), and IBM's
+                    research on "The Analytics Advantage" (2013).</p>
 
                 <ul class="tip-list">
                     <li>
                         <span class="tip-icon">1</span>
-                        <span><strong>State the decision, not just the question.</strong> Instead of "can you pull retention by region," say "I need to decide whether to reallocate budget from Region A to Region B for Q3. I need to understand whether A's lower retention is structural or temporary." The decision context changes everything about how the analysis is designed.</span>
+                        <span><strong>State the decision, not just the question.</strong> Instead of "can you pull
+                            retention by region," say "I need to decide whether to reallocate budget from Region A to
+                            Region B for Q3. I need to understand whether A's lower retention is structural or
+                            temporary." The decision context changes everything about how the analysis is
+                            designed.</span>
                     </li>
                     <li>
                         <span class="tip-icon">2</span>
-                        <span><strong>Give a real deadline, not an implicit one.</strong> "As soon as possible" is not a deadline. It forces the analyst to guess your urgency relative to everything else in their queue. "I need this before Thursday's planning meeting at 2 p.m." is actionable and allows the analyst to calibrate depth of analysis to available time.</span>
+                        <span><strong>Give a real deadline, not an implicit one.</strong> "As soon as possible" is not a
+                            deadline. It forces the analyst to guess your urgency relative to everything else in their
+                            queue. "I need this before Thursday's planning meeting at 2 p.m." is actionable and allows
+                            the analyst to calibrate depth of analysis to available time.</span>
                     </li>
                     <li>
                         <span class="tip-icon">3</span>
-                        <span><strong>Expect and welcome clarifying questions.</strong> An analyst who asks questions before starting work is not being difficult. They are doing quality control. Resisting clarifying questions is one of the most reliable ways to guarantee you will receive an answer to a question you did not ask.</span>
+                        <span><strong>Expect and welcome clarifying questions.</strong> An analyst who asks questions
+                            before starting work is not being difficult. They are doing quality control. Resisting
+                            clarifying questions is one of the most reliable ways to guarantee you will receive an
+                            answer to a question you did not ask.</span>
                     </li>
                     <li>
                         <span class="tip-icon">4</span>
-                        <span><strong>Close the loop after decisions are made.</strong> When analysis informs a decision, tell the analyst. "We went with option B based on your retention numbers, and here is what happened" is valuable feedback that improves the quality of future work. Analysts who never learn the outcome of their analyses lose the context needed to sharpen their business judgment over time.</span>
+                        <span><strong>Close the loop after decisions are made.</strong> When analysis informs a
+                            decision, tell the analyst. "We went with option B based on your retention numbers, and here
+                            is what happened" is valuable feedback that improves the quality of future work. Analysts
+                            who never learn the outcome of their analyses lose the context needed to sharpen their
+                            business judgment over time.</span>
                     </li>
                     <li>
                         <span class="tip-icon">5</span>
-                        <span><strong>Protect unscheduled time for proactive analysis.</strong> Analysts whose calendars are 100 percent filled with reactive requests produce 100 percent reactive output. The proactive analysis, the pattern no one asked about, the risk that showed up in the data before it showed up in the business results, only happens when there is time for it. Organizations that build this time in deliberately get more analytical value from the same headcount.</span>
+                        <span><strong>Protect unscheduled time for proactive analysis.</strong> Analysts whose calendars
+                            are 100 percent filled with reactive requests produce 100 percent reactive output. The
+                            proactive analysis, the pattern no one asked about, the risk that showed up in the data
+                            before it showed up in the business results, only happens when there is time for it.
+                            Organizations that build this time in deliberately get more analytical value from the same
+                            headcount.</span>
                     </li>
                     <li>
                         <span class="tip-icon">6</span>
-                        <span><strong>Treat the analyst as a thinking partner, not a vending machine.</strong> A vending machine takes an input and returns a cached output. An analytical thinking partner helps you refine the input, challenges assumptions about what you actually need, and adds interpretive value to the output. The relationship you build determines which one you get.</span>
+                        <span><strong>Treat the analyst as a thinking partner, not a vending machine.</strong> A vending
+                            machine takes an input and returns a cached output. An analytical thinking partner helps you
+                            refine the input, challenges assumptions about what you actually need, and adds interpretive
+                            value to the output. The relationship you build determines which one you get.</span>
                     </li>
                 </ul>
 
                 <h2>What Analysts Wish Stakeholders Understood</h2>
 
-                <p>In a 2021 survey of 500 data professionals conducted by DataIQ, the top frustrations cited by analysts were consistent and specific:</p>
+                <p>In a 2021 survey of 500 data professionals conducted by DataIQ, the top frustrations cited by
+                    analysts were consistent and specific:</p>
 
                 <div class="two-col">
                     <div class="col-card col-card-red">
@@ -304,18 +766,43 @@
                 </div>
 
                 <div class="callout callout-green">
-                    The best analyst-stakeholder relationships are not transactional. They are collaborative. The stakeholder brings domain knowledge, business context, and decision authority. The analyst brings analytical skill, data literacy, and interpretive judgment. Neither has the full picture alone. Together, they produce analysis that actually drives decisions.
+                    The best analyst-stakeholder relationships are not transactional. They are collaborative. The
+                    stakeholder brings domain knowledge, business context, and decision authority. The analyst brings
+                    analytical skill, data literacy, and interpretive judgment. Neither has the full picture alone.
+                    Together, they produce analysis that actually drives decisions.
                 </div>
 
                 <h2>The Bottom Line</h2>
 
-                <p>A data analyst's day is not a sequence of queries. It is a sequence of translation tasks: business language to analytical language, raw data to structured data, quantitative findings to actionable insight, technical caveats to business-relevant context. Each translation takes time and requires input from both sides of the conversation.</p>
+                <p>A data analyst's day is not a sequence of queries. It is a sequence of translation tasks: business
+                    language to analytical language, raw data to structured data, quantitative findings to actionable
+                    insight, technical caveats to business-relevant context. Each translation takes time and requires
+                    input from both sides of the conversation.</p>
 
-                <p>The stakeholders who work best with analysts are the ones who understand this. They invest a few minutes at the start of every request to provide context and decision framing. They expect and welcome clarifying questions. They give real deadlines. And they close the loop after decisions are made.</p>
+                <p>The stakeholders who work best with analysts are the ones who understand this. They invest a few
+                    minutes at the start of every request to provide context and decision framing. They expect and
+                    welcome clarifying questions. They give real deadlines. And they close the loop after decisions are
+                    made.</p>
 
-                <p>In return, they get something most organizations do not get from their analytics function: analysis that actually changes what they do.</p>
+                <p>In return, they get something most organizations do not get from their analytics function: analysis
+                    that actually changes what they do.</p>
 
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 
@@ -323,10 +810,12 @@
         <div class="container" style="text-align:center;">
             <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
-            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+                rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>

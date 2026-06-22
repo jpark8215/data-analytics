@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jpark8215.github.io/data-analytics/sitemap.xml

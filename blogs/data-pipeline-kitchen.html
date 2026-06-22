@@ -1,60 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What is a Data Pipeline? Explained with a Restaurant Kitchen | Data-Informed Insights</title>
-    <meta name="description" content="Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why they break, and why your data engineering team is always so stressed.">
+    <meta name="description"
+        content="Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why they break, and why your data engineering team is always so stressed.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/blog.css">
     <style>
-        .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-        .post-header { text-align: center; margin-bottom: var(--space-l); }
-        .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-        .post-content h2 { margin-top: var(--space-l); font-size: 1.875rem; }
-        .post-content p { margin-bottom: var(--space-m); }
-        .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 1.5rem; }
-        .post-content li { margin-bottom: 0.5rem; }
-        .post-image { width: 100%; height: auto; max-height: 440px; object-fit: cover; border-radius: var(--radius-l); margin-bottom: var(--space-l); box-shadow: var(--shadow-lg); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-m); color: var(--clr-text-muted); font-weight: 500; }
-        .back-link:hover { color: var(--clr-primary); }
-        .callout { border-left: 4px solid var(--clr-primary); background: rgba(59,130,246,0.08); border-radius: 0 var(--radius-m) var(--radius-m) 0; padding: var(--space-m); margin: var(--space-l) 0; font-style: italic; color: var(--clr-text-main); font-size: 1.2rem; line-height: 1.7; }
-        .callout-warning { border-left-color: #f59e0b; background: rgba(245,158,11,0.08); }
-        .callout-accent { border-left-color: var(--clr-accent); background: rgba(139,92,246,0.08); }
-        .callout-green { border-left-color: #10b981; background: rgba(16,185,129,0.08); }
-        .station-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-m); margin: var(--space-l) 0; }
-        @media (min-width: 768px) { .station-grid { grid-template-columns: repeat(3, 1fr); } }
-        .station-card { background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.2); border-radius: var(--radius-m); padding: var(--space-m); }
-        .station-card .icon { font-size: 2rem; color: var(--clr-primary); margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif; font-weight: 800; line-height: 1; }
-        .station-card h4 { font-size: 1.1rem; margin: 0 0 0.5rem; color: var(--clr-text-main); }
-        .station-card p { font-size: 0.95rem; color: var(--clr-text-muted); margin: 0; }
-        .analogy-block { border-radius: var(--radius-l); padding: var(--space-m); margin: var(--space-m) 0; position: relative; overflow: hidden; }
-        .analogy-block::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
-        .ab-ing { background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.18); }
-        .ab-ing::before { background: var(--clr-accent); }
-        .ab-prep { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.18); }
-        .ab-prep::before { background: #f59e0b; }
-        .ab-serve { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.18); }
-        .ab-serve::before { background: #10b981; }
-        .analogy-block h3 { margin: 0 0 0.5rem; font-size: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
-        .analogy-block .tech-term { font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.6rem; border-radius: 100px; background: rgba(255,255,255,0.1); }
-        .ab-ing .tech-term { color: var(--clr-accent); background: rgba(139,92,246,0.15); }
-        .ab-prep .tech-term { color: #f59e0b; background: rgba(245,158,11,0.15); }
-        .ab-serve .tech-term { color: #10b981; background: rgba(16,185,129,0.15); }
-        .comparison-table { width: 100%; border-collapse: collapse; margin: var(--space-m) 0; font-size: 0.95rem; border-radius: var(--radius-m); overflow: hidden; }
-        .comparison-table th { background: rgba(255,255,255,0.05); color: var(--clr-text-main); padding: 0.75rem 1rem; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .comparison-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--clr-text-muted); }
-        .comparison-table tr:last-child td { border-bottom: none; }
-        .comparison-table td:first-child { font-weight: 600; color: var(--clr-text-main); }
-        .failure-mode { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; margin-bottom: 1.5rem; }
-        .failure-icon { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(239,68,68,0.15); color: #f87171; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Outfit', sans-serif; }
-        .failure-content h4 { margin: 0 0 0.35rem; color: #f87171; }
-        .failure-content p { margin: 0; font-size: 0.95rem; }
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-m);
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 440px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            border-left: 4px solid var(--clr-primary);
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            color: var(--clr-text-main);
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-accent {
+            border-left-color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .callout-green {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .station-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        @media (min-width: 768px) {
+            .station-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .station-card {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+        }
+
+        .station-card .icon {
+            font-size: 2rem;
+            color: var(--clr-primary);
+            margin-bottom: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .station-card h4 {
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem;
+            color: var(--clr-text-main);
+        }
+
+        .station-card p {
+            font-size: 0.95rem;
+            color: var(--clr-text-muted);
+            margin: 0;
+        }
+
+        .analogy-block {
+            border-radius: var(--radius-l);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analogy-block::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .ab-ing {
+            background: rgba(139, 92, 246, 0.07);
+            border: 1px solid rgba(139, 92, 246, 0.18);
+        }
+
+        .ab-ing::before {
+            background: var(--clr-accent);
+        }
+
+        .ab-prep {
+            background: rgba(245, 158, 11, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.18);
+        }
+
+        .ab-prep::before {
+            background: #f59e0b;
+        }
+
+        .ab-serve {
+            background: rgba(16, 185, 129, 0.07);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+        }
+
+        .ab-serve::before {
+            background: #10b981;
+        }
+
+        .analogy-block h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .analogy-block .tech-term {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .ab-ing .tech-term {
+            color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .ab-prep .tech-term {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .ab-serve .tech-term {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-m) 0;
+            font-size: 0.95rem;
+            border-radius: var(--radius-m);
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--clr-text-main);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--clr-text-muted);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: var(--clr-text-main);
+        }
+
+        .failure-mode {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1rem;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .failure-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .failure-content h4 {
+            margin: 0 0 0.35rem;
+            color: #f87171;
+        }
+
+        .failure-content p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="What is a Data Pipeline? Explained with a Restaurant Kitchen">
+    <meta property="og:description"
+        content="Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why they break, and why your data engineering team is always so stressed.">
+    <meta property="og:image"
+        content="https://jpark8215.github.io/data-analytics/assets/images/pipeline_kitchen_abstract.png">
+    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/data-pipeline-kitchen.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/data-pipeline-kitchen.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "What is a Data Pipeline? Explained with a Restaurant Kitchen",
+      "description": "Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why they break, and why your data engineering team is always so stressed.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/pipeline_kitchen_abstract.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
+
 <body>
     <header class="site-header glass">
         <div class="container nav-container">
@@ -66,7 +323,8 @@
                     <li><a href="../index.html#latest" class="nav-link">Latest Posts</a></li>
                 </ul>
             </nav>
-            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline"
+                style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
         </div>
     </header>
 
@@ -75,10 +333,13 @@
 
         <article>
             <header class="post-header">
-                <span class="blog-card-tag" style="background:rgba(59,130,246,0.2);color:var(--clr-primary);">Engineering</span>
-                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">What is a Data Pipeline? Explained with a Restaurant Kitchen</h1>
+                <span class="blog-card-tag"
+                    style="background:rgba(59,130,246,0.2);color:var(--clr-primary);">Engineering</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">What is a Data Pipeline? Explained
+                    with a Restaurant Kitchen</h1>
                 <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-                    Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why they break, and why your data engineering team is always so stressed.
+                    Raw ingredients in, clean dishes out. A non-technical guide to how data pipelines actually work, why
+                    they break, and why your data engineering team is always so stressed.
                 </p>
             </header>
 
@@ -88,47 +349,86 @@
 
             <div class="post-content">
 
-                <p>When business stakeholders hear the term "data pipeline," they often picture a literal pipe. Data flows into one end, travels through a tube, and pours out the other end onto a dashboard. It sounds passive, reliable, and practically maintenance-free.</p>
+                <p>When business stakeholders hear the term "data pipeline," they often picture a literal pipe. Data
+                    flows into one end, travels through a tube, and pours out the other end onto a dashboard. It sounds
+                    passive, reliable, and practically maintenance-free.</p>
 
-                <p>Data engineers know the reality is entirely different. A data pipeline is not a pipe. It is a high-end restaurant kitchen on a Saturday night. It involves sourcing ingredients from dozens of different suppliers, cleaning them, chopping them into standardized sizes, combining them in specific sequences at exact temperatures, and plating them perfectly before the customer gets impatient.</p>
+                <p>Data engineers know the reality is entirely different. A data pipeline is not a pipe. It is a
+                    high-end restaurant kitchen on a Saturday night. It involves sourcing ingredients from dozens of
+                    different suppliers, cleaning them, chopping them into standardized sizes, combining them in
+                    specific sequences at exact temperatures, and plating them perfectly before the customer gets
+                    impatient.</p>
 
-                <p>Understanding this analogy is the key to bridging the communication gap between business leaders who consume data and the engineers who prepare it. When stakeholders understand that they are ordering from a kitchen rather than turning on a tap, requests become clearer, expectations become realistic, and data teams stop burning out.</p>
+                <p>Understanding this analogy is the key to bridging the communication gap between business leaders who
+                    consume data and the engineers who prepare it. When stakeholders understand that they are ordering
+                    from a kitchen rather than turning on a tap, requests become clearer, expectations become realistic,
+                    and data teams stop burning out.</p>
 
                 <h2>The Three Stations of the Kitchen (ETL)</h2>
 
-                <p>The standard architecture of a data pipeline is known as ETL: Extract, Transform, Load. Some modern setups use ELT (Extract, Load, Transform), but the stations remain the same.</p>
+                <p>The standard architecture of a data pipeline is known as ETL: Extract, Transform, Load. Some modern
+                    setups use ELT (Extract, Load, Transform), but the stations remain the same.</p>
 
                 <div class="analogy-block ab-ing">
                     <h3>The Receiving Dock <span class="tech-term">Extract</span></h3>
-                    <p>A restaurant does not grow its own food. It receives deliveries from the butcher, the local farm, and the dry goods distributor. Some arrive daily in refrigerated trucks. Some arrive weekly in cardboard boxes. The receiving dock's job is to unload these varied ingredients and bring them inside.</p>
-                    <p>In a data pipeline, "Extract" is the process of pulling raw data from external suppliers. The suppliers are your company's software tools: the CRM (Salesforce), the payment processor (Stripe), the advertising platforms (Google Ads, Meta), and internal application databases. Like food deliveries, this data arrives in completely different formats. Salesforce sends JSON files. The legacy HR system sends CSVs. The extraction process pulls them all into the building.</p>
+                    <p>A restaurant does not grow its own food. It receives deliveries from the butcher, the local farm,
+                        and the dry goods distributor. Some arrive daily in refrigerated trucks. Some arrive weekly in
+                        cardboard boxes. The receiving dock's job is to unload these varied ingredients and bring them
+                        inside.</p>
+                    <p>In a data pipeline, "Extract" is the process of pulling raw data from external suppliers. The
+                        suppliers are your company's software tools: the CRM (Salesforce), the payment processor
+                        (Stripe), the advertising platforms (Google Ads, Meta), and internal application databases. Like
+                        food deliveries, this data arrives in completely different formats. Salesforce sends JSON files.
+                        The legacy HR system sends CSVs. The extraction process pulls them all into the building.</p>
                 </div>
 
                 <div class="analogy-block ab-prep">
                     <h3>The Prep Counters & Stoves <span class="tech-term">Transform</span></h3>
-                    <p>You cannot serve a customer a raw potato and an unplucked chicken. Ingredients must be cleaned, peeled, chopped into uniform pieces, and cooked together following a strict recipe. A carrot from Farm A and a carrot from Farm B must end up looking identical in the stew.</p>
-                    <p>In data engineering, "Transform" is where the actual cooking happens. It is the hardest, messiest part of the job. Raw data is inherently dirty. Dates arrive in three different formats (MM/DD/YYYY vs DD-MM-YYYY). Null values need to be handled. Customer records from Stripe must be perfectly joined with customer records from Salesforce, even though one uses an email address and the other uses an account ID. Transformation standardizes the chaos into a clean, uniform format.</p>
+                    <p>You cannot serve a customer a raw potato and an unplucked chicken. Ingredients must be cleaned,
+                        peeled, chopped into uniform pieces, and cooked together following a strict recipe. A carrot
+                        from Farm A and a carrot from Farm B must end up looking identical in the stew.</p>
+                    <p>In data engineering, "Transform" is where the actual cooking happens. It is the hardest, messiest
+                        part of the job. Raw data is inherently dirty. Dates arrive in three different formats
+                        (MM/DD/YYYY vs DD-MM-YYYY). Null values need to be handled. Customer records from Stripe must be
+                        perfectly joined with customer records from Salesforce, even though one uses an email address
+                        and the other uses an account ID. Transformation standardizes the chaos into a clean, uniform
+                        format.</p>
                 </div>
 
                 <div class="analogy-block ab-serve">
                     <h3>The Plating Station <span class="tech-term">Load</span></h3>
-                    <p>Once the food is cooked, it cannot stay in the pots. It must be plated beautifully, placed under the heat lamps, and made ready for the waiters to carry out to the dining room.</p>
-                    <p>In the pipeline, "Load" is the process of moving the transformed, cleaned data into a central Data Warehouse (like Snowflake or BigQuery). Once it is loaded here, it is "on the plate." It is ready for the waiters (Business Intelligence tools like Tableau, Looker, or PowerBI) to serve it directly to the customer (the business stakeholder looking at a dashboard).</p>
+                    <p>Once the food is cooked, it cannot stay in the pots. It must be plated beautifully, placed under
+                        the heat lamps, and made ready for the waiters to carry out to the dining room.</p>
+                    <p>In the pipeline, "Load" is the process of moving the transformed, cleaned data into a central
+                        Data Warehouse (like Snowflake or BigQuery). Once it is loaded here, it is "on the plate." It is
+                        ready for the waiters (Business Intelligence tools like Tableau, Looker, or PowerBI) to serve it
+                        directly to the customer (the business stakeholder looking at a dashboard).</p>
                 </div>
 
                 <div class="callout callout-accent">
-                    When a stakeholder says "Just add the marketing spend to the revenue dashboard," they think they are asking the waiter for ketchup. The engineer hears an order for a dish that requires sourcing a new ingredient, building a new prep station, and rewriting the recipe book.
+                    When a stakeholder says "Just add the marketing spend to the revenue dashboard," they think they are
+                    asking the waiter for ketchup. The engineer hears an order for a dish that requires sourcing a new
+                    ingredient, building a new prep station, and rewriting the recipe book.
                 </div>
 
                 <h2>The Head Chef: Orchestration</h2>
 
-                <p>A kitchen with cooks but no head chef is chaos. Someone has to coordinate the timing. The chicken takes 20 minutes; the sauce takes 5 minutes. If you start both at the same time, the sauce burns while the chicken is still raw. The head chef (or expeditor) ensures that Step B does not begin until Step A is perfectly complete.</p>
+                <p>A kitchen with cooks but no head chef is chaos. Someone has to coordinate the timing. The chicken
+                    takes 20 minutes; the sauce takes 5 minutes. If you start both at the same time, the sauce burns
+                    while the chicken is still raw. The head chef (or expeditor) ensures that Step B does not begin
+                    until Step A is perfectly complete.</p>
 
-                <p>In data pipelines, this role is called <strong>Orchestration</strong> (tools like Apache Airflow or Dagster). Orchestrators do not touch the data themselves. They shout the orders. They tell the extraction tool to pull the Stripe data at 2:00 AM. They wait until that is finished, and then they tell the transformation tool (like dbt) to start cleaning it. If the Stripe data fails to arrive, the orchestrator halts the kitchen and alerts the engineers so they do not serve an incomplete dish.</p>
+                <p>In data pipelines, this role is called <strong>Orchestration</strong> (tools like Apache Airflow or
+                    Dagster). Orchestrators do not touch the data themselves. They shout the orders. They tell the
+                    extraction tool to pull the Stripe data at 2:00 AM. They wait until that is finished, and then they
+                    tell the transformation tool (like dbt) to start cleaning it. If the Stripe data fails to arrive,
+                    the orchestrator halts the kitchen and alerts the engineers so they do not serve an incomplete dish.
+                </p>
 
                 <h2>Batch vs. Streaming: How Fast Do You Need It?</h2>
 
-                <p>There is a constant debate between business teams and engineering teams about "real-time" data. The kitchen analogy clarifies exactly why real-time data is so expensive and difficult to maintain.</p>
+                <p>There is a constant debate between business teams and engineering teams about "real-time" data. The
+                    kitchen analogy clarifies exactly why real-time data is so expensive and difficult to maintain.</p>
 
                 <table class="comparison-table">
                     <thead>
@@ -141,28 +441,41 @@
                     <tbody>
                         <tr>
                             <td><strong>Batch Processing</strong></td>
-                            <td>Making a massive pot of soup overnight. It is incredibly efficient, requires less staff, and feeds everyone the next day. But if you order at 9:00 AM, you are eating yesterday's soup.</td>
-                            <td>Moving data in large chunks once every 24 hours. This is the industry standard for 90% of business reporting. It is stable, cost-effective, and easy to monitor.</td>
+                            <td>Making a massive pot of soup overnight. It is incredibly efficient, requires less staff,
+                                and feeds everyone the next day. But if you order at 9:00 AM, you are eating yesterday's
+                                soup.</td>
+                            <td>Moving data in large chunks once every 24 hours. This is the industry standard for 90%
+                                of business reporting. It is stable, cost-effective, and easy to monitor.</td>
                         </tr>
                         <tr>
                             <td><strong>Streaming (Real-Time)</strong></td>
-                            <td>A made-to-order line cook flipping burgers exactly when the ticket prints. It requires a dedicated cook standing by constantly, and the margin for error is zero.</td>
-                            <td>Processing data the millisecond it is created (using tools like Kafka). It requires complex infrastructure, costs significantly more, and breaks more easily.</td>
+                            <td>A made-to-order line cook flipping burgers exactly when the ticket prints. It requires a
+                                dedicated cook standing by constantly, and the margin for error is zero.</td>
+                            <td>Processing data the millisecond it is created (using tools like Kafka). It requires
+                                complex infrastructure, costs significantly more, and breaks more easily.</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <p>When a stakeholder asks for real-time dashboards for metrics they only check once a week, they are demanding a dedicated line cook for a meal they eat on Fridays. A good data engineering team will always push back and ask: "Can you eat the overnight soup instead?"</p>
+                <p>When a stakeholder asks for real-time dashboards for metrics they only check once a week, they are
+                    demanding a dedicated line cook for a meal they eat on Fridays. A good data engineering team will
+                    always push back and ask: "Can you eat the overnight soup instead?"</p>
 
                 <h2>Why Pipelines Break (And Why Engineers Panic)</h2>
 
-                <p>If a pipeline were actually a pipe, it would only break if someone smashed it. Because it is a kitchen, it breaks for the same reasons kitchens break. When a dashboard goes down, it is usually due to one of these three failure modes:</p>
+                <p>If a pipeline were actually a pipe, it would only break if someone smashed it. Because it is a
+                    kitchen, it breaks for the same reasons kitchens break. When a dashboard goes down, it is usually
+                    due to one of these three failure modes:</p>
 
                 <div class="failure-mode">
                     <div class="failure-icon">1</div>
                     <div class="failure-content">
                         <h4>Upstream Schema Changes (The Supplier Changed the Ingredient)</h4>
-                        <p>The kitchen expects carrots to arrive in 5-pound bags. Overnight, without warning, the farm starts shipping them in 50-pound crates. The prep cook's station is immediately overwhelmed. In data, this happens when a software vendor (like Salesforce) silently changes a column name from "Account_ID" to "Acct_Num." The extraction tool looks for the old name, finds nothing, and the entire pipeline crashes.</p>
+                        <p>The kitchen expects carrots to arrive in 5-pound bags. Overnight, without warning, the farm
+                            starts shipping them in 50-pound crates. The prep cook's station is immediately overwhelmed.
+                            In data, this happens when a software vendor (like Salesforce) silently changes a column
+                            name from "Account_ID" to "Acct_Num." The extraction tool looks for the old name, finds
+                            nothing, and the entire pipeline crashes.</p>
                     </div>
                 </div>
 
@@ -170,7 +483,11 @@
                     <div class="failure-icon">2</div>
                     <div class="failure-content">
                         <h4>Data Quality Issues (Rotten Ingredients)</h4>
-                        <p>The delivery truck arrives on time, but the meat is spoiled. If the prep cook does not check it, the customer gets sick. In data, this happens when a sales rep manually enters "$1000000" instead of "$100" into a CRM field. If the pipeline does not have "Data Testing" (automated quality checks acting as health inspectors), that million-dollar error flows straight into the CEO's revenue dashboard.</p>
+                        <p>The delivery truck arrives on time, but the meat is spoiled. If the prep cook does not check
+                            it, the customer gets sick. In data, this happens when a sales rep manually enters
+                            "$1000000" instead of "$100" into a CRM field. If the pipeline does not have "Data Testing"
+                            (automated quality checks acting as health inspectors), that million-dollar error flows
+                            straight into the CEO's revenue dashboard.</p>
                     </div>
                 </div>
 
@@ -178,31 +495,64 @@
                     <div class="failure-icon">3</div>
                     <div class="failure-content">
                         <h4>Volume Spikes (The Dinner Rush)</h4>
-                        <p>The kitchen is staffed to handle 100 orders an hour. A tour bus pulls up, and suddenly there are 400 orders. The servers crash. In data, this happens during Black Friday or a viral marketing event. The sheer volume of incoming data exceeds the memory limits of the transformation servers, and the pipeline stalls out trying to process the backlog.</p>
+                        <p>The kitchen is staffed to handle 100 orders an hour. A tour bus pulls up, and suddenly there
+                            are 400 orders. The servers crash. In data, this happens during Black Friday or a viral
+                            marketing event. The sheer volume of incoming data exceeds the memory limits of the
+                            transformation servers, and the pipeline stalls out trying to process the backlog.</p>
                     </div>
                 </div>
 
                 <div class="callout callout-green">
-                    "Data engineering is the practice of defending the kitchen against the chaos of the outside world. The goal is not just to cook the meal, but to ensure the customer never knows how messy the raw ingredients were."
+                    "Data engineering is the practice of defending the kitchen against the chaos of the outside world.
+                    The goal is not just to cook the meal, but to ensure the customer never knows how messy the raw
+                    ingredients were."
                 </div>
 
                 <h2>How to Be a Better Customer</h2>
 
-                <p>Business stakeholders are the customers sitting in the dining room. You do not need to know how to chop the onions, but understanding how the kitchen works makes you a better patron. To work effectively with your data team:</p>
+                <p>Business stakeholders are the customers sitting in the dining room. You do not need to know how to
+                    chop the onions, but understanding how the kitchen works makes you a better patron. To work
+                    effectively with your data team:</p>
 
                 <ol>
-                    <li><strong>Define the recipe before ordering.</strong> Do not just ask for "a dashboard showing user engagement." Define exactly what an active user is. The kitchen cannot cook a dish if you will not tell them the ingredients.</li>
-                    <li><strong>Accept the overnight soup.</strong> Unless a machine is using the data to make automated sub-second decisions (like fraud detection), you almost certainly do not need real-time streaming data. Daily batch processing is usually sufficient and infinitely more stable.</li>
-                    <li><strong>Do not change the order mid-cooking.</strong> If the data team has spent two weeks building the transformations to join three datasets, asking to "just swap out one of the sources" requires throwing out the prepped ingredients and starting over.</li>
+                    <li><strong>Define the recipe before ordering.</strong> Do not just ask for "a dashboard showing
+                        user engagement." Define exactly what an active user is. The kitchen cannot cook a dish if you
+                        will not tell them the ingredients.</li>
+                    <li><strong>Accept the overnight soup.</strong> Unless a machine is using the data to make automated
+                        sub-second decisions (like fraud detection), you almost certainly do not need real-time
+                        streaming data. Daily batch processing is usually sufficient and infinitely more stable.</li>
+                    <li><strong>Do not change the order mid-cooking.</strong> If the data team has spent two weeks
+                        building the transformations to join three datasets, asking to "just swap out one of the
+                        sources" requires throwing out the prepped ingredients and starting over.</li>
                 </ol>
 
                 <h2>The Bottom Line</h2>
 
-                <p>A data pipeline is a complex, orchestrated manufacturing process. It requires rigorous hygiene, precise timing, and constant maintenance to keep the chaos of raw data from reaching the pristine environment of a business dashboard.</p>
+                <p>A data pipeline is a complex, orchestrated manufacturing process. It requires rigorous hygiene,
+                    precise timing, and constant maintenance to keep the chaos of raw data from reaching the pristine
+                    environment of a business dashboard.</p>
 
-                <p>The next time you open a BI tool and see a perfectly formatted chart, take a moment to appreciate the kitchen in the background. The ingredients were messy, the suppliers were uncooperative, and the timing was tight. But the dish arrived clean, and that is exactly what a good pipeline is designed to do.</p>
+                <p>The next time you open a BI tool and see a perfectly formatted chart, take a moment to appreciate the
+                    kitchen in the background. The ingredients were messy, the suppliers were uncooperative, and the
+                    timing was tight. But the dish arrived clean, and that is exactly what a good pipeline is designed
+                    to do.</p>
 
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 
@@ -210,10 +560,12 @@
         <div class="container" style="text-align:center;">
             <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
-            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+                rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>

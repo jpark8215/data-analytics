@@ -1,65 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Dashboard Isn't Solving Problems. Here's What Does. | Data-Informed Insights</title>
-    <meta name="description" content="Most dashboards report what happened. Almost none of them solve anything. The difference between reporting and actual problem-solving with data is wider than most organizations realize.">
+    <meta name="description"
+        content="Most dashboards report what happened. Almost none of them solve anything. The difference between reporting and actual problem-solving with data is wider than most organizations realize.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/variables.css">
     <link rel="stylesheet" href="../assets/css/blog.css">
     <style>
-        .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-        .post-header { text-align: center; margin-bottom: var(--space-l); }
-        .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-        .post-content h2 { margin-top: var(--space-l); font-size: 1.875rem; }
-        .post-content p { margin-bottom: var(--space-m); }
-        .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 1.5rem; }
-        .post-content li { margin-bottom: 0.5rem; }
-        .post-image { width: 100%; height: auto; max-height: 440px; object-fit: cover; border-radius: var(--radius-l); margin-bottom: var(--space-l); box-shadow: var(--shadow-lg); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-m); color: var(--clr-text-muted); font-weight: 500; }
-        .back-link:hover { color: var(--clr-primary); }
-        .callout { border-left: 4px solid var(--clr-primary); background: rgba(59,130,246,0.08); border-radius: 0 var(--radius-m) var(--radius-m) 0; padding: var(--space-m); margin: var(--space-l) 0; font-style: italic; color: var(--clr-text-main); font-size: 1.2rem; line-height: 1.7; }
-        .callout-warning { border-left-color: #f59e0b; background: rgba(245,158,11,0.08); }
-        .callout-accent { border-left-color: var(--clr-accent); background: rgba(139,92,246,0.08); }
-        .callout-green { border-left-color: #10b981; background: rgba(16,185,129,0.08); }
-        .callout-danger { border-left-color: #ef4444; background: rgba(239,68,68,0.08); }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-m); margin: var(--space-l) 0; }
-        .stat-card { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); border-radius: var(--radius-m); padding: var(--space-m); text-align: center; }
-        .stat-card .stat-number { font-size: 2.25rem; font-weight: 800; color: var(--clr-primary); font-family: 'Outfit', sans-serif; line-height: 1.1; }
-        .stat-card .stat-label { font-size: 0.875rem; color: var(--clr-text-muted); margin-top: 0.35rem; }
-        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-m); margin: var(--space-l) 0; }
-        @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
-        .compare-card { border-radius: var(--radius-m); padding: var(--space-m); }
-        .compare-card h4 { margin: 0 0 0.75rem; font-size: 1rem; }
-        .compare-card ul { margin: 0; padding-left: 1.25rem; font-size: 0.95rem; }
-        .compare-card li { margin-bottom: 0.4rem; color: var(--clr-text-muted); }
-        .card-grey { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); }
-        .card-grey h4 { color: #94a3b8; }
-        .card-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
-        .card-green h4 { color: var(--clr-secondary); }
-        .step-block { display: flex; gap: 1.25rem; align-items: flex-start; padding: var(--space-m) 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .step-block:last-child { border-bottom: none; }
-        .step-num { flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1rem; margin-top: 0.1rem; }
-        .step-num-blue { background: rgba(59,130,246,0.2); color: var(--clr-primary); }
-        .step-num-green { background: rgba(16,185,129,0.2); color: var(--clr-secondary); }
-        .step-num-purple { background: rgba(139,92,246,0.2); color: var(--clr-accent); }
-        .step-num-amber { background: rgba(245,158,11,0.2); color: #fbbf24; }
-        .step-num-red { background: rgba(239,68,68,0.2); color: #f87171; }
-        .step-block h4 { margin: 0 0 0.35rem; font-size: 1.05rem; }
-        .step-block p { margin: 0; font-size: 0.97rem; color: var(--clr-text-muted); }
-        .highlight-box { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
-        .highlight-box h4 { color: var(--clr-accent); margin: 0 0 0.5rem; }
-        .analogy-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-m); padding: var(--space-m); margin: var(--space-m) 0; }
-        .analogy-box strong.label { color: var(--clr-secondary); display: block; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.06em; }
-        .question-list { list-style: none; padding: 0; }
-        .question-list li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .question-list li:last-child { border-bottom: none; }
-        .q-icon { flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(59,130,246,0.2); color: var(--clr-primary); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; margin-top: 0.15rem; }
+        .post-container {
+            max-width: var(--content-width);
+            margin: var(--space-xl) auto;
+            padding: 0 var(--space-m);
+        }
+
+        .post-header {
+            text-align: center;
+            margin-bottom: var(--space-l);
+        }
+
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--clr-text-main);
+        }
+
+        .post-content h2 {
+            margin-top: var(--space-l);
+            font-size: 1.875rem;
+        }
+
+        .post-content p {
+            margin-bottom: var(--space-m);
+        }
+
+        .post-content ul,
+        .post-content ol {
+            margin-bottom: var(--space-m);
+            padding-left: 1.5rem;
+        }
+
+        .post-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-height: 440px;
+            object-fit: cover;
+            border-radius: var(--radius-l);
+            margin-bottom: var(--space-l);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: var(--space-m);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--clr-primary);
+        }
+
+        .callout {
+            border-left: 4px solid var(--clr-primary);
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 0 var(--radius-m) var(--radius-m) 0;
+            padding: var(--space-m);
+            margin: var(--space-l) 0;
+            font-style: italic;
+            color: var(--clr-text-main);
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        .callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-accent {
+            border-left-color: var(--clr-accent);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .callout-green {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .callout-danger {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        .stat-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--clr-primary);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            color: var(--clr-text-muted);
+            margin-top: 0.35rem;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-m);
+            margin: var(--space-l) 0;
+        }
+
+        @media (max-width: 640px) {
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .compare-card {
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+        }
+
+        .compare-card h4 {
+            margin: 0 0 0.75rem;
+            font-size: 1rem;
+        }
+
+        .compare-card ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            font-size: 0.95rem;
+        }
+
+        .compare-card li {
+            margin-bottom: 0.4rem;
+            color: var(--clr-text-muted);
+        }
+
+        .card-grey {
+            background: rgba(100, 116, 139, 0.1);
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .card-grey h4 {
+            color: #94a3b8;
+        }
+
+        .card-green {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .card-green h4 {
+            color: var(--clr-secondary);
+        }
+
+        .step-block {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            padding: var(--space-m) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .step-block:last-child {
+            border-bottom: none;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            margin-top: 0.1rem;
+        }
+
+        .step-num-blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--clr-primary);
+        }
+
+        .step-num-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--clr-secondary);
+        }
+
+        .step-num-purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--clr-accent);
+        }
+
+        .step-num-amber {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .step-num-red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .step-block h4 {
+            margin: 0 0 0.35rem;
+            font-size: 1.05rem;
+        }
+
+        .step-block p {
+            margin: 0;
+            font-size: 0.97rem;
+            color: var(--clr-text-muted);
+        }
+
+        .highlight-box {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--clr-accent);
+            margin: 0 0 0.5rem;
+        }
+
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-m);
+            padding: var(--space-m);
+            margin: var(--space-m) 0;
+        }
+
+        .analogy-box strong.label {
+            color: var(--clr-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .question-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .question-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .question-list li:last-child {
+            border-bottom: none;
+        }
+
+        .q-icon {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--clr-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }
     </style>
+
+    <!-- SEO & JSON-LD Schema injected by script -->
+    <meta property="og:title" content="Your Dashboard Isn't Solving Problems. Here's What Does.">
+    <meta property="og:description"
+        content="Most dashboards report what happened. Almost none of them solve anything. The difference between reporting and actual problem-solving with data is wider than most organizations realize.">
+    <meta property="og:image"
+        content="https://jpark8215.github.io/data-analytics/assets/images/dashboard_vs_problem_solving.png">
+    <meta property="og:url"
+        content="https://jpark8215.github.io/data-analytics/blogs/dashboard-vs-problem-solving.html">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/dashboard-vs-problem-solving.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Your Dashboard Isn't Solving Problems. Here's What Does.",
+      "description": "Most dashboards report what happened. Almost none of them solve anything. The difference between reporting and actual problem-solving with data is wider than most organizations realize.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/dashboard_vs_problem_solving.png",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
 </head>
+
 <body>
     <header class="site-header glass">
         <div class="container nav-container">
@@ -70,7 +350,8 @@
                     <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
                 </ul>
             </nav>
-            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/developerjp/" target="_blank" class="btn btn-outline"
+                style="padding:0.5rem 1rem;font-size:0.875rem;">LinkedIn</a>
         </div>
     </header>
 
@@ -79,10 +360,13 @@
 
         <article>
             <header class="post-header">
-                <span class="blog-card-tag" style="background:rgba(139,92,246,0.2);color:var(--clr-accent);">Strategic</span>
-                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Your Dashboard Isn't Solving Problems. Here's What Does.</h1>
+                <span class="blog-card-tag"
+                    style="background:rgba(139,92,246,0.2);color:var(--clr-accent);">Strategic</span>
+                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Your Dashboard Isn't Solving Problems.
+                    Here's What Does.</h1>
                 <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-                    The difference between reporting and actual problem-solving with data is wider than most organizations realize.
+                    The difference between reporting and actual problem-solving with data is wider than most
+                    organizations realize.
                 </p>
             </header>
 
@@ -92,50 +376,81 @@
 
             <div class="post-content">
 
-                <p>The meeting room has a screen. On the screen is a dashboard. It has 22 metrics. Color-coded RAG status. Trend lines. Gauge charts. A filter for date range and region. It took a team six weeks to build and costs a not-insignificant sum each year to maintain.</p>
+                <p>The meeting room has a screen. On the screen is a dashboard. It has 22 metrics. Color-coded RAG
+                    status. Trend lines. Gauge charts. A filter for date range and region. It took a team six weeks to
+                    build and costs a not-insignificant sum each year to maintain.</p>
 
                 <p>Nobody in the room can say what problem it solved last quarter.</p>
 
-                <p>This scenario is not unusual. It is the norm. Organizations worldwide have invested substantially in business intelligence platforms, dashboards, and real-time reporting infrastructure. The investment is real. The problem-solving impact is frequently unclear, unmeasured, or simply absent.</p>
+                <p>This scenario is not unusual. It is the norm. Organizations worldwide have invested substantially in
+                    business intelligence platforms, dashboards, and real-time reporting infrastructure. The investment
+                    is real. The problem-solving impact is frequently unclear, unmeasured, or simply absent.</p>
 
-                <p>The reason is structural, not technical. Reporting and problem-solving are fundamentally different activities. Dashboards are built for one. Organizations need both. Understanding the distinction is one of the highest-leverage things a leader or analyst can do to increase the actual business value of their data investment.</p>
+                <p>The reason is structural, not technical. Reporting and problem-solving are fundamentally different
+                    activities. Dashboards are built for one. Organizations need both. Understanding the distinction is
+                    one of the highest-leverage things a leader or analyst can do to increase the actual business value
+                    of their data investment.</p>
 
                 <div class="stat-grid">
                     <div class="stat-card">
                         <div class="stat-number">80%</div>
-                        <div class="stat-label">of analytics projects fail to deliver measurable business value, primarily because they focus on reporting rather than decision support (Gartner, "Predicts 2020: Data and Analytics Strategy")</div>
+                        <div class="stat-label">of analytics projects fail to deliver measurable business value,
+                            primarily because they focus on reporting rather than decision support (Gartner, "Predicts
+                            2020: Data and Analytics Strategy")</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">73%</div>
-                        <div class="stat-label">of enterprise data goes unused for analytics entirely, let alone problem-solving, according to Forrester Research (2019)</div>
+                        <div class="stat-label">of enterprise data goes unused for analytics entirely, let alone
+                            problem-solving, according to Forrester Research (2019)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number">Less than 5%</div>
-                        <div class="stat-label">of organizations use data to predictively identify and solve problems before they escalate, vs. simply reporting after the fact (IBM Institute for Business Value, 2021)</div>
+                        <div class="stat-label">of organizations use data to predictively identify and solve problems
+                            before they escalate, vs. simply reporting after the fact (IBM Institute for Business Value,
+                            2021)</div>
                     </div>
                 </div>
 
                 <h2>What Reporting Actually Is</h2>
 
-                <p>Reporting is the organized presentation of what happened. It answers the question: "What is the current state of this metric?" A dashboard showing monthly revenue, weekly active users, customer satisfaction scores by region, or support ticket volume is a reporting artifact. It tells you where you are relative to where you were.</p>
+                <p>Reporting is the organized presentation of what happened. It answers the question: "What is the
+                    current state of this metric?" A dashboard showing monthly revenue, weekly active users, customer
+                    satisfaction scores by region, or support ticket volume is a reporting artifact. It tells you where
+                    you are relative to where you were.</p>
 
-                <p>Reporting is genuinely valuable. Organizations that lack basic reporting are flying blind, making decisions without any systematic observation of reality. The foundational work of establishing what the numbers are, consistently and reliably, is a prerequisite for everything that follows.</p>
+                <p>Reporting is genuinely valuable. Organizations that lack basic reporting are flying blind, making
+                    decisions without any systematic observation of reality. The foundational work of establishing what
+                    the numbers are, consistently and reliably, is a prerequisite for everything that follows.</p>
 
-                <p>But reporting has a ceiling. It is a rearview mirror. It shows you what has already happened. It does not explain why it happened. It does not identify which of the visible metrics are actually connected to business outcomes. And it does not tell you what to do next.</p>
+                <p>But reporting has a ceiling. It is a rearview mirror. It shows you what has already happened. It does
+                    not explain why it happened. It does not identify which of the visible metrics are actually
+                    connected to business outcomes. And it does not tell you what to do next.</p>
 
                 <div class="callout callout-warning">
-                    A dashboard that shows revenue declining is not solving a problem. It is naming one. The distance between naming a problem and solving it is where most organizations get stuck.
+                    A dashboard that shows revenue declining is not solving a problem. It is naming one. The distance
+                    between naming a problem and solving it is where most organizations get stuck.
                 </div>
 
-                <p>Research by Thomas H. Davenport, published in his landmark book <em>Competing on Analytics</em> (Harvard Business School Press, 2007), distinguished three levels of analytical maturity in organizations: descriptive (what happened), predictive (what will happen), and prescriptive (what should we do). The overwhelming majority of organizational dashboards operate at the descriptive level. They report. They do not predict, recommend, or drive action.</p>
+                <p>Research by Thomas H. Davenport, published in his landmark book <em>Competing on Analytics</em>
+                    (Harvard Business School Press, 2007), distinguished three levels of analytical maturity in
+                    organizations: descriptive (what happened), predictive (what will happen), and prescriptive (what
+                    should we do). The overwhelming majority of organizational dashboards operate at the descriptive
+                    level. They report. They do not predict, recommend, or drive action.</p>
 
                 <h2>The Gap Between Seeing and Solving</h2>
 
-                <p>The failure mode in most organizations is not a lack of data visibility. It is an assumption that visibility is the same as insight, and that insight automatically produces action. Neither is true.</p>
+                <p>The failure mode in most organizations is not a lack of data visibility. It is an assumption that
+                    visibility is the same as insight, and that insight automatically produces action. Neither is true.
+                </p>
 
-                <p>Researchers at MIT's Sloan Center for Information Systems Research documented this gap in a 2017 study of 400 organizations with significant BI investments. The study found that organizations with more dashboards and reporting tools did not make decisions faster or with higher quality than organizations with fewer. What distinguished high-performing organizations was not the volume of data they could see, but the quality of the questions they asked about it.</p>
+                <p>Researchers at MIT's Sloan Center for Information Systems Research documented this gap in a 2017
+                    study of 400 organizations with significant BI investments. The study found that organizations with
+                    more dashboards and reporting tools did not make decisions faster or with higher quality than
+                    organizations with fewer. What distinguished high-performing organizations was not the volume of
+                    data they could see, but the quality of the questions they asked about it.</p>
 
-                <p>The distinction matters practically. Consider two organizations, both of which observe a 12% drop in customer retention in their dashboard:</p>
+                <p>The distinction matters practically. Consider two organizations, both of which observe a 12% drop in
+                    customer retention in their dashboard:</p>
 
                 <div class="compare-grid">
                     <div class="compare-card card-grey">
@@ -160,32 +475,62 @@
                     </div>
                 </div>
 
-                <p>The first response produces more reporting. The second produces a solved problem. The difference is not access to more data. It is a disciplined process for moving from observation to action.</p>
+                <p>The first response produces more reporting. The second produces a solved problem. The difference is
+                    not access to more data. It is a disciplined process for moving from observation to action.</p>
 
                 <h2>Why Dashboards Drift Away From Problem-Solving</h2>
 
-                <p>Dashboards do not start out as passive reporting artifacts. They are usually built in response to a genuine problem: a business question someone needed to answer, a decision that required visibility into a specific metric. But once built, they tend to accumulate. New metrics get added when new questions are asked. Old metrics stay because removing them triggers political friction. The dashboard that started as a focused decision-support tool becomes an all-things-to-all-people reporting portal.</p>
+                <p>Dashboards do not start out as passive reporting artifacts. They are usually built in response to a
+                    genuine problem: a business question someone needed to answer, a decision that required visibility
+                    into a specific metric. But once built, they tend to accumulate. New metrics get added when new
+                    questions are asked. Old metrics stay because removing them triggers political friction. The
+                    dashboard that started as a focused decision-support tool becomes an all-things-to-all-people
+                    reporting portal.</p>
 
-                <p>Stephen Few, in <em>Information Dashboard Design</em> (O'Reilly, 2006), documented this pattern as "dashboard sprawl" and identified it as the primary mechanism by which dashboard investments lose their decision-driving value. His research on dashboard design showed that the average number of metrics on an enterprise dashboard doubled between the first and third year of deployment, while the number of those metrics that stakeholders could meaningfully act on stayed roughly constant. More visibility, same actionability.</p>
+                <p>Stephen Few, in <em>Information Dashboard Design</em> (O'Reilly, 2006), documented this pattern as
+                    "dashboard sprawl" and identified it as the primary mechanism by which dashboard investments lose
+                    their decision-driving value. His research on dashboard design showed that the average number of
+                    metrics on an enterprise dashboard doubled between the first and third year of deployment, while the
+                    number of those metrics that stakeholders could meaningfully act on stayed roughly constant. More
+                    visibility, same actionability.</p>
 
                 <div class="analogy-box">
                     <strong class="label">The Analogy</strong>
-                    A weather station with 400 sensors measuring temperature, humidity, wind speed, barometric pressure, UV index, and soil moisture across 50 locations is not the same as a weather forecast. The sensors report. The forecast, built by combining specific sensor readings with physical models and local context, tells you whether to carry an umbrella. Organizations confuse the sensor network for the forecast and wonder why the rain keeps surprising them.
+                    A weather station with 400 sensors measuring temperature, humidity, wind speed, barometric pressure,
+                    UV index, and soil moisture across 50 locations is not the same as a weather forecast. The sensors
+                    report. The forecast, built by combining specific sensor readings with physical models and local
+                    context, tells you whether to carry an umbrella. Organizations confuse the sensor network for the
+                    forecast and wonder why the rain keeps surprising them.
                 </div>
 
-                <p>A 2019 Forrester survey of 500 business intelligence decision-makers found that 72% reported their organizations had more dashboards than they could reasonably maintain. The same survey found that only 31% of existing dashboards were regularly consulted by the decision-makers they were built for. The gap between dashboards built and dashboards used is a measurable proxy for the gap between reporting investment and actual problem-solving value.</p>
+                <p>A 2019 Forrester survey of 500 business intelligence decision-makers found that 72% reported their
+                    organizations had more dashboards than they could reasonably maintain. The same survey found that
+                    only 31% of existing dashboards were regularly consulted by the decision-makers they were built for.
+                    The gap between dashboards built and dashboards used is a measurable proxy for the gap between
+                    reporting investment and actual problem-solving value.</p>
 
                 <h2>What Actual Data Problem-Solving Looks Like</h2>
 
-                <p>Problem-solving with data is a structured process. It has a specific starting point, a defined endpoint, and a series of analytical steps in between. It is categorically different from ongoing monitoring, and it produces categorically different outputs.</p>
+                <p>Problem-solving with data is a structured process. It has a specific starting point, a defined
+                    endpoint, and a series of analytical steps in between. It is categorically different from ongoing
+                    monitoring, and it produces categorically different outputs.</p>
 
-                <p>The structured problem-solving process that consistently produces business impact, documented across multiple studies of high-performing analytics organizations (Davenport and Harris, 2007; Kohavi et al., <em>Trustworthy Online Controlled Experiments</em>, Cambridge University Press, 2020; Provost and Fawcett, <em>Data Science for Business</em>, O'Reilly, 2013), follows a consistent structure:</p>
+                <p>The structured problem-solving process that consistently produces business impact, documented across
+                    multiple studies of high-performing analytics organizations (Davenport and Harris, 2007; Kohavi et
+                    al., <em>Trustworthy Online Controlled Experiments</em>, Cambridge University Press, 2020; Provost
+                    and Fawcett, <em>Data Science for Business</em>, O'Reilly, 2013), follows a consistent structure:
+                </p>
 
                 <div class="step-block">
                     <div class="step-num step-num-blue">1</div>
                     <div>
                         <h4>Start With a Decision, Not a Metric</h4>
-                        <p>Every effective data problem-solving effort begins with a decision that someone needs to make. Not "let's see what the data shows," but "we need to decide whether to change our pricing structure for the mid-market segment by Q3." The decision defines what data is relevant, what level of confidence is needed, and what the analysis is actually for. Without a named decision at the center, analytical work has no stopping condition and no success criterion.</p>
+                        <p>Every effective data problem-solving effort begins with a decision that someone needs to
+                            make. Not "let's see what the data shows," but "we need to decide whether to change our
+                            pricing structure for the mid-market segment by Q3." The decision defines what data is
+                            relevant, what level of confidence is needed, and what the analysis is actually for. Without
+                            a named decision at the center, analytical work has no stopping condition and no success
+                            criterion.</p>
                     </div>
                 </div>
 
@@ -193,7 +538,15 @@
                     <div class="step-num step-num-green">2</div>
                     <div>
                         <h4>Form a Specific, Falsifiable Hypothesis</h4>
-                        <p>A hypothesis is not a hope. It is a testable prediction: "We believe mid-market churn in months 3 to 6 is driven by onboarding friction, not price sensitivity, because support tickets spike in weeks 4 and 5 of the customer lifecycle." This hypothesis names a specific mechanism, makes a falsifiable prediction, and identifies the data that would confirm or refute it. The scientific method has been applied to business problem-solving precisely because it forces specificity that vague "data exploration" does not. Research by Kohavi and colleagues at Microsoft, Amazon, and LinkedIn found that A/B tests with pre-registered hypotheses produced actionable results at three times the rate of unstructured analytical explorations.</p>
+                        <p>A hypothesis is not a hope. It is a testable prediction: "We believe mid-market churn in
+                            months 3 to 6 is driven by onboarding friction, not price sensitivity, because support
+                            tickets spike in weeks 4 and 5 of the customer lifecycle." This hypothesis names a specific
+                            mechanism, makes a falsifiable prediction, and identifies the data that would confirm or
+                            refute it. The scientific method has been applied to business problem-solving precisely
+                            because it forces specificity that vague "data exploration" does not. Research by Kohavi and
+                            colleagues at Microsoft, Amazon, and LinkedIn found that A/B tests with pre-registered
+                            hypotheses produced actionable results at three times the rate of unstructured analytical
+                            explorations.</p>
                     </div>
                 </div>
 
@@ -201,7 +554,14 @@
                     <div class="step-num step-num-purple">3</div>
                     <div>
                         <h4>Identify the Minimum Data Needed to Test the Hypothesis</h4>
-                        <p>This step runs counter to most organizational instincts. The impulse is to gather all available data before drawing conclusions. The problem-solving approach asks: what is the smallest dataset that would definitively confirm or refute the hypothesis? Constraining the data requirement focuses the analysis, reduces cleaning time, and forces analytical clarity. It also guards against the well-documented risk that expanding data inputs beyond the relevant threshold degrades analytical accuracy rather than improving it, a phenomenon detailed by Guyon and Elisseeff in the <em>Journal of Machine Learning Research</em> (2003).</p>
+                        <p>This step runs counter to most organizational instincts. The impulse is to gather all
+                            available data before drawing conclusions. The problem-solving approach asks: what is the
+                            smallest dataset that would definitively confirm or refute the hypothesis? Constraining the
+                            data requirement focuses the analysis, reduces cleaning time, and forces analytical clarity.
+                            It also guards against the well-documented risk that expanding data inputs beyond the
+                            relevant threshold degrades analytical accuracy rather than improving it, a phenomenon
+                            detailed by Guyon and Elisseeff in the <em>Journal of Machine Learning Research</em> (2003).
+                        </p>
                     </div>
                 </div>
 
@@ -209,7 +569,12 @@
                     <div class="step-num step-num-amber">4</div>
                     <div>
                         <h4>Test and Interpret Against the Hypothesis, Not in General</h4>
-                        <p>The analysis is evaluated against the specific hypothesis, not against everything the data might show. This does not mean ignoring unexpected findings. It means treating unexpected findings as new hypotheses to be tested separately, not as conclusions to be acted on immediately. Organizations that skip this discipline regularly act on spurious correlations or anomalies that would have been resolved by a second round of testing. The result is a cycle of reactive interventions that address noise rather than signal.</p>
+                        <p>The analysis is evaluated against the specific hypothesis, not against everything the data
+                            might show. This does not mean ignoring unexpected findings. It means treating unexpected
+                            findings as new hypotheses to be tested separately, not as conclusions to be acted on
+                            immediately. Organizations that skip this discipline regularly act on spurious correlations
+                            or anomalies that would have been resolved by a second round of testing. The result is a
+                            cycle of reactive interventions that address noise rather than signal.</p>
                     </div>
                 </div>
 
@@ -217,90 +582,172 @@
                     <div class="step-num step-num-red">5</div>
                     <div>
                         <h4>Connect the Finding to a Specific Action With a Measurable Expected Outcome</h4>
-                        <p>The final step is the one most often skipped. An analysis that ends with a finding and no action recommendation is a report, not a problem-solving output. The finding must be translated into a specific intervention ("redesign the onboarding flow for weeks 4 to 5") with a specific measurable expected outcome ("reduce support ticket volume by 25% and increase month-6 retention by 8 percentage points") and a timeline for measurement. Without this step, there is no way to know whether the problem was actually solved, and no learning that improves the next cycle of analysis.</p>
+                        <p>The final step is the one most often skipped. An analysis that ends with a finding and no
+                            action recommendation is a report, not a problem-solving output. The finding must be
+                            translated into a specific intervention ("redesign the onboarding flow for weeks 4 to 5")
+                            with a specific measurable expected outcome ("reduce support ticket volume by 25% and
+                            increase month-6 retention by 8 percentage points") and a timeline for measurement. Without
+                            this step, there is no way to know whether the problem was actually solved, and no learning
+                            that improves the next cycle of analysis.</p>
                     </div>
                 </div>
 
                 <div class="callout callout-accent">
-                    "Analytics that does not end in a decision is a hobby. Analytics that ends in a decision without a measurable expected outcome is an opinion. Problem-solving with data ends with a specific action, a specific prediction, and a specific measurement plan."
+                    "Analytics that does not end in a decision is a hobby. Analytics that ends in a decision without a
+                    measurable expected outcome is an opinion. Problem-solving with data ends with a specific action, a
+                    specific prediction, and a specific measurement plan."
                 </div>
 
                 <h2>The Research on What Actually Drives Analytical Business Value</h2>
 
-                <p>The question of what makes analytical investments pay off has been studied extensively. The findings consistently point away from reporting infrastructure and toward problem-solving discipline.</p>
+                <p>The question of what makes analytical investments pay off has been studied extensively. The findings
+                    consistently point away from reporting infrastructure and toward problem-solving discipline.</p>
 
-                <p>A landmark study by Erik Brynjolfsson and Lorin Hitt at MIT and Wharton (2011, <em>Management Science</em>) analyzed 179 large public US companies over a five-year period. Companies that adopted data-driven decision-making practices, not just data infrastructure, had output and productivity 5 to 6 percent higher than their industry peers after controlling for other factors. The study explicitly distinguished between firms that had data systems and firms that used those systems to make different decisions. Only the latter showed measurable productivity and revenue advantages.</p>
+                <p>A landmark study by Erik Brynjolfsson and Lorin Hitt at MIT and Wharton (2011, <em>Management
+                        Science</em>) analyzed 179 large public US companies over a five-year period. Companies that
+                    adopted data-driven decision-making practices, not just data infrastructure, had output and
+                    productivity 5 to 6 percent higher than their industry peers after controlling for other factors.
+                    The study explicitly distinguished between firms that had data systems and firms that used those
+                    systems to make different decisions. Only the latter showed measurable productivity and revenue
+                    advantages.</p>
 
-                <p>A 2020 McKinsey Global Survey of 1,000 executives found that organizations describing themselves as "strong analytical organizations" were twice as likely to be in the top quartile of financial performance in their sector. But when McKinsey's researchers examined what those organizations actually did differently, the gap was not in dashboard sophistication. It was in what they called "analytical culture": the habit of starting with a problem definition before reaching for data, testing hypotheses before drawing conclusions, and measuring outcomes after acting on findings.</p>
+                <p>A 2020 McKinsey Global Survey of 1,000 executives found that organizations describing themselves as
+                    "strong analytical organizations" were twice as likely to be in the top quartile of financial
+                    performance in their sector. But when McKinsey's researchers examined what those organizations
+                    actually did differently, the gap was not in dashboard sophistication. It was in what they called
+                    "analytical culture": the habit of starting with a problem definition before reaching for data,
+                    testing hypotheses before drawing conclusions, and measuring outcomes after acting on findings.</p>
 
                 <div class="highlight-box">
                     <h4>The Three Questions That Separate Reporting from Problem-Solving</h4>
-                    <p style="margin:0 0 0.75rem;">Before any analytical project begins, organizations that consistently generate business value from data answer these three questions explicitly:</p>
+                    <p style="margin:0 0 0.75rem;">Before any analytical project begins, organizations that consistently
+                        generate business value from data answer these three questions explicitly:</p>
                     <ul style="margin:0;padding-left:1.25rem;">
-                        <li><strong>What decision will this analysis inform?</strong> If the answer is "we just want visibility," the project is a reporting project, not a problem-solving one.</li>
-                        <li><strong>What would we do differently if the finding goes in each possible direction?</strong> If both possible findings lead to the same action, the analysis adds no value.</li>
-                        <li><strong>How will we know if the action we take actually solved the problem?</strong> If there is no measurement plan, the project ends at a finding, not a solution.</li>
+                        <li><strong>What decision will this analysis inform?</strong> If the answer is "we just want
+                            visibility," the project is a reporting project, not a problem-solving one.</li>
+                        <li><strong>What would we do differently if the finding goes in each possible
+                                direction?</strong> If both possible findings lead to the same action, the analysis adds
+                            no value.</li>
+                        <li><strong>How will we know if the action we take actually solved the problem?</strong> If
+                            there is no measurement plan, the project ends at a finding, not a solution.</li>
                     </ul>
                 </div>
 
                 <h2>When Dashboards Do Work</h2>
 
-                <p>This post is not an argument against dashboards. Dashboards serve a real and important function. They are the right tool when the goal is ongoing monitoring of a stable, well-understood set of metrics that are directly connected to decisions that recur on a regular cadence.</p>
+                <p>This post is not an argument against dashboards. Dashboards serve a real and important function. They
+                    are the right tool when the goal is ongoing monitoring of a stable, well-understood set of metrics
+                    that are directly connected to decisions that recur on a regular cadence.</p>
 
                 <p>A dashboard works well when:</p>
 
                 <ul>
-                    <li>Every metric on it is connected to a specific decision that someone is responsible for making</li>
+                    <li>Every metric on it is connected to a specific decision that someone is responsible for making
+                    </li>
                     <li>The viewer knows what action each metric triggers when it crosses a threshold</li>
                     <li>The dashboard is reviewed by the person with the authority to act on its findings</li>
-                    <li>It is updated and pruned regularly to remove metrics that no longer connect to active decisions</li>
+                    <li>It is updated and pruned regularly to remove metrics that no longer connect to active decisions
+                    </li>
                     <li>It is treated as a starting point for investigation, not a substitute for it</li>
                 </ul>
 
-                <p>The issue is not the dashboard format. It is the organizational habit of treating dashboard creation as the end of the analytical process rather than its beginning. A dashboard that triggers a structured problem-solving process when a metric falls outside expected bounds is doing its job. A dashboard that sits on a screen looking busy is not.</p>
+                <p>The issue is not the dashboard format. It is the organizational habit of treating dashboard creation
+                    as the end of the analytical process rather than its beginning. A dashboard that triggers a
+                    structured problem-solving process when a metric falls outside expected bounds is doing its job. A
+                    dashboard that sits on a screen looking busy is not.</p>
 
                 <div class="callout callout-green">
-                    The best dashboards are alarm systems, not museums. They notify you that something requires investigation. The investigation itself, the hypothesis, the test, the action, and the measurement, is where the actual problem-solving happens.
+                    The best dashboards are alarm systems, not museums. They notify you that something requires
+                    investigation. The investigation itself, the hypothesis, the test, the action, and the measurement,
+                    is where the actual problem-solving happens.
                 </div>
 
                 <h2>Practical Steps to Close the Gap</h2>
 
-                <p>For organizations that want to shift from reporting to problem-solving without abandoning their existing reporting infrastructure, the following steps are supported by both academic research and practitioner experience:</p>
+                <p>For organizations that want to shift from reporting to problem-solving without abandoning their
+                    existing reporting infrastructure, the following steps are supported by both academic research and
+                    practitioner experience:</p>
 
                 <ul class="question-list">
                     <li>
                         <span class="q-icon">1</span>
-                        <span><strong>Audit your dashboards against decisions.</strong> For each metric on each dashboard, ask: who is responsible for acting on this metric, and what do they do when it moves? Remove any metric that cannot be connected to a specific decision-maker and a specific action. Research by Few (2006) found that dashboards reduced to decision-relevant metrics drove 40% more stakeholder engagement than comprehensive reporting dashboards.</span>
+                        <span><strong>Audit your dashboards against decisions.</strong> For each metric on each
+                            dashboard, ask: who is responsible for acting on this metric, and what do they do when it
+                            moves? Remove any metric that cannot be connected to a specific decision-maker and a
+                            specific action. Research by Few (2006) found that dashboards reduced to decision-relevant
+                            metrics drove 40% more stakeholder engagement than comprehensive reporting
+                            dashboards.</span>
                     </li>
                     <li>
                         <span class="q-icon">2</span>
-                        <span><strong>Require a problem statement before approving analytical projects.</strong> Before any analysis begins, the requesting stakeholder should be able to complete this sentence: "We need to decide [X] by [date], and we believe data analysis will help us because [Y]." If this sentence cannot be completed, the project is not yet ready to be started.</span>
+                        <span><strong>Require a problem statement before approving analytical projects.</strong> Before
+                            any analysis begins, the requesting stakeholder should be able to complete this sentence:
+                            "We need to decide [X] by [date], and we believe data analysis will help us because [Y]." If
+                            this sentence cannot be completed, the project is not yet ready to be started.</span>
                     </li>
                     <li>
                         <span class="q-icon">3</span>
-                        <span><strong>Build a hypothesis log.</strong> For every significant business problem, maintain a written record of the hypotheses being tested, the data used to test them, the findings, and the actions taken. This log creates organizational memory, prevents the same hypotheses from being retested repeatedly, and builds the analytical culture that McKinsey identified as the primary differentiator of high-performing analytical organizations.</span>
+                        <span><strong>Build a hypothesis log.</strong> For every significant business problem, maintain
+                            a written record of the hypotheses being tested, the data used to test them, the findings,
+                            and the actions taken. This log creates organizational memory, prevents the same hypotheses
+                            from being retested repeatedly, and builds the analytical culture that McKinsey identified
+                            as the primary differentiator of high-performing analytical organizations.</span>
                     </li>
                     <li>
                         <span class="q-icon">4</span>
-                        <span><strong>Measure outcomes, not just outputs.</strong> Analysts are typically measured on the volume of reports produced, the timeliness of delivery, and the technical quality of their work. These are output measures. Outcome measures ask: did the decision informed by this analysis produce the expected result? Organizations that track outcomes create feedback loops that improve analytical quality over time. Organizations that track only outputs create incentives for producing more reports, not better decisions.</span>
+                        <span><strong>Measure outcomes, not just outputs.</strong> Analysts are typically measured on
+                            the volume of reports produced, the timeliness of delivery, and the technical quality of
+                            their work. These are output measures. Outcome measures ask: did the decision informed by
+                            this analysis produce the expected result? Organizations that track outcomes create feedback
+                            loops that improve analytical quality over time. Organizations that track only outputs
+                            create incentives for producing more reports, not better decisions.</span>
                     </li>
                     <li>
                         <span class="q-icon">5</span>
-                        <span><strong>Designate at least one analyst explicitly for problem-solving projects, not reporting maintenance.</strong> In most organizations, analysts spend the majority of their time maintaining existing reports and responding to ad-hoc data requests. Protecting a portion of analytical capacity for structured problem-solving projects, even 20%, generates disproportionate business value relative to the investment. This is the organizational equivalent of carving out time for research and development rather than spending 100% of capacity on current production.</span>
+                        <span><strong>Designate at least one analyst explicitly for problem-solving projects, not
+                                reporting maintenance.</strong> In most organizations, analysts spend the majority of
+                            their time maintaining existing reports and responding to ad-hoc data requests. Protecting a
+                            portion of analytical capacity for structured problem-solving projects, even 20%, generates
+                            disproportionate business value relative to the investment. This is the organizational
+                            equivalent of carving out time for research and development rather than spending 100% of
+                            capacity on current production.</span>
                     </li>
                 </ul>
 
                 <h2>The Bottom Line</h2>
 
-                <p>Dashboards report. They do not solve. The distinction sounds semantic until you calculate the organizational cost of 80% of analytics investments failing to produce measurable business value, and then ask why.</p>
+                <p>Dashboards report. They do not solve. The distinction sounds semantic until you calculate the
+                    organizational cost of 80% of analytics investments failing to produce measurable business value,
+                    and then ask why.</p>
 
-                <p>The answer is almost always the same: the organization invested in visibility without investing in the discipline of moving from observation to hypothesis to test to action to measurement. The dashboard shows the problem. The process solves it.</p>
+                <p>The answer is almost always the same: the organization invested in visibility without investing in
+                    the discipline of moving from observation to hypothesis to test to action to measurement. The
+                    dashboard shows the problem. The process solves it.</p>
 
-                <p>The organizations that get real value from their data do not have better dashboards. They have better questions. They start with the decision that needs to be made, form a testable hypothesis about what the data will show, test it against the minimum necessary data, and connect the finding to a specific action with a specific measurement plan.</p>
+                <p>The organizations that get real value from their data do not have better dashboards. They have better
+                    questions. They start with the decision that needs to be made, form a testable hypothesis about what
+                    the data will show, test it against the minimum necessary data, and connect the finding to a
+                    specific action with a specific measurement plan.</p>
 
-                <p>That process does not require a 22-metric dashboard. It requires a clear problem and the discipline to work through it systematically. The dashboard, if it is well-built, is just the starting gun.</p>
+                <p>That process does not require a 22-metric dashboard. It requires a clear problem and the discipline
+                    to work through it systematically. The dashboard, if it is well-built, is just the starting gun.</p>
 
             </div>
+
+            <!-- Author Bio Section -->
+            <div
+                style="margin-top: 4rem; padding: 2rem; background: rgba(59,130,246,0.05); border-radius: var(--radius-l); border-left: 4px solid var(--clr-primary);">
+                <h3 style="margin-top: 0; font-size: 1.5rem; color: var(--clr-text-main);">About the Author</h3>
+                <p style="font-size: 1.1rem; color: var(--clr-text-muted); line-height: 1.6; margin-bottom: 1rem;">
+                    <strong>Jieun Park</strong> is an AI Engineer & Director of Business Intelligence. With extensive
+                    experience in transforming raw data into actionable strategic insights, Jieun Park writes about the
+                    intersection of data architecture, analytics, and business impact.
+                </p>
+                <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                    style="display: inline-block; padding: 0.5rem 1.2rem; background: var(--clr-primary); color: white; text-decoration: none; border-radius: var(--radius-m); font-weight: 500;">Connect
+                    on LinkedIn</a>
+            </div>
+
         </article>
     </main>
 
@@ -308,10 +755,12 @@
         <div class="container" style="text-align:center;">
             <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
             <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
-            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+                rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>
