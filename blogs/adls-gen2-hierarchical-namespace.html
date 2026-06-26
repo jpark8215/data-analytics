@@ -293,9 +293,13 @@
                     how many files it contains.</p>
 
                 <div class="citation-note">
-                    As stated in the Microsoft documentation on ADLS Gen2 performance tuning: "With a hierarchical
-                    namespace, the cost of renaming or deleting directories scales with the number of objects stored in
-                    those directories in Blob Storage, whereas, in ADLS Gen2, it is a constant time metadata operation."
+                    In a flat-namespace system such as standard Azure Blob Storage, renaming a directory containing
+                    100,000 files requires copying each object to a new key prefix and deleting the originals, resulting
+                    in an O(n) operation whose cost grows linearly with the number of files. By contrast, in Azure Data
+                    Lake Storage Gen2 with the hierarchical namespace feature enabled, a directory is represented as a
+                    filesystem metadata object. Renaming or deleting the directory therefore requires only an atomic
+                    metadata update, making it an O(1) operation whose cost is independent of the number of files
+                    contained within the directory.
                 </div>
 
                 <div class="stat-grid">
