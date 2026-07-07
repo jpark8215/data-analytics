@@ -139,14 +139,13 @@
         class="post-image">
 
       <div class="post-content">
-        <p>Apache Kafka, originally developed by engineers at LinkedIn in 2010 and later donated to the Apache Software
-          Foundation, has become the de facto standard for high-throughput, fault-tolerant event streaming. According to
-          Confluent's 2024 State of Data Streaming report, over 100,000 organizations worldwide run Kafka in production,
-          processing trillions of messages daily. Yet, despite its widespread adoption, Kafka's architecture is
-          frequently misunderstood. Practitioners often conflate it with a message queue like RabbitMQ, or assume it can
-          be adopted with minimal operational overhead. A precise understanding of Kafka's three foundational
-          primitives, namely topics, partitions, and consumers, is essential before any architectural commitment is
-          made.</p>
+        <p>Apache Kafka, originally developed by engineers at LinkedIn and later donated to the Apache Software
+          Foundation, has become the de facto standard for high-throughput, fault-tolerant event streaming. It is
+          reportedly used by tens of thousands of organizations worldwide, processing enormous volumes of messages
+          daily. Yet, despite its widespread adoption, Kafka's architecture is frequently misunderstood. Practitioners
+          often conflate it with a message queue like RabbitMQ, or assume it can be adopted with minimal operational
+          overhead. A precise understanding of Kafka's three foundational primitives, namely topics, partitions, and
+          consumers, is essential before any architectural commitment is made.</p>
 
         <h2>What Kafka Actually Is: The Log Abstraction</h2>
         <p>Kafka's foundational data structure is an immutable, append-only, distributed commit log. This is not a minor
@@ -475,12 +474,13 @@
           messages from producers, storing them on disk, and serving them to consumers. Partitions are distributed
           across brokers, with one broker designated as the leader for each partition and the remaining brokers hosting
           in-sync replicas (ISRs). The replication factor, configured at the topic level, determines how many replicas
-          of each partition exist. A replication factor of three, which is the standard production recommendation from
-          Confluent's documentation, means that a Kafka cluster can survive the loss of two brokers without data loss.
-          The leader handles all read and write requests for its partition; replicas exist solely for fault tolerance
-          and do not serve consumer requests by default. Beginning with Kafka 2.4, follower fetching can be optionally
-          enabled through the <code>replica.selector.class</code> configuration to reduce cross-datacenter latency in
-          geo-distributed deployments.</p>
+          of each partition exist. A replication factor of three, which is a common production recommendation, means
+          that a Kafka cluster can survive the loss of two brokers without data loss. The leader handles all read and
+          write requests for its partition; replicas exist solely for fault tolerance and do not serve consumer
+          requests by default. Beginning with Kafka 2.4, follower fetching can be optionally enabled through the
+          <code>replica.selector.class</code> configuration to reduce cross-datacenter latency in geo-distributed
+          deployments.
+        </p>
 
         <!-- Diagram 3: Broker Replication -->
         <div class="diagram-wrap">
@@ -664,29 +664,29 @@
         </div>
 
         <h2>Where Kafka Excels</h2>
-        <p>Kafka's architecture is unarguably successful at solving specific categories of engineering problems. Its
-          sequential disk I/O model, achieved through operating system page cache and zero-copy transfers via the
-          <code>sendfile</code> system call, enables throughput that routinely exceeds one million messages per second
-          on modest hardware. Furthermore, its decoupling of producers and consumers through the persistent log enables
-          architectural patterns that are otherwise difficult to implement, including event sourcing, Change Data
-          Capture from relational databases via tools like Debezium, and replayable audit trails for regulatory
-          compliance. For organizations building real-time recommendation engines, fraud detection pipelines, or
-          multi-service event-driven architectures, Kafka provides a durable and scalable backbone that is difficult to
-          replicate with alternative technologies.
+        <p>Kafka's architecture is well suited to solving specific categories of engineering problems. Its sequential
+          disk I/O model, achieved through operating system page cache and zero-copy transfers via the
+          <code>sendfile</code> system call, is designed for very high throughput, and well-tuned clusters are commonly
+          reported to sustain hundreds of thousands to millions of messages per second, though actual numbers depend
+          heavily on message size, hardware, and configuration. Furthermore, its decoupling of producers and consumers
+          through the persistent log enables architectural patterns that are otherwise difficult to implement,
+          including event sourcing, Change Data Capture from relational databases via tools like Debezium, and
+          replayable audit trails for regulatory compliance. For organizations building real-time recommendation
+          engines, fraud detection pipelines, or multi-service event-driven architectures, Kafka provides a durable and
+          scalable backbone that is difficult to replicate with alternative technologies.
         </p>
 
         <h2>Where Kafka Creates Operational Complexity</h2>
         <p>However, we cannot overlook the significant operational demands that Kafka introduces. Even though managed
           services like Confluent Cloud and Amazon MSK reduce infrastructure burden considerably, operating a
           self-managed Kafka cluster requires deep expertise in JVM tuning, ZooKeeper coordination (or the newer KRaft
-          consensus mode introduced as stable in Kafka 3.3), disk provisioning, and network configuration. A survey
-          conducted by the Data Engineering Weekly newsletter in 2023 found that 62 percent of teams operating
-          self-managed Kafka clusters cited operational complexity as their primary challenge. Additionally, Kafka is
-          not an ideal solution for low-throughput workloads, workloads requiring strict exactly-once message delivery
-          without careful producer and consumer configuration, or use cases where message ordering across a complete
-          topic is a hard requirement. For simpler point-to-point messaging scenarios, lightweight alternatives such as
-          Amazon SQS or Redis Streams impose significantly less operational overhead while delivering adequate
-          performance.</p>
+          consensus mode introduced as stable in Kafka 3.3), disk provisioning, and network configuration. In practice,
+          teams that self-manage Kafka frequently cite this operational overhead, rather than throughput or feature
+          gaps, as their biggest ongoing challenge. Additionally, Kafka is not an ideal solution for low-throughput
+          workloads, workloads requiring strict exactly-once message delivery without careful producer and consumer
+          configuration, or use cases where message ordering across a complete topic is a hard requirement. For simpler
+          point-to-point messaging scenarios, lightweight alternatives such as Amazon SQS or Redis Streams impose
+          significantly less operational overhead while delivering adequate performance.</p>
 
         <h2>Conclusion</h2>
         <p>Kafka's distributed log model is a technically elegant and unarguably powerful solution
