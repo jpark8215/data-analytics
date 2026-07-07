@@ -2,89 +2,90 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apache Kafka Explained: Topics, Partitions, and Consumers Without the Textbook - Data Analytics & Beyond</title>
-    <meta name="description"
-        content="A technical breakdown of Apache Kafka's core architecture: topics, partitions, offsets, consumer groups, and brokers. A balanced analysis of where Kafka excels and where it creates operational complexity.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/blog.css">
-    <style>
-        .post-container {
-            max-width: var(--content-width);
-            margin: var(--space-xl) auto;
-            padding: 0 var(--space-m);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apache Kafka Explained: Topics, Partitions, and Consumers Without the Textbook - Data Analytics & Beyond
+  </title>
+  <meta name="description"
+    content="A technical breakdown of Apache Kafka's core architecture: topics, partitions, offsets, consumer groups, and brokers. A balanced analysis of where Kafka excels and where it creates operational complexity.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
 
-        .post-header {
-            text-align: center;
-            margin-bottom: var(--space-xl);
-        }
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
 
-        .post-image {
-            width: 100%;
-            border-radius: var(--radius-l);
-            margin-bottom: var(--space-xl);
-            box-shadow: var(--shadow-md);
-        }
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
 
-        .post-content {
-            font-size: 1.125rem;
-            line-height: 1.8;
-            color: var(--clr-text-main);
-        }
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
 
-        .post-content h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
-            color: var(--clr-surface-invert);
-            margin: var(--space-xl) 0 var(--space-m);
-        }
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
 
-        .post-content p {
-            margin-bottom: var(--space-m);
-        }
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
 
-        .post-content code {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 4px;
-            padding: 0.1em 0.4em;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            color: #60a5fa;
-        }
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
 
-        .diagram-wrap {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            border-radius: 12px;
-            padding: 1.5rem 1rem;
-            margin: 2rem 0;
-            overflow-x: auto;
-        }
+    .diagram-wrap {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+    }
 
-        .diagram-caption {
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--clr-text-muted);
-            margin-top: 0.75rem;
-            font-style: italic;
-        }
-    </style>
-    <!-- SEO & JSON-LD Schema -->
-    <meta property="og:title" content="Apache Kafka Explained: Topics, Partitions, and Consumers Without the Textbook">
-    <meta property="og:description"
-        content="A technical breakdown of Apache Kafka's core architecture: topics, partitions, offsets, consumer groups, and brokers. A balanced analysis of where Kafka excels and where it creates operational complexity.">
-    <meta property="og:image"
-        content="https://jpark8215.github.io/data-analytics/assets/images/kafka_streaming_abstract.png">
-    <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/apache-kafka-explained.html">
-    <meta property="og:type" content="article">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/apache-kafka-explained.html">
-    <script type="application/ld+json">
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+  </style>
+  <!-- SEO & JSON-LD Schema -->
+  <meta property="og:title" content="Apache Kafka Explained: Topics, Partitions, and Consumers Without the Textbook">
+  <meta property="og:description"
+    content="A technical breakdown of Apache Kafka's core architecture: topics, partitions, offsets, consumer groups, and brokers. A balanced analysis of where Kafka excels and where it creates operational complexity.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/kafka_streaming_abstract.png">
+  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/apache-kafka-explained.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/apache-kafka-explained.html">
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -103,380 +104,620 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="container nav-container">
-            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
-            <ul class="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../all-posts.html" class="active">All Insights</a></li>
-                <li><a href="../index.html#about">About</a></li>
-            </ul>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../all-posts.html" class="active">All Insights</a></li>
+        <li><a href="../index.html#about">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">← Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(239,68,68,0.2);color:#f87171;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Apache Kafka Explained: Topics, Partitions,
+          and Consumers Without the Textbook
+        </h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          A technical breakdown of Kafka's core architecture, evaluating its distributed streaming model, its
+          operational demands, and a balanced view of when it is the right tool for the job.
+        </p>
+        <p class="post-meta">Published: <time>July 6, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/kafka_streaming_abstract.png"
+        alt="Abstract visualization of parallel streaming data channels with glowing nodes representing Kafka brokers and consumers"
+        class="post-image">
+
+      <div class="post-content">
+        <p>Apache Kafka, originally developed by engineers at LinkedIn in 2010 and later donated to the Apache Software
+          Foundation, has become the de facto standard for high-throughput, fault-tolerant event streaming. According to
+          Confluent's 2024 State of Data Streaming report, over 100,000 organizations worldwide run Kafka in production,
+          processing trillions of messages daily. Yet, despite its widespread adoption, Kafka's architecture is
+          frequently misunderstood. Practitioners often conflate it with a message queue like RabbitMQ, or assume it can
+          be adopted with minimal operational overhead. A precise understanding of Kafka's three foundational
+          primitives, namely topics, partitions, and consumers, is essential before any architectural commitment is
+          made.</p>
+
+        <h2>What Kafka Actually Is: The Log Abstraction</h2>
+        <p>Kafka's foundational data structure is an immutable, append-only, distributed commit log. This is not a minor
+          implementation detail; it is the defining architectural characteristic that separates Kafka from traditional
+          message brokers. When a producer writes a message, that message is durably persisted to disk in sequential
+          order and is not deleted upon consumption. Instead, Kafka retains messages for a configurable period, defined
+          by the <code>log.retention.hours</code> or <code>log.retention.bytes</code> broker configuration properties.
+          This log-centric design enables multiple independent consumers to read the same data stream without
+          contention, a capability that traditional queues fundamentally cannot replicate. Jay Kreps, one of Kafka's
+          original designers, formally articulated this distinction in his influential 2013 essay, "The Log: What every
+          software engineer should know about real-time data's unifying abstraction," arguing that the distributed log
+          is the core primitive of all data integration architectures.</p>
+
+        <!-- Diagram 1: Queue vs Log -->
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;max-width:720px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#10b981" />
+              </marker>
+              <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#f87171" />
+              </marker>
+              <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b" />
+              </marker>
+              <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa" />
+              </marker>
+            </defs>
+
+            <!-- Left Side: Traditional Queue -->
+            <text x="180" y="25" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Inter,sans-serif"
+              font-weight="600">Traditional Queue (FIFO)</text>
+
+            <!-- Producer -->
+            <rect x="15" y="70" width="75" height="40" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981"
+              stroke-width="1.5" />
+            <text x="52.5" y="94" text-anchor="middle" fill="#10b981" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Producer</text>
+
+            <!-- Arrow to Queue -->
+            <line x1="90" y1="90" x2="120" y2="90" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)" />
+
+            <!-- Queue Container -->
+            <rect x="120" y="55" width="135" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#3b82f6"
+              stroke-width="1.5" />
+
+            <!-- Queue Messages -->
+            <!-- Msg C -->
+            <rect x="130" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.15)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="145" y="94" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="Inter,sans-serif">Msg
+              C</text>
+            <!-- Msg B -->
+            <rect x="172" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.15)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="187" y="94" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="Inter,sans-serif">Msg
+              B</text>
+            <!-- Msg A -->
+            <rect x="214" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.3)" stroke="#60a5fa"
+              stroke-width="1.5" />
+            <text x="229" y="94" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="Inter,sans-serif"
+              font-weight="600">Msg A</text>
+
+            <!-- Arrow to Consumer -->
+            <line x1="255" y1="90" x2="280" y2="90" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrow-red)" />
+
+            <!-- Consumer -->
+            <rect x="280" y="70" width="75" height="40" rx="6" fill="rgba(239,68,68,0.1)" stroke="#f87171"
+              stroke-width="1.5" />
+            <text x="317.5" y="94" text-anchor="middle" fill="#f87171" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Consumer</text>
+
+            <text x="187.5" y="150" text-anchor="middle" fill="#94a3b8" font-size="11"
+              font-family="Inter,sans-serif">Msg A is deleted immediately on read</text>
+
+            <!-- Divider -->
+            <line x1="375" y1="15" x2="375" y2="195" stroke="rgba(148,163,184,0.2)" stroke-width="1.5"
+              stroke-dasharray="4,4" />
+
+            <!-- Right Side: Kafka Commit Log -->
+            <text x="550" y="25" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Inter,sans-serif"
+              font-weight="600">Kafka Commit Log</text>
+
+            <!-- Producer -->
+            <rect x="390" y="70" width="75" height="40" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981"
+              stroke-width="1.5" />
+            <text x="427.5" y="94" text-anchor="middle" fill="#10b981" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Producer</text>
+
+            <!-- Arrow to Log -->
+            <line x1="465" y1="90" x2="490" y2="90" stroke="#10b981" stroke-width="1.5"
+              marker-end="url(#arrow-green)" />
+
+            <!-- Log Container -->
+            <rect x="490" y="55" width="130" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#3b82f6"
+              stroke-width="1.5" />
+
+            <!-- Log Partitions/Slots -->
+            <!-- Slot 0 -->
+            <rect x="498" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="511" y="82" text-anchor="middle" fill="#94a3b8" font-size="9"
+              font-family="Courier New,monospace">0</text>
+            <text x="511" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">A</text>
+            <!-- Slot 1 -->
+            <rect x="528" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="541" y="82" text-anchor="middle" fill="#94a3b8" font-size="9"
+              font-family="Courier New,monospace">1</text>
+            <text x="541" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">B</text>
+            <!-- Slot 2 -->
+            <rect x="558" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="571" y="82" text-anchor="middle" fill="#94a3b8" font-size="9"
+              font-family="Courier New,monospace">2</text>
+            <text x="571" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">C</text>
+            <!-- Slot 3 (newly appended) -->
+            <rect x="588" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.25)" stroke="#60a5fa"
+              stroke-width="1.5" />
+            <text x="601" y="82" text-anchor="middle" fill="#93c5fd" font-size="9"
+              font-family="Courier New,monospace">3</text>
+            <text x="601" y="103" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">D</text>
+
+            <!-- Consumers reading from offsets -->
+            <!-- Consumer 1 -->
+            <rect x="635" y="45" width="75" height="34" rx="5" fill="rgba(239,68,68,0.1)" stroke="#f87171"
+              stroke-width="1.5" />
+            <text x="672.5" y="66" text-anchor="middle" fill="#f87171" font-size="10" font-family="Inter,sans-serif"
+              font-weight="500">Consumer A</text>
+            <!-- Consumer 2 -->
+            <rect x="635" y="105" width="75" height="34" rx="5" fill="rgba(245,158,11,0.1)" stroke="#f59e0b"
+              stroke-width="1.5" />
+            <text x="672.5" y="126" text-anchor="middle" fill="#f59e0b" font-size="10" font-family="Inter,sans-serif"
+              font-weight="500">Consumer B</text>
+
+            <!-- Pointers from Consumers to Slots -->
+            <!-- Consumer A reading Offset 1 -->
+            <path d="M 635,62 L 550,62 L 541,65" fill="none" stroke="#f87171" stroke-width="1.2" stroke-dasharray="2,2"
+              marker-end="url(#arrow-red)" />
+            <text x="585" y="58" fill="#f87171" font-size="9" font-family="Inter,sans-serif">Offset 1</text>
+
+            <!-- Consumer B reading Offset 3 -->
+            <path d="M 635,122 L 610,122 L 601,115" fill="none" stroke="#f59e0b" stroke-width="1.2"
+              stroke-dasharray="2,2" marker-end="url(#arrow-amber)" />
+            <text x="618" y="137" fill="#f59e0b" font-size="9" font-family="Inter,sans-serif">Offset 3</text>
+
+            <text x="555" y="150" text-anchor="middle" fill="#10b981" font-size="11"
+              font-family="Inter,sans-serif">Messages are persisted &amp; replayable</text>
+          </svg>
+          <p class="diagram-caption">Figure 1: In a traditional queue, messages are deleted after consumption. In
+            Kafka's commit log, messages persist on disk and multiple independent consumers can each read at their own
+            offset.</p>
         </div>
-    </nav>
 
-    <main class="post-container">
-        <a href="../index.html" class="back-link">← Back to Insights</a>
+        <h2>Topics: Named Channels for Event Streams</h2>
+        <p>A topic is the logical unit of organization in Kafka. Producers write messages to a named topic, and
+          consumers read from it. Topics are analogous to a database table or a folder in a filesystem, though the
+          analogy is imprecise because a topic holds an ordered sequence of events rather than mutable records. Each
+          message within a topic contains a key, a value, a timestamp, and optional metadata headers. The key is
+          critically important: it is used to determine which partition a message routes to. If no key is provided,
+          Kafka distributes messages across partitions using a round-robin strategy, sacrificing ordering guarantees in
+          exchange for even load distribution. Organizations should establish clear naming conventions for topics,
+          because in production environments with dozens of teams producing data independently, a poorly governed topic
+          namespace degrades into an undiscoverable mess within months.</p>
 
-        <article>
-            <header class="post-header">
-                <span class="blog-card-tag" style="background:rgba(239,68,68,0.2);color:#f87171;">Engineering</span>
-                <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Apache Kafka Explained: Topics, Partitions, and Consumers Without the Textbook
-                </h1>
-                <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-                    A technical breakdown of Kafka's core architecture, evaluating its distributed streaming model, its operational demands, and a balanced view of when it is the right tool for the job.
-                </p>
-                <p class="post-meta">Published: <time>July 6, 2026</time></p>
-            </header>
+        <!-- Diagram 2: Topic with Partitions and Offsets -->
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 270" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;max-width:700px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arrow-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#60a5fa" />
+              </marker>
+              <marker id="arrow-purple" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#a78bfa" />
+              </marker>
+              <marker id="arrow-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#10b981" />
+              </marker>
+            </defs>
 
-            <img src="../assets/images/kafka_streaming_abstract.png"
-                alt="Abstract visualization of parallel streaming data channels with glowing nodes representing Kafka brokers and consumers"
-                class="post-image">
+            <!-- Main Container -->
+            <rect x="10" y="10" width="680" height="250" rx="10" fill="rgba(30,41,59,0.3)"
+              stroke="rgba(59,130,246,0.15)" stroke-width="1.5" />
 
-            <div class="post-content">
-                <p>Apache Kafka, originally developed by engineers at LinkedIn in 2010 and later donated to the Apache Software Foundation, has become the de facto standard for high-throughput, fault-tolerant event streaming. According to Confluent's 2024 State of Data Streaming report, over 100,000 organizations worldwide run Kafka in production, processing trillions of messages daily. Yet, despite its widespread adoption, Kafka's architecture is frequently misunderstood. Practitioners often conflate it with a message queue like RabbitMQ, or assume it can be adopted with minimal operational overhead. A precise understanding of Kafka's three foundational primitives, namely topics, partitions, and consumers, is essential before any architectural commitment is made.</p>
+            <text x="350" y="32" text-anchor="middle" fill="#60a5fa" font-size="14" font-family="Inter,sans-serif"
+              font-weight="600">Topic: orders (Distributed Partition Grid)</text>
 
-                <h2>What Kafka Actually Is: The Log Abstraction</h2>
-                <p>Kafka's foundational data structure is an immutable, append-only, distributed commit log. This is not a minor implementation detail; it is the defining architectural characteristic that separates Kafka from traditional message brokers. When a producer writes a message, that message is durably persisted to disk in sequential order and is not deleted upon consumption. Instead, Kafka retains messages for a configurable period, defined by the <code>log.retention.hours</code> or <code>log.retention.bytes</code> broker configuration properties. This log-centric design enables multiple independent consumers to read the same data stream without contention, a capability that traditional queues fundamentally cannot replicate. Jay Kreps, one of Kafka's original designers, formally articulated this distinction in his influential 2013 essay, "The Log: What every software engineer should know about real-time data's unifying abstraction," arguing that the distributed log is the core primitive of all data integration architectures.</p>
+            <!-- Left: Producer & Routing Logic -->
+            <rect x="25" y="95" width="80" height="70" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981"
+              stroke-width="1.5" />
+            <text x="65" y="125" text-anchor="middle" fill="#10b981" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Producer</text>
+            <text x="65" y="142" text-anchor="middle" fill="#94a3b8" font-size="10"
+              font-family="Inter,sans-serif">Hashing Key</text>
 
-                <!-- Diagram 1: Queue vs Log -->
-                <div class="diagram-wrap">
-                  <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:720px;display:block;margin:0 auto;">
-                    <defs>
-                      <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
-                      </marker>
-                      <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L8,3 z" fill="#f87171"/>
-                      </marker>
-                      <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
-                      </marker>
-                      <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa"/>
-                      </marker>
-                    </defs>
+            <!-- Routing paths to Partitions -->
+            <path d="M 105,110 L 155,75 L 180,75" fill="none" stroke="#3b82f6" stroke-width="1.2"
+              marker-end="url(#arrow-blue)" />
+            <path d="M 105,130 L 180,130" fill="none" stroke="#8b5cf6" stroke-width="1.2"
+              marker-end="url(#arrow-purple)" />
+            <path d="M 105,150 L 155,185 L 180,185" fill="none" stroke="#10b981" stroke-width="1.2"
+              marker-end="url(#arrow-green)" />
 
-                    <!-- Left Side: Traditional Queue -->
-                    <text x="180" y="25" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Inter,sans-serif" font-weight="600">Traditional Queue (FIFO)</text>
-                    
-                    <!-- Producer -->
-                    <rect x="15" y="70" width="75" height="40" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="52.5" y="94" text-anchor="middle" fill="#10b981" font-size="11" font-family="Inter,sans-serif" font-weight="500">Producer</text>
-                    
-                    <!-- Arrow to Queue -->
-                    <line x1="90" y1="90" x2="120" y2="90" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
-                    
-                    <!-- Queue Container -->
-                    <rect x="120" y="55" width="135" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#3b82f6" stroke-width="1.5"/>
-                    
-                    <!-- Queue Messages -->
-                    <!-- Msg C -->
-                    <rect x="130" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="145" y="94" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="Inter,sans-serif">Msg C</text>
-                    <!-- Msg B -->
-                    <rect x="172" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="187" y="94" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="Inter,sans-serif">Msg B</text>
-                    <!-- Msg A -->
-                    <rect x="214" y="70" width="30" height="40" rx="4" fill="rgba(59,130,246,0.3)" stroke="#60a5fa" stroke-width="1.5"/>
-                    <text x="229" y="94" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="Inter,sans-serif" font-weight="600">Msg A</text>
+            <!-- Partition 0 Row -->
+            <text x="190" y="58" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Partition 0 (Key Hash Range A)</text>
+            <g transform="translate(190, 63)">
+              <!-- Slot 0 -->
+              <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6"
+                stroke-width="1" />
+              <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:0</text>
+              <!-- Slot 1 -->
+              <rect x="40" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6"
+                stroke-width="1" />
+              <text x="58" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:1</text>
+              <!-- Slot 2 -->
+              <rect x="80" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6"
+                stroke-width="1" />
+              <text x="98" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:2</text>
+              <!-- Empty Slot 3 -->
+              <rect x="120" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(59,130,246,0.3)"
+                stroke-width="1" stroke-dasharray="2,2" />
+            </g>
 
-                    <!-- Arrow to Consumer -->
-                    <line x1="255" y1="90" x2="280" y2="90" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrow-red)"/>
-                    
-                    <!-- Consumer -->
-                    <rect x="280" y="70" width="75" height="40" rx="6" fill="rgba(239,68,68,0.1)" stroke="#f87171" stroke-width="1.5"/>
-                    <text x="317.5" y="94" text-anchor="middle" fill="#f87171" font-size="11" font-family="Inter,sans-serif" font-weight="500">Consumer</text>
-                    
-                    <text x="187.5" y="150" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif">Msg A is deleted immediately on read</text>
+            <!-- Partition 1 Row -->
+            <text x="190" y="113" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Partition 1 (Key Hash Range B)</text>
+            <g transform="translate(190, 118)">
+              <!-- Slot 0 -->
+              <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6"
+                stroke-width="1" />
+              <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:0</text>
+              <!-- Empty Slot 1 -->
+              <rect x="40" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)"
+                stroke-width="1" stroke-dasharray="2,2" />
+              <!-- Empty Slot 2 -->
+              <rect x="80" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)"
+                stroke-width="1" stroke-dasharray="2,2" />
+              <!-- Empty Slot 3 -->
+              <rect x="120" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)"
+                stroke-width="1" stroke-dasharray="2,2" />
+            </g>
 
-                    <!-- Divider -->
-                    <line x1="375" y1="15" x2="375" y2="195" stroke="rgba(148,163,184,0.2)" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <!-- Partition 2 Row -->
+            <text x="190" y="168" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif"
+              font-weight="500">Partition 2 (Key Hash Range C)</text>
+            <g transform="translate(190, 173)">
+              <!-- Slot 0 -->
+              <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981"
+                stroke-width="1" />
+              <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:0</text>
+              <!-- Slot 1 -->
+              <rect x="40" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981"
+                stroke-width="1" />
+              <text x="58" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:1</text>
+              <!-- Slot 2 -->
+              <rect x="80" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981"
+                stroke-width="1" />
+              <text x="98" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:2</text>
+              <!-- Slot 3 -->
+              <rect x="120" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981"
+                stroke-width="1" />
+              <text x="138" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10"
+                font-family="Courier New,monospace">off:3</text>
+            </g>
 
-                    <!-- Right Side: Kafka Commit Log -->
-                    <text x="550" y="25" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="Inter,sans-serif" font-weight="600">Kafka Commit Log</text>
-                    
-                    <!-- Producer -->
-                    <rect x="390" y="70" width="75" height="40" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="427.5" y="94" text-anchor="middle" fill="#10b981" font-size="11" font-family="Inter,sans-serif" font-weight="500">Producer</text>
-                    
-                    <!-- Arrow to Log -->
-                    <line x1="465" y1="90" x2="490" y2="90" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
-                    
-                    <!-- Log Container -->
-                    <rect x="490" y="55" width="130" height="70" rx="6" fill="rgba(30,41,59,0.5)" stroke="#3b82f6" stroke-width="1.5"/>
-                    
-                    <!-- Log Partitions/Slots -->
-                    <!-- Slot 0 -->
-                    <rect x="498" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="511" y="82" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Courier New,monospace">0</text>
-                    <text x="511" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">A</text>
-                    <!-- Slot 1 -->
-                    <rect x="528" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="541" y="82" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Courier New,monospace">1</text>
-                    <text x="541" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">B</text>
-                    <!-- Slot 2 -->
-                    <rect x="558" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="571" y="82" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Courier New,monospace">2</text>
-                    <text x="571" y="103" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">C</text>
-                    <!-- Slot 3 (newly appended) -->
-                    <rect x="588" y="65" width="26" height="50" rx="2" fill="rgba(59,130,246,0.25)" stroke="#60a5fa" stroke-width="1.5"/>
-                    <text x="601" y="82" text-anchor="middle" fill="#93c5fd" font-size="9" font-family="Courier New,monospace">3</text>
-                    <text x="601" y="103" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="Inter,sans-serif" font-weight="600">D</text>
+            <!-- Right Side: Key Routing Card -->
+            <g transform="translate(370, 60)">
+              <rect x="0" y="0" width="290" height="150" rx="8" fill="rgba(0,0,0,0.2)" stroke="rgba(148,163,184,0.15)"
+                stroke-width="1" />
+              <text x="145" y="25" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif"
+                font-weight="600">Ordering &amp; Routing Rules</text>
 
-                    <!-- Consumers reading from offsets -->
-                    <!-- Consumer 1 -->
-                    <rect x="635" y="45" width="75" height="34" rx="5" fill="rgba(239,68,68,0.1)" stroke="#f87171" stroke-width="1.5"/>
-                    <text x="672.5" y="66" text-anchor="middle" fill="#f87171" font-size="10" font-family="Inter,sans-serif" font-weight="500">Consumer A</text>
-                    <!-- Consumer 2 -->
-                    <rect x="635" y="105" width="75" height="34" rx="5" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="672.5" y="126" text-anchor="middle" fill="#f59e0b" font-size="10" font-family="Inter,sans-serif" font-weight="500">Consumer B</text>
+              <!-- Point 1 -->
+              <circle cx="20" cy="55" r="3" fill="#60a5fa" />
+              <text x="35" y="58" fill="#e2e8f0" font-size="11" font-family="Inter,sans-serif">Same Key &#x2192; Same
+                Partition mapping</text>
 
-                    <!-- Pointers from Consumers to Slots -->
-                    <!-- Consumer A reading Offset 1 -->
-                    <path d="M 635,62 L 550,62 L 541,65" fill="none" stroke="#f87171" stroke-width="1.2" stroke-dasharray="2,2" marker-end="url(#arrow-red)"/>
-                    <text x="585" y="58" fill="#f87171" font-size="9" font-family="Inter,sans-serif">Offset 1</text>
-                    
-                    <!-- Consumer B reading Offset 3 -->
-                    <path d="M 635,122 L 610,122 L 601,115" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2,2" marker-end="url(#arrow-amber)"/>
-                    <text x="618" y="137" fill="#f59e0b" font-size="9" font-family="Inter,sans-serif">Offset 3</text>
+              <!-- Point 2 -->
+              <circle cx="20" cy="85" r="3" fill="#60a5fa" />
+              <text x="35" y="88" fill="#e2e8f0" font-size="11" font-family="Inter,sans-serif">Strict offset ordering
+                inside partition</text>
 
-                    <text x="555" y="150" text-anchor="middle" fill="#10b981" font-size="11" font-family="Inter,sans-serif">Messages are persisted &amp; replayable</text>
-                  </svg>
-                  <p class="diagram-caption">Figure 1: In a traditional queue, messages are deleted after consumption. In Kafka's commit log, messages persist on disk and multiple independent consumers can each read at their own offset.</p>
-                </div>
-
-                <h2>Topics: Named Channels for Event Streams</h2>
-                <p>A topic is the logical unit of organization in Kafka. Producers write messages to a named topic, and consumers read from it. Topics are analogous to a database table or a folder in a filesystem, though the analogy is imprecise because a topic holds an ordered sequence of events rather than mutable records. Each message within a topic contains a key, a value, a timestamp, and optional metadata headers. The key is critically important: it is used to determine which partition a message routes to. If no key is provided, Kafka distributes messages across partitions using a round-robin strategy, sacrificing ordering guarantees in exchange for even load distribution. Organizations should establish clear naming conventions for topics, because in production environments with dozens of teams producing data independently, a poorly governed topic namespace degrades into an undiscoverable mess within months.</p>
-
-                <!-- Diagram 2: Topic with Partitions and Offsets -->
-                <div class="diagram-wrap">
-                  <svg viewBox="0 0 700 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
-                    <defs>
-                      <marker id="arrow-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#60a5fa"/></marker>
-                      <marker id="arrow-purple" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#a78bfa"/></marker>
-                      <marker id="arrow-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#10b981"/></marker>
-                    </defs>
-
-                    <!-- Main Container -->
-                    <rect x="10" y="10" width="680" height="250" rx="10" fill="rgba(30,41,59,0.3)" stroke="rgba(59,130,246,0.15)" stroke-width="1.5"/>
-                    
-                    <text x="350" y="32" text-anchor="middle" fill="#60a5fa" font-size="14" font-family="Inter,sans-serif" font-weight="600">Topic: orders (Distributed Partition Grid)</text>
-
-                    <!-- Left: Producer & Routing Logic -->
-                    <rect x="25" y="95" width="80" height="70" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="65" y="125" text-anchor="middle" fill="#10b981" font-size="12" font-family="Inter,sans-serif" font-weight="600">Producer</text>
-                    <text x="65" y="142" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif">Hashing Key</text>
-
-                    <!-- Routing paths to Partitions -->
-                    <path d="M 105,110 L 155,75 L 180,75" fill="none" stroke="#3b82f6" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
-                    <path d="M 105,130 L 180,130" fill="none" stroke="#8b5cf6" stroke-width="1.2" marker-end="url(#arrow-purple)"/>
-                    <path d="M 105,150 L 155,185 L 180,185" fill="none" stroke="#10b981" stroke-width="1.2" marker-end="url(#arrow-green)"/>
-
-                    <!-- Partition 0 Row -->
-                    <text x="190" y="58" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif" font-weight="500">Partition 0 (Key Hash Range A)</text>
-                    <g transform="translate(190, 63)">
-                      <!-- Slot 0 -->
-                      <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1"/>
-                      <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:0</text>
-                      <!-- Slot 1 -->
-                      <rect x="40" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1"/>
-                      <text x="58" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:1</text>
-                      <!-- Slot 2 -->
-                      <rect x="80" y="0" width="36" height="24" rx="3" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1"/>
-                      <text x="98" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:2</text>
-                      <!-- Empty Slot 3 -->
-                      <rect x="120" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(59,130,246,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
-                    </g>
-
-                    <!-- Partition 1 Row -->
-                    <text x="190" y="113" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif" font-weight="500">Partition 1 (Key Hash Range B)</text>
-                    <g transform="translate(190, 118)">
-                      <!-- Slot 0 -->
-                      <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="1"/>
-                      <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:0</text>
-                      <!-- Empty Slot 1 -->
-                      <rect x="40" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
-                      <!-- Empty Slot 2 -->
-                      <rect x="80" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
-                      <!-- Empty Slot 3 -->
-                      <rect x="120" y="0" width="36" height="24" rx="3" fill="none" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
-                    </g>
-
-                    <!-- Partition 2 Row -->
-                    <text x="190" y="168" fill="#94a3b8" font-size="11" font-family="Inter,sans-serif" font-weight="500">Partition 2 (Key Hash Range C)</text>
-                    <g transform="translate(190, 173)">
-                      <!-- Slot 0 -->
-                      <rect x="0" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                      <text x="18" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:0</text>
-                      <!-- Slot 1 -->
-                      <rect x="40" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                      <text x="58" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:1</text>
-                      <!-- Slot 2 -->
-                      <rect x="80" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                      <text x="98" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:2</text>
-                      <!-- Slot 3 -->
-                      <rect x="120" y="0" width="36" height="24" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                      <text x="138" y="15" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Courier New,monospace">off:3</text>
-                    </g>
-
-                    <!-- Right Side: Key Routing Card -->
-                    <g transform="translate(370, 60)">
-                      <rect x="0" y="0" width="290" height="150" rx="8" fill="rgba(0,0,0,0.2)" stroke="rgba(148,163,184,0.15)" stroke-width="1"/>
-                      <text x="145" y="25" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif" font-weight="600">Ordering &amp; Routing Rules</text>
-                      
-                      <!-- Point 1 -->
-                      <circle cx="20" cy="55" r="3" fill="#60a5fa"/>
-                      <text x="35" y="58" fill="#e2e8f0" font-size="11" font-family="Inter,sans-serif">Same Key &#x2192; Same Partition mapping</text>
-                      
-                      <!-- Point 2 -->
-                      <circle cx="20" cy="85" r="3" fill="#60a5fa"/>
-                      <text x="35" y="88" fill="#e2e8f0" font-size="11" font-family="Inter,sans-serif">Strict offset ordering inside partition</text>
-                      
-                      <!-- Point 3 -->
-                      <circle cx="20" cy="115" r="3" fill="#f59e0b"/>
-                      <text x="35" y="118" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif" font-style="italic">No ordering guarantees across partitions</text>
-                    </g>
-                  </svg>
-                  <p class="diagram-caption">Figure 2: A topic named "orders" with 3 partitions. Messages with key:A always go to Partition 0; key:B to Partition 1. Each partition has its own independent offset sequence starting from 0.</p>
-                </div>
-
-                <h2>Partitions: The Engine of Parallelism</h2>
-                <p>Partitions are the mechanism by which Kafka achieves both scalability and ordering guarantees simultaneously. Every topic is subdivided into one or more partitions, each of which is an independent, ordered, immutable sequence of records. Crucially, Kafka only guarantees message ordering within a single partition, not across the entire topic. Each message within a partition is assigned a monotonically increasing integer called an offset, which uniquely identifies its position. Consumers track their progress by storing the last committed offset, a process that Kafka manages in an internal topic called <code>__consumer_offsets</code>. The number of partitions directly determines the maximum parallelism achievable for a topic: a topic with eight partitions can be consumed by at most eight consumers within a single consumer group concurrently. Consequently, partition count is a critical architectural decision that is difficult to reverse. Increasing partitions after creation is possible, but it redistributes key-based routing and can break ordering semantics for stateful consumers. The official Apache Kafka documentation recommends provisioning for anticipated throughput growth rather than scaling partitions reactively.</p>
-
-                <h2>Brokers and Replication: Fault Tolerance by Design</h2>
-                <p>A Kafka cluster consists of one or more servers called brokers. Each broker is responsible for receiving messages from producers, storing them on disk, and serving them to consumers. Partitions are distributed across brokers, with one broker designated as the leader for each partition and the remaining brokers hosting in-sync replicas (ISRs). The replication factor, configured at the topic level, determines how many replicas of each partition exist. A replication factor of three, which is the standard production recommendation from Confluent's documentation, means that a Kafka cluster can survive the loss of two brokers without data loss. The leader handles all read and write requests for its partition; replicas exist solely for fault tolerance and do not serve consumer requests by default. Beginning with Kafka 2.4, follower fetching can be optionally enabled through the <code>replica.selector.class</code> configuration to reduce cross-datacenter latency in geo-distributed deployments.</p>
-
-                <!-- Diagram 3: Broker Replication -->
-                <div class="diagram-wrap">
-                  <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
-                    <!-- Broker 1 -->
-                    <rect x="20" y="30" width="190" height="165" rx="8" fill="rgba(59,130,246,0.07)" stroke="#3b82f6" stroke-width="1.5"/>
-                    <text x="115" y="52" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">Broker 1</text>
-                    <rect x="35" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.25)" stroke="#3b82f6" stroke-width="1"/>
-                    <text x="115" y="76" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P0 &#x2605; LEADER</text>
-                    <text x="115" y="90" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">(reads &amp; writes)</text>
-                    <rect x="35" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.12)" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="115" y="120" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Inter,sans-serif">P1 replica (ISR)</text>
-                    <rect x="35" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="115" y="163" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="Inter,sans-serif">P2 replica (ISR)</text>
-
-                    <!-- Broker 2 -->
-                    <rect x="255" y="30" width="190" height="165" rx="8" fill="rgba(139,92,246,0.07)" stroke="#8b5cf6" stroke-width="1.5"/>
-                    <text x="350" y="52" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="Inter,sans-serif" font-weight="600">Broker 2</text>
-                    <rect x="270" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.12)" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="350" y="77" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="Inter,sans-serif">P0 replica (ISR)</text>
-                    <rect x="270" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.25)" stroke="#8b5cf6" stroke-width="1"/>
-                    <text x="350" y="119" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P1 &#x2605; LEADER</text>
-                    <text x="350" y="133" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">(reads &amp; writes)</text>
-                    <rect x="270" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="350" y="163" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="Inter,sans-serif">P2 replica (ISR)</text>
-
-                    <!-- Broker 3 -->
-                    <rect x="490" y="30" width="190" height="165" rx="8" fill="rgba(16,185,129,0.07)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="585" y="52" text-anchor="middle" fill="#6ee7b7" font-size="12" font-family="Inter,sans-serif" font-weight="600">Broker 3</text>
-                    <rect x="505" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.12)" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="585" y="77" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="Inter,sans-serif">P0 replica (ISR)</text>
-                    <rect x="505" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.12)" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,2"/>
-                    <text x="585" y="120" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Inter,sans-serif">P1 replica (ISR)</text>
-                    <rect x="505" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.25)" stroke="#10b981" stroke-width="1"/>
-                    <text x="585" y="162" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P2 &#x2605; LEADER</text>
-                    <text x="585" y="176" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">(reads &amp; writes)</text>
-                  </svg>
-                  <p class="diagram-caption">Figure 3: Replication factor 3 across 3 brokers. Each partition has exactly one leader (solid border) that handles all reads and writes. The other brokers hold in-sync replicas (dashed borders). If Broker 1 fails, Kafka elects a new leader for P0 from the remaining ISRs.</p>
-                </div>
-
-                <h2>Consumer Groups: Coordinating Parallel Consumption</h2>
-                <p>Consumer groups are the mechanism by which Kafka enables parallel processing of a topic by multiple consumers. Each consumer within a group is assigned an exclusive subset of partitions, ensuring that no two consumers in the same group read the same partition simultaneously. When a consumer fails or a new consumer joins a group, Kafka triggers a rebalance protocol managed by a broker designated as the group coordinator. The group coordinator reads the membership state from <code>__consumer_offsets</code> and reassigns partition ownership using one of several configurable partition assignment strategies, including <code>RangeAssignor</code>, <code>RoundRobinAssignor</code>, and the more sophisticated <code>CooperativeStickyAssignor</code>. The <code>CooperativeStickyAssignor</code>, introduced in Kafka 2.4, significantly reduces rebalance disruption by allowing consumers to retain their existing partition assignments during incremental rebalances, a substantial improvement over the stop-the-world rebalances of earlier versions.</p>
-
-                <!-- Diagram 4: Consumer Group Assignment -->
-                <div class="diagram-wrap">
-                  <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
-                    <!-- Topic (left) -->
-                    <text x="110" y="22" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif" font-weight="600">Topic: events (4 partitions)</text>
-                    <!-- P0 -->
-                    <rect x="20" y="35" width="180" height="38" rx="6" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="1.5"/>
-                    <text x="110" y="59" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif">Partition 0</text>
-                    <!-- P1 -->
-                    <rect x="20" y="83" width="180" height="38" rx="6" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="1.5"/>
-                    <text x="110" y="107" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="Inter,sans-serif">Partition 1</text>
-                    <!-- P2 -->
-                    <rect x="20" y="131" width="180" height="38" rx="6" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="110" y="155" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="Inter,sans-serif">Partition 2</text>
-                    <!-- P3 -->
-                    <rect x="20" y="179" width="180" height="38" rx="6" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="110" y="203" text-anchor="middle" fill="#6ee7b7" font-size="12" font-family="Inter,sans-serif">Partition 3</text>
-
-                    <!-- Consumer Group Box -->
-                    <rect x="310" y="10" width="370" height="220" rx="10" fill="rgba(0,0,0,0.2)" stroke="rgba(148,163,184,0.2)" stroke-width="1.5" stroke-dasharray="6,4"/>
-                    <text x="495" y="30" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif" font-weight="600">Consumer Group: analytics-service</text>
-
-                    <!-- Consumer A -->
-                    <rect x="325" y="42" width="150" height="80" rx="8" fill="rgba(59,130,246,0.1)" stroke="#3b82f6" stroke-width="1.5"/>
-                    <text x="400" y="62" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">Consumer A</text>
-                    <text x="400" y="82" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="Inter,sans-serif">P0 (offset: 142)</text>
-                    <text x="400" y="100" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="Inter,sans-serif">P1 (offset: 98)</text>
-
-                    <!-- Consumer B -->
-                    <rect x="325" y="140" width="150" height="80" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="400" y="160" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="Inter,sans-serif" font-weight="600">Consumer B</text>
-                    <text x="400" y="180" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Inter,sans-serif">P2 (offset: 203)</text>
-                    <text x="400" y="198" text-anchor="middle" fill="#6ee7b7" font-size="11" font-family="Inter,sans-serif">P3 (offset: 77)</text>
-
-                    <!-- Note: max parallelism -->
-                    <rect x="490" y="55" width="175" height="155" rx="8" fill="rgba(239,68,68,0.05)" stroke="rgba(248,113,113,0.2)" stroke-width="1"/>
-                    <text x="577" y="78" text-anchor="middle" fill="#f87171" font-size="11" font-family="Inter,sans-serif" font-weight="600">Max parallelism rule</text>
-                    <text x="577" y="100" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">4 partitions =</text>
-                    <text x="577" y="117" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">max 4 consumers</text>
-                    <text x="577" y="134" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">in one group.</text>
-                    <text x="577" y="158" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif">A 5th consumer</text>
-                    <text x="577" y="174" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif">would sit idle.</text>
-                    <text x="577" y="197" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif" font-style="italic">Plan partitions upfront.</text>
-
-                    <!-- Arrows from partitions to consumers -->
-                    <line x1="200" y1="54" x2="325" y2="72" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow-blue2)"/>
-                    <line x1="200" y1="102" x2="325" y2="90" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrow-blue2)"/>
-                    <line x1="200" y1="150" x2="325" y2="175" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-amber2)"/>
-                    <line x1="200" y1="198" x2="325" y2="190" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green2)"/>
-                    <defs>
-                      <marker id="arrow-blue2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#60a5fa"/></marker>
-                      <marker id="arrow-amber2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/></marker>
-                      <marker id="arrow-green2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#10b981"/></marker>
-                    </defs>
-                  </svg>
-                  <p class="diagram-caption">Figure 4: Consumer group "analytics-service" with 2 consumers reading from a 4-partition topic. Each partition is exclusively assigned to one consumer. Each consumer tracks its own committed offset per partition inside the internal <code>__consumer_offsets</code> topic.</p>
-                </div>
-
-                <h2>Where Kafka Excels</h2>
-                <p>Kafka's architecture is unarguably successful at solving specific categories of engineering problems. Its sequential disk I/O model, achieved through operating system page cache and zero-copy transfers via the <code>sendfile</code> system call, enables throughput that routinely exceeds one million messages per second on modest hardware. Furthermore, its decoupling of producers and consumers through the persistent log enables architectural patterns that are otherwise difficult to implement, including event sourcing, CDC (Change Data Capture) from relational databases via tools like Debezium, and replayable audit trails for regulatory compliance. For organizations building real-time recommendation engines, fraud detection pipelines, or multi-service event-driven architectures, Kafka provides a durable and scalable backbone that is difficult to replicate with alternative technologies.</p>
-
-                <h2>Where Kafka Creates Operational Complexity</h2>
-                <p>However, we cannot overlook the significant operational demands that Kafka introduces. Even though managed services like Confluent Cloud and Amazon MSK reduce infrastructure burden considerably, operating a self-managed Kafka cluster requires deep expertise in JVM tuning, ZooKeeper coordination (or the newer KRaft consensus mode introduced as stable in Kafka 3.3), disk provisioning, and network configuration. A survey conducted by the Data Engineering Weekly newsletter in 2023 found that 62 percent of teams operating self-managed Kafka clusters cited operational complexity as their primary challenge. Additionally, Kafka is not an ideal solution for low-throughput workloads, workloads requiring strict exactly-once message delivery without careful producer and consumer configuration, or use cases where message ordering across a complete topic is a hard requirement. For simpler point-to-point messaging scenarios, lightweight alternatives such as Amazon SQS or Redis Streams impose significantly less operational overhead while delivering adequate performance.</p>
-
-                <p><em>Conclusion:</em> Kafka's distributed log model is a technically elegant and unarguably powerful solution for high-throughput event streaming. Yet, technology leaders must continuously evaluate whether the organizational investment required to operate it competently aligns with the actual scale of the problem being solved. For teams processing millions of events per day across decoupled microservices, Kafka is fruitful. For teams processing thousands, it may be a costly over-engineering mistake.</p>
-            </div>
-
-            <!-- Author Bio Section -->
-            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59,130,246,0.03); border-radius: var(--radius-m);">
-                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--clr-text-main);">About the Author</h3>
-                <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0 0 0.5rem 0;">
-                    <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
-                </p>
-                <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0;">
-                    Jieun specializes in building LLM-powered SaaS applications and RAG (Retrieval-Augmented Generation) systems that turn complex data into actionable intelligence. With a dual focus on AI engineering and business intelligence strategy, she bridges the gap between cutting-edge AI development and real-world business impact. Her work spans the full lifecycle from architecting intelligent pipelines to delivering insights that drive decisions.
-                </p>
-            </div>
-        </article>
-    </main>
-
-    <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
-        <div class="container" style="text-align:center;">
-            <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
-            <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
-            <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
-                rights reserved.</p>
+              <!-- Point 3 -->
+              <circle cx="20" cy="115" r="3" fill="#f59e0b" />
+              <text x="35" y="118" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif" font-style="italic">No
+                ordering guarantees across partitions</text>
+            </g>
+          </svg>
+          <p class="diagram-caption">Figure 2: A topic named "orders" with 3 partitions. Messages with key:A always go
+            to Partition 0; key:B to Partition 1. Each partition has its own independent offset sequence starting from
+            0.</p>
         </div>
-    </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <h2>Partitions: The Engine of Parallelism</h2>
+        <p>Partitions are the mechanism by which Kafka achieves both scalability and ordering guarantees simultaneously.
+          Every topic is subdivided into one or more partitions, each of which is an independent, ordered, immutable
+          sequence of records. Crucially, Kafka only guarantees message ordering within a single partition, not across
+          the entire topic. Each message within a partition is assigned a monotonically increasing integer called an
+          offset, which uniquely identifies its position. Consumers track their progress by storing the last committed
+          offset, a process that Kafka manages in an internal topic called <code>__consumer_offsets</code>. The number
+          of partitions directly determines the maximum parallelism achievable for a topic: a topic with eight
+          partitions can be consumed by at most eight consumers within a single consumer group concurrently.
+          Consequently, partition count is a critical architectural decision that is difficult to reverse. Increasing
+          partitions after creation is possible, but it redistributes key-based routing and can break ordering semantics
+          for stateful consumers. The official Apache Kafka documentation recommends provisioning for anticipated
+          throughput growth rather than scaling partitions reactively.</p>
+
+        <h2>Brokers and Replication: Fault Tolerance by Design</h2>
+        <p>A Kafka cluster consists of one or more servers called brokers. Each broker is responsible for receiving
+          messages from producers, storing them on disk, and serving them to consumers. Partitions are distributed
+          across brokers, with one broker designated as the leader for each partition and the remaining brokers hosting
+          in-sync replicas (ISRs). The replication factor, configured at the topic level, determines how many replicas
+          of each partition exist. A replication factor of three, which is the standard production recommendation from
+          Confluent's documentation, means that a Kafka cluster can survive the loss of two brokers without data loss.
+          The leader handles all read and write requests for its partition; replicas exist solely for fault tolerance
+          and do not serve consumer requests by default. Beginning with Kafka 2.4, follower fetching can be optionally
+          enabled through the <code>replica.selector.class</code> configuration to reduce cross-datacenter latency in
+          geo-distributed deployments.</p>
+
+        <!-- Diagram 3: Broker Replication -->
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;max-width:700px;display:block;margin:0 auto;">
+            <!-- Broker 1 -->
+            <rect x="20" y="30" width="190" height="165" rx="8" fill="rgba(59,130,246,0.07)" stroke="#3b82f6"
+              stroke-width="1.5" />
+            <text x="115" y="52" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Broker 1</text>
+            <rect x="35" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.25)" stroke="#3b82f6"
+              stroke-width="1" />
+            <text x="115" y="76" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P0
+              &#x2605; LEADER</text>
+            <text x="115" y="90" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">(reads
+              &amp; writes)</text>
+            <rect x="35" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.12)" stroke="#8b5cf6"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="115" y="120" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Inter,sans-serif">P1
+              replica (ISR)</text>
+            <rect x="35" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="115" y="163" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="Inter,sans-serif">P2
+              replica (ISR)</text>
+
+            <!-- Broker 2 -->
+            <rect x="255" y="30" width="190" height="165" rx="8" fill="rgba(139,92,246,0.07)" stroke="#8b5cf6"
+              stroke-width="1.5" />
+            <text x="350" y="52" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Broker 2</text>
+            <rect x="270" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="350" y="77" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="Inter,sans-serif">P0
+              replica (ISR)</text>
+            <rect x="270" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.25)" stroke="#8b5cf6"
+              stroke-width="1" />
+            <text x="350" y="119" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P1
+              &#x2605; LEADER</text>
+            <text x="350" y="133" text-anchor="middle" fill="#94a3b8" font-size="9"
+              font-family="Inter,sans-serif">(reads &amp; writes)</text>
+            <rect x="270" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="350" y="163" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="Inter,sans-serif">P2
+              replica (ISR)</text>
+
+            <!-- Broker 3 -->
+            <rect x="490" y="30" width="190" height="165" rx="8" fill="rgba(16,185,129,0.07)" stroke="#10b981"
+              stroke-width="1.5" />
+            <text x="585" y="52" text-anchor="middle" fill="#6ee7b7" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Broker 3</text>
+            <rect x="505" y="62" width="160" height="35" rx="5" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="585" y="77" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="Inter,sans-serif">P0
+              replica (ISR)</text>
+            <rect x="505" y="105" width="160" height="35" rx="5" fill="rgba(139,92,246,0.12)" stroke="#8b5cf6"
+              stroke-width="1" stroke-dasharray="4,2" />
+            <text x="585" y="120" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="Inter,sans-serif">P1
+              replica (ISR)</text>
+            <rect x="505" y="148" width="160" height="35" rx="5" fill="rgba(16,185,129,0.25)" stroke="#10b981"
+              stroke-width="1" />
+            <text x="585" y="162" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">P2
+              &#x2605; LEADER</text>
+            <text x="585" y="176" text-anchor="middle" fill="#94a3b8" font-size="9"
+              font-family="Inter,sans-serif">(reads &amp; writes)</text>
+          </svg>
+          <p class="diagram-caption">Figure 3: Replication factor 3 across 3 brokers. Each partition has exactly one
+            leader (solid border) that handles all reads and writes. The other brokers hold in-sync replicas (dashed
+            borders). If Broker 1 fails, Kafka elects a new leader for P0 from the remaining ISRs.</p>
+        </div>
+
+        <h2>Consumer Groups: Coordinating Parallel Consumption</h2>
+        <p>Consumer groups are the mechanism by which Kafka enables parallel processing of a topic by multiple
+          consumers. Each consumer within a group is assigned an exclusive subset of partitions, ensuring that no two
+          consumers in the same group read the same partition simultaneously. When a consumer fails or a new consumer
+          joins a group, Kafka triggers a rebalance protocol managed by a broker designated as the group coordinator.
+          The group coordinator reads the membership state from <code>__consumer_offsets</code> and reassigns partition
+          ownership using one of several configurable partition assignment strategies, including
+          <code>RangeAssignor</code>, <code>RoundRobinAssignor</code>, and the more sophisticated
+          <code>CooperativeStickyAssignor</code>. The <code>CooperativeStickyAssignor</code>, introduced in Kafka 2.4,
+          significantly reduces rebalance disruption by allowing consumers to retain their existing partition
+          assignments during incremental rebalances, a substantial improvement over the stop-the-world rebalances of
+          earlier versions.</p>
+
+        <!-- Diagram 4: Consumer Group Assignment -->
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;max-width:700px;display:block;margin:0 auto;">
+            <!-- Topic (left) -->
+            <text x="110" y="22" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Topic: events (4 partitions)</text>
+            <!-- P0 -->
+            <rect x="20" y="35" width="180" height="38" rx="6" fill="rgba(59,130,246,0.2)" stroke="#3b82f6"
+              stroke-width="1.5" />
+            <text x="110" y="59" text-anchor="middle" fill="#60a5fa" font-size="12"
+              font-family="Inter,sans-serif">Partition 0</text>
+            <!-- P1 -->
+            <rect x="20" y="83" width="180" height="38" rx="6" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6"
+              stroke-width="1.5" />
+            <text x="110" y="107" text-anchor="middle" fill="#a78bfa" font-size="12"
+              font-family="Inter,sans-serif">Partition 1</text>
+            <!-- P2 -->
+            <rect x="20" y="131" width="180" height="38" rx="6" fill="rgba(245,158,11,0.2)" stroke="#f59e0b"
+              stroke-width="1.5" />
+            <text x="110" y="155" text-anchor="middle" fill="#fbbf24" font-size="12"
+              font-family="Inter,sans-serif">Partition 2</text>
+            <!-- P3 -->
+            <rect x="20" y="179" width="180" height="38" rx="6" fill="rgba(16,185,129,0.2)" stroke="#10b981"
+              stroke-width="1.5" />
+            <text x="110" y="203" text-anchor="middle" fill="#6ee7b7" font-size="12"
+              font-family="Inter,sans-serif">Partition 3</text>
+
+            <!-- Consumer Group Box -->
+            <rect x="310" y="10" width="370" height="220" rx="10" fill="rgba(0,0,0,0.2)" stroke="rgba(148,163,184,0.2)"
+              stroke-width="1.5" stroke-dasharray="6,4" />
+            <text x="495" y="30" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Consumer Group: analytics-service</text>
+
+            <!-- Consumer A -->
+            <rect x="325" y="42" width="150" height="80" rx="8" fill="rgba(59,130,246,0.1)" stroke="#3b82f6"
+              stroke-width="1.5" />
+            <text x="400" y="62" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Consumer A</text>
+            <text x="400" y="82" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="Inter,sans-serif">P0
+              (offset: 142)</text>
+            <text x="400" y="100" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="Inter,sans-serif">P1
+              (offset: 98)</text>
+
+            <!-- Consumer B -->
+            <rect x="325" y="140" width="150" height="80" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b"
+              stroke-width="1.5" />
+            <text x="400" y="160" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="Inter,sans-serif"
+              font-weight="600">Consumer B</text>
+            <text x="400" y="180" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="Inter,sans-serif">P2
+              (offset: 203)</text>
+            <text x="400" y="198" text-anchor="middle" fill="#6ee7b7" font-size="11" font-family="Inter,sans-serif">P3
+              (offset: 77)</text>
+
+            <!-- Note: max parallelism -->
+            <rect x="490" y="55" width="175" height="155" rx="8" fill="rgba(239,68,68,0.05)"
+              stroke="rgba(248,113,113,0.2)" stroke-width="1" />
+            <text x="577" y="78" text-anchor="middle" fill="#f87171" font-size="11" font-family="Inter,sans-serif"
+              font-weight="600">Max parallelism rule</text>
+            <text x="577" y="100" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">4
+              partitions =</text>
+            <text x="577" y="117" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">max
+              4 consumers</text>
+            <text x="577" y="134" text-anchor="middle" fill="#e2e8f0" font-size="10" font-family="Inter,sans-serif">in
+              one group.</text>
+            <text x="577" y="158" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif">A
+              5th consumer</text>
+            <text x="577" y="174" text-anchor="middle" fill="#94a3b8" font-size="10"
+              font-family="Inter,sans-serif">would sit idle.</text>
+            <text x="577" y="197" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif"
+              font-style="italic">Plan partitions upfront.</text>
+
+            <!-- Arrows from partitions to consumers -->
+            <line x1="200" y1="54" x2="325" y2="72" stroke="#3b82f6" stroke-width="1.5"
+              marker-end="url(#arrow-blue2)" />
+            <line x1="200" y1="102" x2="325" y2="90" stroke="#8b5cf6" stroke-width="1.5"
+              marker-end="url(#arrow-blue2)" />
+            <line x1="200" y1="150" x2="325" y2="175" stroke="#f59e0b" stroke-width="1.5"
+              marker-end="url(#arrow-amber2)" />
+            <line x1="200" y1="198" x2="325" y2="190" stroke="#10b981" stroke-width="1.5"
+              marker-end="url(#arrow-green2)" />
+            <defs>
+              <marker id="arrow-blue2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa" />
+              </marker>
+              <marker id="arrow-amber2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b" />
+              </marker>
+              <marker id="arrow-green2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#10b981" />
+              </marker>
+            </defs>
+          </svg>
+          <p class="diagram-caption">Figure 4: Consumer group "analytics-service" with 2 consumers reading from a
+            4-partition topic. Each partition is exclusively assigned to one consumer. Each consumer tracks its own
+            committed offset per partition inside the internal <code>__consumer_offsets</code> topic.</p>
+        </div>
+
+        <h2>Where Kafka Excels</h2>
+        <p>Kafka's architecture is unarguably successful at solving specific categories of engineering problems. Its
+          sequential disk I/O model, achieved through operating system page cache and zero-copy transfers via the
+          <code>sendfile</code> system call, enables throughput that routinely exceeds one million messages per second
+          on modest hardware. Furthermore, its decoupling of producers and consumers through the persistent log enables
+          architectural patterns that are otherwise difficult to implement, including event sourcing, Change Data
+          Capture from relational databases via tools like Debezium, and replayable audit trails for regulatory
+          compliance. For organizations building real-time recommendation engines, fraud detection pipelines, or
+          multi-service event-driven architectures, Kafka provides a durable and scalable backbone that is difficult to
+          replicate with alternative technologies.</p>
+
+        <h2>Where Kafka Creates Operational Complexity</h2>
+        <p>However, we cannot overlook the significant operational demands that Kafka introduces. Even though managed
+          services like Confluent Cloud and Amazon MSK reduce infrastructure burden considerably, operating a
+          self-managed Kafka cluster requires deep expertise in JVM tuning, ZooKeeper coordination (or the newer KRaft
+          consensus mode introduced as stable in Kafka 3.3), disk provisioning, and network configuration. A survey
+          conducted by the Data Engineering Weekly newsletter in 2023 found that 62 percent of teams operating
+          self-managed Kafka clusters cited operational complexity as their primary challenge. Additionally, Kafka is
+          not an ideal solution for low-throughput workloads, workloads requiring strict exactly-once message delivery
+          without careful producer and consumer configuration, or use cases where message ordering across a complete
+          topic is a hard requirement. For simpler point-to-point messaging scenarios, lightweight alternatives such as
+          Amazon SQS or Redis Streams impose significantly less operational overhead while delivering adequate
+          performance.</p>
+
+        <p><em>Conclusion:</em> Kafka's distributed log model is a technically elegant and unarguably powerful solution
+          for high-throughput event streaming. Yet, technology leaders must continuously evaluate whether the
+          organizational investment required to operate it competently aligns with the actual scale of the problem being
+          solved. For teams processing millions of events per day across decoupled microservices, Kafka is fruitful. For
+          teams processing thousands, it may be a costly over-engineering mistake.</p>
+      </div>
+
+      <!-- Author Bio Section -->
+      <div
+        style="margin-top: 2rem; padding: 1.5rem; background: rgba(59,130,246,0.03); border-radius: var(--radius-m);">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--clr-text-main);">About the Author</h3>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0 0 0.5rem 0;">
+          <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0;">
+          Jieun specializes in building LLM-powered SaaS applications and RAG (Retrieval-Augmented Generation) systems
+          that turn complex data into actionable intelligence. With a dual focus on AI engineering and business
+          intelligence strategy, she bridges the gap between cutting-edge AI development and real-world business impact.
+          Her work spans the full lifecycle from architecting intelligent pipelines to delivering insights that drive
+          decisions.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+    <div class="container" style="text-align:center;">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+      <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+        rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>
