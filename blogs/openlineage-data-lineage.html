@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is Data Lineage and How Do Tools Like OpenLineage Actually Track It? - Data Analytics & Beyond</title>
+  <meta name="description"
+    content="An analytical breakdown of data lineage concepts and how the OpenLineage standard tracks data flow, jobs, and dependencies across modern data ecosystems.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
+    .post-header { text-align: center; margin-bottom: var(--space-xl); }
+    .post-image { width: 100%; border-radius: var(--radius-l); margin-bottom: var(--space-xl); box-shadow: var(--shadow-md); }
+    .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
+    .post-content h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--clr-surface-invert); margin: var(--space-xl) 0 var(--space-m); }
+    .post-content p { margin-bottom: var(--space-m); }
+    .post-content code { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.9em; color: #60a5fa; }
+    .post-content ul { margin-bottom: var(--space-m); padding-left: 2rem; }
+    .post-content li { margin-bottom: 0.5rem; }
+    .diagram-wrap { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 1.5rem 1rem; margin: 2rem 0; overflow-x: auto; }
+    .diagram-caption { text-align: center; font-size: 0.85rem; color: var(--clr-text-muted); margin-top: 0.75rem; font-style: italic; }
+  </style>
+  <!-- SEO & JSON-LD Schema -->
+  <meta property="og:title" content="What is Data Lineage and How Do Tools Like OpenLineage Actually Track It?">
+  <meta property="og:description"
+    content="An analytical breakdown of data lineage concepts and how the OpenLineage standard tracks data flow, jobs, and dependencies across modern data ecosystems.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/data_lineage_abstract.png">
+  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/openlineage-data-lineage.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/openlineage-data-lineage.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "What is Data Lineage and How Do Tools Like OpenLineage Actually Track It?",
+      "description": "An analytical breakdown of data lineage concepts and how the OpenLineage standard tracks data flow, jobs, and dependencies.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/data_lineage_abstract.png",
+      "datePublished": "2026-07-09",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+    </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">← Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(139,92,246,0.2);color:#c4b5fd;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">What is Data Lineage and How Do Tools Like OpenLineage Actually Track It?
+        </h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          An analytical breakdown of data lineage concepts and how the OpenLineage standard captures data dependencies and transformation logic across complex enterprise environments.
+        </p>
+        <p class="post-meta">Published: <time>July 9, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/data_lineage_abstract.png"
+        alt="Abstract visualization of data lineage a network of glowing interconnected nodes and directed edges forming a flowing dependency graph"
+        class="post-image">
+
+      <div class="post-content">
+        <p>In contemporary data architectures, information traverses numerous systems before reaching an end user. A single metric on an executive dashboard often originates in an operational database, flows through messaging queues, lands in a cloud storage lake, and undergoes several aggregation layers inside a cloud data warehouse. This intricate web of transformations introduces significant opacity. Data lineage resolves this challenge by providing a detailed, step-by-step audit trail of data flow. It documents the origin of data, the systems it interacts with, and the logic applied to it. Consequently, organizations utilize data lineage for impact analysis, regulatory compliance, and root-cause debugging. However, historically, implementing data lineage required proprietary tools or fragile, custom-built parsing scripts that attempted to reverse-engineer SQL queries and workflow definitions.</p>
+
+        <h2>The OpenLineage Standard</h2>
+        <p>OpenLineage has emerged as a vendor-neutral, open-source standard designed specifically for the collection and governance of data lineage. Hosted by the LF AI &amp; Data Foundation, it replaces fragmented integration points with a unified JSON-based specification. Instead of attempting to parse query logs after the fact, OpenLineage relies on operational systems to emit standardized metadata events as pipelines execute. Furthermore, this approach pushes the responsibility of lineage generation to the computing frameworks themselves. Apache Airflow, Apache Spark, and dbt all have native or community-supported OpenLineage integrations. When a task runs within these engines, it constructs and transmits a JSON payload to a centralized backend tracker, such as Marquez or Atlan.</p>
+
+        <h2>Core Mechanics: Jobs, Runs, and Datasets</h2>
+        <p>To capture complex topologies, the OpenLineage specification models the universe using three core entities. First, a <strong>Dataset</strong> represents an abstract grouping of data, such as a database table or an object storage directory. Second, a <strong>Job</strong> defines a repeatable transformation process that consumes or produces datasets. Third, a <strong>Run</strong> signifies a single instantiated execution of a Job, tied to a specific point in time. During execution, a Job will emit <code>START</code>, <code>RUNNING</code>, and <code>COMPLETE</code> or <code>FAIL</code> events. Each event contains an array of inputs and outputs mapped directly to the Dataset entity.</p>
+
+        <!-- Diagram 1: OpenLineage Core Entities -->
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arrow-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#60a5fa"/></marker>
+              <marker id="arrow-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#10b981"/></marker>
+            </defs>
+
+            <!-- Background Container -->
+            <rect x="10" y="10" width="680" height="230" rx="10" fill="rgba(30,41,59,0.3)" stroke="rgba(139,92,246,0.15)" stroke-width="1.5"/>
+            <text x="350" y="32" text-anchor="middle" fill="#c4b5fd" font-size="14" font-family="Inter,sans-serif" font-weight="600">OpenLineage Event Architecture</text>
+
+            <!-- Input Dataset -->
+            <rect x="40" y="85" width="120" height="70" rx="6" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="100" y="115" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="Inter,sans-serif" font-weight="600">Input Dataset</text>
+            <text x="100" y="135" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Courier New,monospace">raw_events_tbl</text>
+
+            <!-- Arrow Input -> Run -->
+            <path d="M 160,120 L 250,120" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow-blue)"/>
+            <text x="205" y="110" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="Inter,sans-serif">Reads from</text>
+
+            <!-- Central Job & Run -->
+            <rect x="250" y="55" width="200" height="130" rx="8" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1.5"/>
+            <text x="350" y="80" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="Inter,sans-serif" font-weight="600">Job: aggregate_events</text>
+            
+            <rect x="270" y="100" width="160" height="65" rx="6" fill="rgba(139,92,246,0.2)" stroke="#a78bfa" stroke-width="1"/>
+            <text x="350" y="125" text-anchor="middle" fill="#e2e8f0" font-size="11" font-family="Inter,sans-serif" font-weight="500">Run ID: x7f9-2b4a</text>
+            <text x="350" y="145" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="Inter,sans-serif">State: COMPLETED</text>
+
+            <!-- Arrow Run -> Output -->
+            <path d="M 450,120 L 540,120" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow-green)"/>
+            <text x="495" y="110" text-anchor="middle" fill="#10b981" font-size="10" font-family="Inter,sans-serif">Writes to</text>
+
+            <!-- Output Dataset -->
+            <rect x="540" y="85" width="120" height="70" rx="6" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1.5"/>
+            <text x="600" y="115" text-anchor="middle" fill="#10b981" font-size="12" font-family="Inter,sans-serif" font-weight="600">Output Dataset</text>
+            <text x="600" y="135" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Courier New,monospace">daily_summary</text>
+
+            <!-- Event Payload Note -->
+            <rect x="250" y="200" width="200" height="25" rx="4" fill="rgba(0,0,0,0.3)" stroke="#475569" stroke-width="1"/>
+            <text x="350" y="217" text-anchor="middle" fill="#cbd5e1" font-size="10" font-family="Courier New,monospace">Emits JSON to Lineage API</text>
+          </svg>
+          <p class="diagram-caption">Figure 1: The OpenLineage standard models data workflows as Jobs and Runs that consume and produce Datasets, emitting JSON events at state changes.</p>
+        </div>
+
+        <h2>Extensibility via Facets</h2>
+        <p>The ingenuity of OpenLineage lies in its implementation of "Facets." Because diverse data systems possess unique metadata attributes, a rigid schema would rapidly become obsolete. Facets solve this by allowing users and systems to attach modular JSON objects to standard entities. For example, a <code>SQLJobFacet</code> attaches the exact SQL query executed to the Job definition. Similarly, a <code>SchemaDatasetFacet</code> describes the column types of a Dataset at the precise moment it was written. This modularity ensures that the protocol captures specialized details, such as data quality metrics or ownership tags, without bloating the foundational spec.</p>
+
+        <h2>A Balanced Assessment of OpenLineage</h2>
+        <p>When evaluating OpenLineage, it is crucial to recognize both its unarguably successful design choices and its persistent limitations.</p>
+        <ul>
+          <li><strong>Pros:</strong> OpenLineage eliminates vendor lock-in. By providing a single open specification, engineering teams can switch visualization backends or governance tools without rewriting integration pipelines. Additionally, because it collects metadata in real time directly from the execution engines, the lineage graphs reflect the genuine operational truth rather than an inferred guess.</li>
+          <li><strong>Cons:</strong> Implementing a robust lineage system requires substantial overhead. While native integrations exist, older or bespoke legacy systems require custom extractors. Even though OpenLineage standardizes the payload, organizations must still deploy and maintain a backend consumer, such as Marquez, to parse and store the incoming metadata events. Without a backend, the JSON events merely vanish.</li>
+        </ul>
+
+        <p>Ultimately, data lineage has evolved from a regulatory afterthought into a critical architectural requirement. OpenLineage drives this transformation by standardizing the metadata language, effectively bringing order to previously unmanageable data environments.</p>
+
+      </div>
+
+      <div
+        style="margin-top: 2rem; padding: 1.5rem; background: rgba(59,130,246,0.03); border-radius: var(--radius-m);">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--clr-text-main);">About the Author</h3>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0 0 0.5rem 0;">
+          <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0;">
+          Jieun specializes in building LLM-powered SaaS applications and RAG (Retrieval-Augmented Generation) systems
+          that turn complex data into actionable intelligence. With a dual focus on AI engineering and business
+          intelligence strategy, she bridges the gap between cutting-edge AI development and real-world business impact.
+          Her work spans the full lifecycle from architecting intelligent pipelines to delivering insights that drive
+          decisions.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+    <div class="container" style="text-align:center;">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+      <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+        rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
