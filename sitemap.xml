@@ -2,11 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jpark8215.github.io/data-analytics/index.html</loc>
-    <lastmod>2026-07-30</lastmod>
+    <lastmod>2026-08-03</lastmod>
   </url>
   <url>
     <loc>https://jpark8215.github.io/data-analytics/all-posts.html</loc>
-    <lastmod>2026-07-30</lastmod>
+    <lastmod>2026-08-03</lastmod>
+  </url>
+  <url>
+    <loc>https://jpark8215.github.io/data-analytics/blogs/excel-clean-messy-data.html</loc>
+    <lastmod>2026-08-03</lastmod>
   </url>
   <url>
     <loc>https://jpark8215.github.io/data-analytics/blogs/sharepoint-copilot-grounding-permissions.html</loc>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Clean Messy Data in Excel: Steps with Tutorials - Data Analytics &amp; Beyond</title>
+  <meta name="description"
+    content="A step-by-step analytical guide to cleaning messy data in Excel, covering TRIM, CLEAN, SUBSTITUTE, remove duplicates, Power Query, data types, and best practices for reliable analysis.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
+    .post-header { text-align: center; margin-bottom: var(--space-xl); }
+    .post-image { width: 100%; border-radius: var(--radius-l); margin-bottom: var(--space-xl); box-shadow: var(--shadow-md); }
+    .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
+    .post-content h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--clr-surface-invert); margin: var(--space-xl) 0 var(--space-m); }
+    .post-content h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--clr-surface-invert); margin: var(--space-l) 0 var(--space-s); }
+    .post-content p { margin-bottom: var(--space-m); }
+    .post-content code { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.9em; color: #60a5fa; }
+    .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 2rem; }
+    .post-content li { margin-bottom: 0.5rem; }
+    .step-box {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+    .step-box p { margin-bottom: 0.5rem; }
+    .step-box p:last-child { margin-bottom: 0; }
+    .formula-block {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1rem 1.5rem;
+      margin: var(--space-m) 0;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      color: #34d399;
+      letter-spacing: 0.02em;
+    }
+  </style>
+  <!-- SEO & JSON-LD Schema -->
+  <meta property="og:title" content="How to Clean Messy Data in Excel: Steps with Tutorials">
+  <meta property="og:description"
+    content="A step-by-step analytical guide to cleaning messy data in Excel, covering TRIM, CLEAN, SUBSTITUTE, remove duplicates, Power Query, data types, and best practices for reliable analysis.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/excel_data_cleaning_abstract.jpg">
+  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/excel-clean-messy-data.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/excel-clean-messy-data.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to Clean Messy Data in Excel: Steps with Tutorials",
+      "description": "A step-by-step analytical guide to cleaning messy data in Excel, covering TRIM, CLEAN, SUBSTITUTE, remove duplicates, Power Query, data types, and best practices for reliable analysis.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/excel_data_cleaning_abstract.jpg",
+      "datePublished": "2026-08-03",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">← Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:var(--clr-secondary);">Practical</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">How to Clean Messy Data in Excel: Steps with Tutorials</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          A step-by-step guide to identifying and correcting the most common data quality problems in Excel, from invisible characters and duplicate rows to inconsistent data types and misformatted dates.
+        </p>
+        <p class="post-meta">Published: <time>August 3, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/excel_data_cleaning_abstract.jpg"
+        alt="Abstract visualization showing chaotic data transforming into clean, ordered structures"
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>Raw data rarely arrives in a form that supports accurate analysis. Whether it has been exported from a CRM, downloaded from a government database, pasted together from multiple sources, or simply maintained by a team with different formatting habits over several years, most real-world spreadsheets carry defects. According to Gartner, poor data quality costs organizations an average of $12.9 million per year. IBM's research has placed the broader cost of bad data on the U.S. economy at approximately $3.1 trillion annually. Yet for many analysts, the problem manifests far more modestly: a SUM formula that returns zero, a pivot table that groups the same customer name six different ways, or a date column that refuses to sort correctly.</p>
+
+        <p>Excel is the tool where many of these problems are first encountered, and it provides a robust set of functions and features designed to address them. This guide walks through the most common categories of messy data and the specific Excel techniques available to resolve each one. The steps are practical and sequential, suited for analysts working with real datasets rather than sanitized training examples.</p>
+
+        <h2>Step 1: Audit the Data Before Touching It</h2>
+
+        <p>The first and most frequently skipped step in data cleaning is assessment. Before applying any formulas or transformations, it is worthwhile to understand the shape and character of the problems present. A quick audit prevents the frustrating scenario of spending an hour cleaning the wrong column while the actual issue lives three columns to the right.</p>
+
+        <p>Start by scanning each column visually. Look for inconsistently aligned values: in Excel, numbers and dates are right-aligned by default, while text is left-aligned. If a column that should contain numbers shows left-aligned entries, those cells contain text masquerading as numbers, a common cause of formula failures. Look for blank rows or columns scattered through the middle of the data, for values that seem truncated, and for any column where the same category label appears in multiple formats such as "NY," "New York," and "new york."</p>
+
+        <p>Beyond the visual check, Microsoft's official Excel documentation recommends using the <strong>Find and Select</strong> feature (Home tab, Find &amp; Select, Go To Special) to locate blank cells, cells containing formulas, or cells with constants. This provides a rapid inventory of where gaps and anomalies are concentrated before any correction is attempted.</p>
+
+        <h2>Step 2: Remove Extra Spaces with TRIM</h2>
+
+        <p>Extra spaces are among the most prevalent and least visible data quality problems. A customer name with a leading space will not match the same name without one, meaning a VLOOKUP will fail and a pivot table will treat them as separate entities. They arrive from copy-paste operations, web scraping, PDF extractions, and database exports.</p>
+
+        <p>Excel's <strong>TRIM</strong> function removes leading and trailing spaces from a text string, and reduces any sequence of multiple internal spaces down to a single space. According to the official Microsoft support documentation, its syntax is straightforward:</p>
+
+        <div class="formula-block">=TRIM(text)</div>
+
+        <div class="step-box">
+          <p><strong>Tutorial:</strong> Suppose column A contains customer names with irregular spacing. In cell B2, enter:</p>
+          <p><code>=TRIM(A2)</code></p>
+          <p>Copy that formula down through the entire column. The result in column B will be the cleaned names. Once verified, select the entire B column result, copy it, then use <strong>Paste Special</strong> (Ctrl + Alt + V, then V for Values) to paste only the values over column A. Delete the helper column B when finished.</p>
+        </div>
+
+        <p>One important limitation: TRIM does not remove non-breaking spaces, which carry the Unicode character value 160 (CHAR(160)) and frequently appear in data copied from web pages. Those require a different approach covered in Step 4.</p>
+
+        <h2>Step 3: Remove Non-Printable Characters with CLEAN</h2>
+
+        <p>Some data, particularly that exported from legacy systems or imported from certain database formats, contains non-printable characters. These are the first 32 characters in the ASCII character set (values 0 through 31) and include items such as line breaks, carriage returns, and low-level control codes. In a spreadsheet they may appear as small squares or rectangles, or they may be entirely invisible while still causing formula errors or sorting anomalies.</p>
+
+        <p>Excel's <strong>CLEAN</strong> function strips these characters from a text string. Its official syntax, per Microsoft's function reference, is:</p>
+
+        <div class="formula-block">=CLEAN(text)</div>
+
+        <div class="step-box">
+          <p><strong>Tutorial:</strong> If column A contains imported text with embedded line breaks or invisible characters, in cell B2 enter:</p>
+          <p><code>=CLEAN(A2)</code></p>
+          <p>This removes any non-printable ASCII characters from the string. As with TRIM, copy the formula down and paste values back once the output is confirmed correct.</p>
+        </div>
+
+        <p>TRIM and CLEAN are frequently applied together in a single nested formula, since extra spaces and non-printable characters often co-exist in the same imported dataset.</p>
+
+        <h2>Step 4: Handle Stubborn Characters with SUBSTITUTE</h2>
+
+        <p>When TRIM alone fails to remove certain spaces, the problem is usually the non-breaking space (CHAR(160)). This character looks identical to a standard space but is not recognized as whitespace by TRIM. The <strong>SUBSTITUTE</strong> function resolves this by replacing every instance of a specified character with another character of your choosing.</p>
+
+        <p>The official syntax from Microsoft's support documentation is:</p>
+
+        <div class="formula-block">=SUBSTITUTE(text, old_text, new_text, [instance_num])</div>
+
+        <p>The optional fourth argument, instance_num, allows replacement of a specific occurrence rather than all occurrences. When omitted, all instances are replaced.</p>
+
+        <div class="step-box">
+          <p><strong>Tutorial:</strong> The most powerful general-purpose cleaning formula combines all three functions. In cell B2, enter:</p>
+          <p><code>=TRIM(CLEAN(SUBSTITUTE(A2, CHAR(160), " ")))</code></p>
+          <p>This formula works in three layers. First, SUBSTITUTE replaces every non-breaking space (CHAR(160)) with a standard space. Second, CLEAN removes any remaining non-printable ASCII characters. Third, TRIM removes all leading, trailing, and duplicate internal spaces from whatever remains. This combination handles the majority of text-based cleaning problems in a single step.</p>
+        </div>
+
+        <p>SUBSTITUTE is also useful for removing characters that should not appear at all. For example, to strip every dollar sign from a column of currency values imported as text, use <code>=SUBSTITUTE(A2, "$", "")</code>, replacing the unwanted character with an empty string.</p>
+
+        <h2>Step 5: Find and Remove Duplicate Rows</h2>
+
+        <p>Duplicate records are a structural problem rather than a character-level one. They arise when data is appended from multiple sources, when a process runs twice without a deduplication step, or when a team manually combines datasets. A duplicate row does not cause a formula to fail, but it silently inflates counts and totals, producing reports that look plausible but are factually incorrect.</p>
+
+        <p>Excel provides a built-in tool for this under the Data tab. However, it is permanent by default, so a copy of the original data should always be preserved before proceeding.</p>
+
+        <div class="step-box">
+          <p><strong>Tutorial: Remove Duplicates (built-in tool)</strong></p>
+          <ol>
+            <li>Select any cell within your data range.</li>
+            <li>Navigate to the <strong>Data</strong> tab and click <strong>Remove Duplicates</strong> in the Data Tools group.</li>
+            <li>In the dialog that appears, select which columns should be used to define uniqueness. If every column must match for a row to be considered a duplicate, select all columns. If only certain fields (such as email address or order ID) define uniqueness, select only those.</li>
+            <li>Click <strong>OK</strong>. Excel will display a message confirming how many duplicate values were removed and how many unique values remain.</li>
+          </ol>
+        </div>
+
+        <p>For a non-destructive alternative, the COUNTIF function can identify duplicates without removing them. In a helper column, enter <code>=COUNTIF($A$2:$A$100, A2)</code> and copy it down. Any value greater than 1 indicates a duplicate. This approach allows review of the duplicates before permanent deletion, which is particularly useful when there is any ambiguity about which definition of "unique" applies to the dataset.</p>
+
+        <h2>Step 6: Fix Inconsistent Text Formatting with UPPER, LOWER, and PROPER</h2>
+
+        <p>Inconsistent capitalization is a frequent consequence of data entered by multiple people over time. "New York," "new york," and "NEW YORK" will be treated as three separate values by any function that performs an exact match, including VLOOKUP, SUMIF, and pivot tables. Standardizing case is one of the simpler cleaning operations but one that has a substantial effect on analysis accuracy.</p>
+
+        <p>Excel provides three functions for this purpose, each documented in Microsoft's official function reference:</p>
+
+        <ul>
+          <li><code>=UPPER(text)</code> converts all characters to uppercase.</li>
+          <li><code>=LOWER(text)</code> converts all characters to lowercase.</li>
+          <li><code>=PROPER(text)</code> capitalizes the first letter of each word and lowercases the rest.</li>
+        </ul>
+
+        <div class="step-box">
+          <p><strong>Tutorial:</strong> If column A contains city names with inconsistent casing and you want to standardize them to title case, in cell B2 enter:</p>
+          <p><code>=PROPER(A2)</code></p>
+          <p>Copy down, verify the results, then paste values back over the original column. Note that PROPER can produce unexpected results with abbreviations or proper nouns that contain lowercase letters mid-word, such as "McDonald" becoming "Mcdonald." Review the output for such cases.</p>
+        </div>
+
+        <h2>Step 7: Correct Data Type Mismatches</h2>
+
+        <p>One of the most consequential and least obvious forms of messy data is a value stored in the wrong data type. A column of order amounts stored as text will return zero in a SUM formula. A date column stored as text will not sort chronologically and will not work in date arithmetic. Excel's default behavior of right-aligning numbers and dates while left-aligning text provides the first diagnostic clue.</p>
+
+        <p>The <strong>ISNUMBER</strong> function provides a programmatic check. Entering <code>=ISNUMBER(A2)</code> returns TRUE if Excel recognizes the cell's value as numeric and FALSE if it is stored as text. For a date column, <code>=ISNUMBER(A2)</code> also returns TRUE because Excel stores dates internally as serial numbers.</p>
+
+        <div class="step-box">
+          <p><strong>Tutorial: Convert text-stored numbers to actual numbers</strong></p>
+          <ol>
+            <li>If the column shows the small green triangles in the upper-left corner of cells, select the entire column, click the warning icon that appears, and choose <strong>Convert to Number</strong>. This is the fastest method when Excel has already flagged the issue.</li>
+            <li>Alternatively, in a helper column, use the <strong>VALUE</strong> function: <code>=VALUE(A2)</code>. This converts a text string that looks like a number into an actual numeric value. Copy the formula down, paste values, and replace the original column.</li>
+            <li>For an entirely non-formula approach, select the column, go to <strong>Data</strong>, click <strong>Text to Columns</strong>, proceed through the wizard without changing any delimiter settings, set the column data format to <strong>General</strong>, and click <strong>Finish</strong>. Excel will re-evaluate each cell and convert recognizable numbers automatically.</li>
+          </ol>
+        </div>
+
+        <div class="step-box">
+          <p><strong>Tutorial: Fix dates stored as text</strong></p>
+          <ol>
+            <li>Select the column containing the text-formatted dates.</li>
+            <li>Go to <strong>Data</strong> and click <strong>Text to Columns</strong>.</li>
+            <li>Choose <strong>Delimited</strong> and click <strong>Next</strong>.</li>
+            <li>Uncheck all delimiter options and click <strong>Next</strong>.</li>
+            <li>Under Column data format, select <strong>Date</strong> and choose the format that matches the current date layout in the column (e.g., MDY, YMD).</li>
+            <li>Click <strong>Finish</strong>. Excel will convert the text dates into genuine date values. Format the column as a Date type via the Home tab to confirm the output is correct.</li>
+          </ol>
+        </div>
+
+        <h2>Step 8: Use Flash Fill for Pattern-Based Cleanup</h2>
+
+        <p>Flash Fill is a feature introduced in Excel 2013 that detects patterns from examples provided manually and applies those patterns to the rest of a column automatically. It does not require formulas and is particularly effective for reformatting data that follows a consistent but non-standard structure, such as splitting a full name column into first and last name columns, reformatting phone numbers, or extracting a domain from an email address.</p>
+
+        <div class="step-box">
+          <p><strong>Tutorial:</strong> Suppose column A contains entries like "Smith, John" and you need to extract only the last name into column B.</p>
+          <ol>
+            <li>In cell B2, manually type the expected result: <strong>Smith</strong>.</li>
+            <li>Press Enter to move to B3.</li>
+            <li>Press <strong>Ctrl + E</strong> to invoke Flash Fill. Excel will detect the pattern from the example and fill the remaining cells automatically.</li>
+          </ol>
+          <p>Always review the Flash Fill output carefully before accepting it. The pattern detection is probabilistic and can produce incorrect results when the source data is not sufficiently consistent.</p>
+        </div>
+
+        <h2>Step 9: Handle Blank Cells Deliberately</h2>
+
+        <p>Blank cells are not inherently a problem, but they become one when they are not handled deliberately. A blank in a date column may mean "not yet completed," "data not collected," or "this row does not apply." Treating all three meanings identically leads to incorrect aggregations. Before deciding how to handle blanks, it is necessary to understand why they exist.</p>
+
+        <p>Excel's <strong>Go To Special</strong> feature (Home tab, Find &amp; Select, Go To Special, Blanks) selects all blank cells in the current range simultaneously. This allows bulk entry of a placeholder value, deletion of rows with missing key fields, or targeted review of each gap. The appropriate action depends entirely on the analytical context.</p>
+
+        <p>For situations where blanks in a numeric column should be treated as zero, the <strong>IF</strong> and <strong>ISBLANK</strong> functions provide a formula-based solution: <code>=IF(ISBLANK(A2), 0, A2)</code>. This returns zero if the cell is blank and the original value if it is not, without modifying the source data.</p>
+
+        <h2>Step 10: Use Power Query for Repeatable, Large-Scale Cleaning</h2>
+
+        <p>The functions and features described in the preceding steps are effective for one-time cleaning of a specific dataset. However, when the same cleaning operations must be applied repeatedly as new data arrives, or when the dataset is large enough to make manual review impractical, Power Query is the appropriate tool. Available natively in Excel 2016 and later versions, and accessible through the Data tab under Get Data or From Table/Range, Power Query records each transformation step and can re-apply them to refreshed data automatically.</p>
+
+        <div class="step-box">
+          <p><strong>Tutorial: A basic Power Query cleaning workflow</strong></p>
+          <ol>
+            <li>Select any cell within your data range and press <strong>Ctrl + T</strong> to convert it to a formal Excel Table. Give it a meaningful name in the Table Design tab.</li>
+            <li>With the table selected, go to the <strong>Data</strong> tab and click <strong>From Table/Range</strong>. The Power Query Editor opens.</li>
+            <li>To remove duplicate rows: select the columns that define uniqueness, then on the <strong>Home</strong> tab click <strong>Remove Rows</strong> and choose <strong>Remove Duplicates</strong>.</li>
+            <li>To remove blank rows: on the <strong>Home</strong> tab, click <strong>Remove Rows</strong> and choose <strong>Remove Blank Rows</strong>.</li>
+            <li>To trim whitespace from text columns: right-click a column header, choose <strong>Transform</strong>, and select <strong>Trim</strong>.</li>
+            <li>To fix data types: click the data type icon at the left of each column header and select the correct type (Text, Whole Number, Date, etc.).</li>
+            <li>When all steps are complete, click <strong>Close &amp; Load</strong> on the Home tab. The cleaned data is returned to a new sheet in Excel.</li>
+          </ol>
+          <p>All applied steps are recorded in the <strong>Applied Steps</strong> pane on the right side of the editor. When the source data is updated, right-clicking the query in the Queries &amp; Connections pane and selecting <strong>Refresh</strong> re-runs every step automatically against the new data.</p>
+        </div>
+
+        <p>Power Query is particularly well-suited to data cleaning workflows that must be documented, audited, or shared with colleagues, because the applied steps function as an explicit, reviewable record of every transformation performed. This transparency addresses one of the chronic weaknesses of formula-based cleaning, where the logic is distributed across hundreds of cells and difficult to reconstruct after the fact.</p>
+
+        <h2>After Cleaning: Verify Before You Trust</h2>
+
+        <p>No cleaning process should be considered complete without a verification step. After applying corrections, it is worth running a set of sanity checks against the cleaned data. These include confirming that row counts align with expectations, that the range of values in key numeric columns falls within plausible bounds, that all cells in columns designated as required are populated, and that formerly inconsistent categories have consolidated to the expected number of distinct values.</p>
+
+        <p>The <strong>COUNTA</strong> function counts all non-empty cells; <strong>COUNTBLANK</strong> counts empty ones. <strong>COUNTIF</strong> tallies how many times each value appears in a column and is useful for confirming that category standardization has produced the correct number of distinct entries. A pivot table over a key dimension column is often the fastest way to verify that consolidation efforts were effective, because it immediately reveals any residual variants that were not addressed by the cleaning formula.</p>
+
+        <p>It is also worth preserving the original uncleaned data, either in a separate sheet or in a separate file, before committing any cleaning changes. Data cleaning involves judgment calls about how to interpret ambiguous values, and those judgments may need to be revisited if downstream analysis produces unexpected results. A recoverable original is far preferable to attempting to reconstruct source data after the fact.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>Cleaning data in Excel is not a single action but a sequence of diagnostic and corrective steps, each addressing a specific category of quality problem. The functions and tools covered here, TRIM, CLEAN, SUBSTITUTE, Remove Duplicates, PROPER, VALUE, Text to Columns, Flash Fill, and Power Query, collectively address the vast majority of issues encountered in real-world spreadsheets. Each has a defined scope and a set of limitations that the preceding steps have attempted to make explicit. The underlying discipline, however, remains constant regardless of which tool is used: understand what is wrong before correcting it, apply corrections in a verifiable and reversible way, and confirm that the result is actually what the analysis requires. Data cleaning done carefully is not overhead; it is the foundation on which every subsequent conclusion depends.</p>
+
+      </div>
+
+      <div
+        style="margin-top: 2rem; padding: 1.5rem; background: rgba(59,130,246,0.03); border-radius: var(--radius-m);">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--clr-text-main);">About the Author</h3>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0 0 0.5rem 0;">
+          <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0;">
+          Jieun specializes in building LLM-powered SaaS applications and RAG (Retrieval-Augmented Generation) systems
+          that turn complex data into actionable intelligence. With a dual focus on AI engineering and business
+          intelligence strategy, she bridges the gap between cutting-edge AI development and real-world business impact.
+          Her work spans the full lifecycle from architecting intelligent pipelines to delivering insights that drive
+          decisions.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+    <div class="container" style="text-align:center;">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+      <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+        rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
