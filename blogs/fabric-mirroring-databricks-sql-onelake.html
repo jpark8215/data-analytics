@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mirroring in Microsoft Fabric: How to Replicate Databricks or SQL Data into OneLake Without Duplicating It - Data Analytics &amp; Beyond</title>
+  <meta name="description"
+    content="A detailed examination of Microsoft Fabric Mirroring, analyzing how zero-ETL replication brings Databricks Unity Catalog and SQL Server data into OneLake without storage duplication, alongside its real limitations.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
+    .post-header { text-align: center; margin-bottom: var(--space-xl); }
+    .post-image { width: 100%; border-radius: var(--radius-l); margin-bottom: var(--space-xl); box-shadow: var(--shadow-md); }
+    .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
+    .post-content h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--clr-surface-invert); margin: var(--space-xl) 0 var(--space-m); }
+    .post-content h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--clr-surface-invert); margin: var(--space-l) 0 var(--space-s); }
+    .post-content p { margin-bottom: var(--space-m); }
+    .post-content code { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.9em; color: #60a5fa; }
+    .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 2rem; }
+    .post-content li { margin-bottom: 0.5rem; }
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+    .callout p { margin-bottom: 0.5rem; }
+    .callout p:last-child { margin-bottom: 0; }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-m) 0 var(--space-l);
+      font-size: 1rem;
+    }
+    .compare-table th {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--clr-surface-invert);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+    }
+    .compare-table td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--clr-text-main);
+      vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+  </style>
+  <!-- SEO & JSON-LD Schema -->
+  <meta property="og:title" content="Mirroring in Microsoft Fabric: How to Replicate Databricks or SQL Data into OneLake Without Duplicating It">
+  <meta property="og:description"
+    content="A detailed examination of Microsoft Fabric Mirroring, analyzing how zero-ETL replication brings Databricks Unity Catalog and SQL Server data into OneLake without storage duplication, alongside its real limitations.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/fabric_mirroring_onelake.jpg">
+  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/fabric-mirroring-databricks-sql-onelake.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/fabric-mirroring-databricks-sql-onelake.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Mirroring in Microsoft Fabric: How to Replicate Databricks or SQL Data into OneLake Without Duplicating It",
+      "description": "A detailed examination of Microsoft Fabric Mirroring, analyzing how zero-ETL replication brings Databricks Unity Catalog and SQL Server data into OneLake without storage duplication, alongside its real limitations.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/fabric_mirroring_onelake.jpg",
+      "datePublished": "2026-08-13",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "AI Engineer & Director of Business Intelligence",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">← Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(6,182,212,0.2);color:#06b6d4;">Architecture</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Mirroring in Microsoft Fabric: How to Replicate Databricks or SQL Data into OneLake Without Duplicating It</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          A detailed examination of Microsoft Fabric Mirroring, analyzing how zero-ETL replication brings Databricks Unity Catalog and SQL Server data into OneLake without storage duplication, alongside its genuine limitations.
+        </p>
+        <p class="post-meta">Published: <time>August 13, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/fabric_mirroring_onelake.jpg"
+        alt="Abstract visualization of multiple data source nodes streaming into a single unified data lake through light-beam conduits"
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>One of the most persistent operational burdens in enterprise data architecture is the movement of data between systems. Every time an organization copies a SQL Server table into a data warehouse, or exports a Databricks Delta table into a separate analytics store, it incurs storage costs, pipeline maintenance overhead, and the ever-present risk of producing inconsistent copies of the same information. Microsoft Fabric Mirroring was introduced to address this specific problem by creating a near real-time, read-accessible representation of external data within OneLake without physically copying the underlying bytes. According to Microsoft's official product documentation on the Mirroring overview page at learn.microsoft.com, this feature is designed as a zero-ETL solution that eliminates the need for traditional extract, transform, and load pipelines when the goal is analytics access rather than data transformation.</p>
+
+        <p>Understanding what Mirroring actually does, how it differs from OneLake Shortcuts, and where it falls short is essential for any organization evaluating its place in a modern data architecture. The feature covers several source systems including Azure SQL Database, SQL Server, Azure Cosmos DB, Snowflake, and Azure Databricks, each with its own implementation approach and set of constraints. This article focuses primarily on the SQL Server and Azure Databricks paths, which represent the most common scenarios and the most consequential design decisions.</p>
+
+        <h2>The Core Mechanism: What "No Duplication" Actually Means</h2>
+
+        <p>The phrase "without duplicating it" requires precise qualification, because it means different things depending on which source system is in use. For SQL Server, Mirroring does physically replicate data into OneLake, but it does so in a highly optimized, incremental manner using Change Data Capture (CDC). The initial snapshot copies the data once, and subsequent changes are propagated continuously rather than through periodic full exports. The result is stored as Delta Parquet files inside a Fabric Lakehouse, consuming OneLake storage capacity. This is not zero-copy in the strictest sense, but it is zero-ETL in the sense that no pipeline engineering is required to move changes forward. Microsoft's documentation for SQL Server Mirroring confirms that SQL Server 2016 through 2022 rely on CDC-based change tracking, while SQL Server 2025 takes a more efficient approach by reading the transaction log directly through a change feed mechanism, avoiding the overhead of CDC's intermediate change tables altogether.</p>
+
+        <p>For Azure Databricks, the architecture is fundamentally different and more accurately described as zero-copy. When an organization creates a Mirrored Azure Databricks Catalog item in Fabric, the physical Delta Lake files remain in their original Azure Data Lake Storage Gen2 location. Fabric does not copy them. Instead, it replicates only the metadata from the Databricks Unity Catalog, including the catalog structure, schema definitions, and table locations, and constructs managed OneLake shortcuts that point back to those original storage paths. Queries executed against the mirrored tables in Fabric read directly from the Databricks-managed ADLS paths without any data movement. This distinction is consequential for cost planning: organizations mirroring from Databricks avoid doubled storage costs entirely, while those mirroring from SQL Server incur OneLake storage for the replicated Delta files.</p>
+
+        <h2>Setting Up SQL Server Mirroring: Prerequisites and Configuration</h2>
+
+        <p>SQL Server Mirroring requires several infrastructure conditions before configuration can proceed. The source SQL Server instance, whether on-premises or hosted in a virtual machine, must be version 2016 or later. Additionally, an on-premises data gateway or VNet data gateway must be installed and configured to establish a secure connection between the SQL Server environment and the Fabric workspace. Microsoft's tutorial documentation at learn.microsoft.com specifies that the gateway is required for all on-premises SQL Server sources regardless of version.</p>
+
+        <div class="callout">
+          <p><strong>Configuration Overview for SQL Server Mirroring:</strong></p>
+          <ol>
+            <li>Enable Change Data Capture on the source SQL Server database using the system stored procedure <code>sys.sp_cdc_enable_db</code>.</li>
+            <li>Install and configure an on-premises data gateway on a server with network access to the SQL Server instance.</li>
+            <li>In the Fabric portal, navigate to the workspace and select New, then Mirrored Database, then SQL Server.</li>
+            <li>Provide the connection string, credentials, and select the gateway. Fabric will validate connectivity and display available databases and tables.</li>
+            <li>Select the tables to mirror and confirm. Fabric begins an initial snapshot, after which incremental changes propagate continuously.</li>
+            <li>An automatically generated SQL Analytics Endpoint becomes available, enabling read-only T-SQL queries against the mirrored data.</li>
+          </ol>
+        </div>
+
+        <p>The automatically generated SQL Analytics Endpoint is a particularly significant feature. It allows BI developers and analysts to query the mirrored SQL Server tables using familiar T-SQL syntax without writing any pipeline code or configuring a separate SQL pool. Furthermore, Power BI reports connected to this endpoint can leverage Direct Lake mode when the underlying Delta files are involved, delivering higher query performance than traditional import or DirectQuery modes.</p>
+
+        <h2>Setting Up Azure Databricks Mirroring: Unity Catalog and VNet Considerations</h2>
+
+        <p>Mirroring Azure Databricks tables into Fabric requires that the source workspace have Unity Catalog enabled, as the mirroring mechanism depends on Unity Catalog's metadata APIs to discover and replicate catalog structure. External tables and managed tables stored in Delta format on Azure Data Lake Storage are eligible for mirroring. Databricks workspaces behind private endpoints are supported through VNet data gateways, which Fabric uses to establish a secure network path to the Unity Catalog APIs without exposing the workspace to the public internet.</p>
+
+        <div class="callout">
+          <p><strong>Configuration Overview for Azure Databricks Mirroring:</strong></p>
+          <ol>
+            <li>Confirm that the Databricks workspace has Unity Catalog enabled and that the tables to be mirrored are stored as managed or external Delta tables in Azure Data Lake Storage Gen2.</li>
+            <li>If the Databricks workspace is behind a private endpoint, install and configure a VNet data gateway within the same VNet.</li>
+            <li>In the Fabric portal, create a new item of type Mirrored Azure Databricks Catalog and provide the Databricks workspace URL along with authentication credentials.</li>
+            <li>Select the Unity Catalog catalogs and schemas to include. Fabric creates managed shortcuts for each eligible table pointing to the original ADLS paths.</li>
+            <li>The mirrored catalog item exposes an automatically created SQL Analytics Endpoint, allowing T-SQL queries against Databricks tables from within Fabric.</li>
+          </ol>
+        </div>
+
+        <p>Because Fabric accesses the physical Delta files via managed shortcuts rather than maintaining its own copy, changes made in Databricks, including inserts, updates, and schema evolution, are reflected in Fabric queries without any synchronization delay. The metadata refresh cycle, during which Fabric checks for newly added or removed tables from the Unity Catalog, runs periodically rather than in real time. Consequently, a table newly created in Databricks may take several minutes to appear in the Fabric mirrored catalog view, even though queries against already-known tables reflect live data immediately.</p>
+
+        <h2>Mirroring versus Shortcuts: Choosing the Right Integration Pattern</h2>
+
+        <p>One of the most common points of confusion when evaluating Fabric Mirroring is its relationship to OneLake Shortcuts, which are a distinct and more lightweight integration mechanism. Understanding the differences is essential because selecting the wrong approach can introduce unnecessary complexity or miss important capabilities.</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Characteristic</th>
+              <th>Fabric Mirroring (Databricks)</th>
+              <th>OneLake Shortcut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data movement</td>
+              <td>None; metadata-only replication with managed shortcuts</td>
+              <td>None; virtual reference to external storage path</td>
+            </tr>
+            <tr>
+              <td>Catalog structure</td>
+              <td>Full Unity Catalog hierarchy replicated into Fabric</td>
+              <td>Single storage path or container referenced</td>
+            </tr>
+            <tr>
+              <td>SQL Analytics Endpoint</td>
+              <td>Auto-generated; supports T-SQL queries immediately</td>
+              <td>Requires manual Lakehouse or Warehouse integration</td>
+            </tr>
+            <tr>
+              <td>Direct Lake support</td>
+              <td>Yes, enabling high-performance Power BI reports</td>
+              <td>Yes, when Delta format files are present</td>
+            </tr>
+            <tr>
+              <td>Security governance</td>
+              <td>Fabric-side permissions required; Unity Catalog policies not inherited</td>
+              <td>Permissions defined on Fabric side; source storage credentials required</td>
+            </tr>
+            <tr>
+              <td>Supported table types</td>
+              <td>Managed and external Delta tables only; views and streaming tables excluded</td>
+              <td>Any ADLS, S3, or GCS path with any file format</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>For teams that need ad hoc access to specific file paths or containers without the overhead of registering catalog metadata, a Shortcut is the simpler choice. For BI teams who need a coherent, discoverable view of an entire Databricks catalog with T-SQL query capability and Power BI Direct Lake support, Mirroring delivers a substantially richer experience out of the box. The two mechanisms are not mutually exclusive, and many organizations employ Shortcuts for engineering tasks and Mirroring for reporting layers simultaneously.</p>
+
+        <h2>Genuine Limitations That Warrant Careful Planning</h2>
+
+        <p>Microsoft's official documentation for Azure Databricks Mirroring lists several table types that are not supported, and understanding these exclusions is necessary before committing to Mirroring as the primary integration strategy. Tables governed by row-level security or column-level security policies in Unity Catalog are not eligible for mirroring. Views, materialized views, and streaming tables are similarly excluded. Additionally, Databricks Delta Sharing tables and Lakehouse federated tables cannot be mirrored. This means that organizations whose Databricks estates contain significant governance-sensitive tables, complex view hierarchies, or streaming table architectures will find that Mirroring covers only a subset of what they need to expose.</p>
+
+        <p>The security inheritance gap is particularly noteworthy. Unity Catalog permissions, including fine-grained column masking and row filtering policies, do not transfer to Fabric when a catalog is mirrored. Every permission boundary that existed in Databricks must be re-established within the Fabric workspace using OneLake data access roles and Fabric-native RBAC. Organizations that assume Mirroring will preserve their existing governance posture automatically will encounter meaningful security gaps that require deliberate remediation work before the mirrored data can be safely exposed to end users.</p>
+
+        <p>Furthermore, the SQL Server Mirroring path introduces its own set of considerations. Because data is physically replicated into OneLake, the initial snapshot for large databases can take considerable time, and the ongoing replication consumes Fabric capacity units in addition to storage. Automated conflict resolution for simultaneous writes is not a concern since the mirrored SQL Analytics Endpoint is strictly read-only, but schema changes on the source SQL Server, such as adding or dropping columns, require Mirroring to handle schema evolution gracefully, which Microsoft's documentation acknowledges is an area of ongoing improvement.</p>
+
+        <h2>Where Mirroring Delivers Clear Value</h2>
+
+        <p>Weighing these limitations against the concrete operational benefits, Mirroring offers unarguably successful outcomes in several well-defined scenarios. The elimination of ETL pipelines between SQL Server and Fabric means that BI teams can access near real-time data without the engineering cycles required to build and maintain Azure Data Factory or Fabric Data Factory pipelines. For organizations that have previously relied on nightly batch exports to populate reporting databases, Mirroring reduces reporting lag from hours to seconds while simultaneously removing a class of pipeline failures from the operational support burden.</p>
+
+        <p>For Databricks-heavy organizations attempting to extend analytics access to business users who are not comfortable operating within the Databricks workspace interface, Mirroring provides a fruitful bridge. Business analysts accustomed to T-SQL and Power BI can query Databricks Delta tables through the familiar SQL Analytics Endpoint without requiring Databricks user licenses or training. Additionally, Power BI reports built against mirrored Databricks catalogs can take advantage of Direct Lake mode, which delivers substantially lower query latency compared to DirectQuery against Databricks SQL Warehouse endpoints, particularly at scale.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>Fabric Mirroring represents a meaningful architectural advancement in reducing the friction between data engineering platforms and analytics consumption layers. The zero-copy approach for Databricks and the zero-ETL incremental replication approach for SQL Server both address real costs that organizations have historically accepted as unavoidable. However, the limitations are equally real. The exclusion of governed tables, views, and streaming table types from Databricks Mirroring, the requirement to re-establish security policies in Fabric, and the storage implications of SQL Server replication all represent constraints that must be incorporated into architecture decisions before deployment. Organizations that assess Mirroring against their specific table inventory and governance requirements before committing will find it a genuinely valuable tool. Those who assume it is a universal solution for all cross-platform data access will encounter meaningful gaps that require supplementary approaches.</p>
+
+      </div>
+
+      <div
+        style="margin-top: 2rem; padding: 1.5rem; background: rgba(59,130,246,0.03); border-radius: var(--radius-m);">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--clr-text-main);">About the Author</h3>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0 0 0.5rem 0;">
+          <strong>Jieun Park</strong> is an AI Engineer and Director of Business Intelligence.
+        </p>
+        <p style="font-size: 0.95rem; color: var(--clr-text-muted); line-height: 1.6; margin: 0;">
+          Jieun specializes in building LLM-powered SaaS applications and RAG (Retrieval-Augmented Generation) systems
+          that turn complex data into actionable intelligence. With a dual focus on AI engineering and business
+          intelligence strategy, she bridges the gap between cutting-edge AI development and real-world business impact.
+          Her work spans the full lifecycle from architecting intelligent pipelines to delivering insights that drive
+          decisions.
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer style="padding:var(--space-l) 0;border-top:1px solid var(--clr-surface-alt);margin-top:var(--space-xl);">
+    <div class="container" style="text-align:center;">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <p style="color:var(--clr-text-muted);margin:var(--space-s) 0;">Providing clarity through data.</p>
+      <p style="font-size:0.875rem;color:var(--clr-text-muted);">&copy; 2026 Data Analytics &amp; Beyond. All
+        rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+
+</html>
