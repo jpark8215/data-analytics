@@ -12,16 +12,68 @@
   <link rel="stylesheet" href="../assets/css/variables.css">
   <link rel="stylesheet" href="../assets/css/blog.css">
   <style>
-    .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-    .post-header { text-align: center; margin-bottom: var(--space-xl); }
-    .post-image { width: 100%; border-radius: var(--radius-l); margin-bottom: var(--space-xl); box-shadow: var(--shadow-md); }
-    .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-    .post-content h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--clr-surface-invert); margin: var(--space-xl) 0 var(--space-m); }
-    .post-content h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--clr-surface-invert); margin: var(--space-l) 0 var(--space-s); }
-    .post-content p { margin-bottom: var(--space-m); }
-    .post-content code { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.9em; color: #60a5fa; }
-    .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 2rem; }
-    .post-content li { margin-bottom: 0.5rem; }
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
     .callout {
       background: rgba(59, 130, 246, 0.06);
       border-left: 4px solid rgba(59, 130, 246, 0.5);
@@ -29,15 +81,23 @@
       padding: 1.25rem 1.5rem;
       margin: var(--space-m) 0;
     }
-    .callout p { margin-bottom: 0.5rem; }
-    .callout p:last-child { margin-bottom: 0; }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
     .step-block {
-      background: rgba(99,102,241,0.06);
-      border-left: 4px solid rgba(99,102,241,0.5);
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
       border-radius: 0 var(--radius-m) var(--radius-m) 0;
       padding: 1.25rem 1.5rem;
       margin: var(--space-m) 0;
     }
+
     .step-label {
       font-family: 'Outfit', sans-serif;
       font-size: 0.85rem;
@@ -47,17 +107,26 @@
       letter-spacing: 0.08em;
       margin-bottom: 0.5rem;
     }
-    .step-block p { margin-bottom: 0.5rem; }
-    .step-block p:last-child { margin-bottom: 0; }
+
+    .step-block p {
+      margin-bottom: 0.5rem;
+    }
+
+    .step-block p:last-child {
+      margin-bottom: 0;
+    }
   </style>
   <meta property="og:title" content="Building an Employee Onboarding App That Runs Itself">
   <meta property="og:description"
     content="A step-by-step guide to building a self-running employee onboarding system using Power Apps, Power Automate, Copilot Studio, and SharePoint.">
-  <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/employee_onboarding_app.jpg">
-  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/employee-onboarding-app-power-platform.html">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/employee_onboarding_app.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/employee-onboarding-app-power-platform.html">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/employee-onboarding-app-power-platform.html">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/employee-onboarding-app-power-platform.html">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -97,9 +166,12 @@
     <article>
       <header class="post-header">
         <span class="blog-card-tag" style="background:rgba(99,102,241,0.2);color:#818cf8;">Practical</span>
-        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Building an Employee Onboarding App That Runs Itself</h1>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Building an Employee Onboarding App That Runs
+          Itself</h1>
         <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-          Power Apps collects the intake. Power Automate routes the approvals. Copilot Studio answers the questions. SharePoint holds the documents. Separately, each tool is useful. Together, they eliminate the administrative labor that consumes most onboarding programs.
+          Power Apps collects the intake. Power Automate routes the approvals. Copilot Studio answers the questions.
+          SharePoint holds the documents. Separately, each tool is useful. Together, they eliminate the administrative
+          labor that consumes most onboarding programs.
         </p>
         <p class="post-meta">Published: <time>October 24, 2026</time></p>
       </header>
@@ -110,140 +182,310 @@
 
       <div class="post-content">
 
-        <p>The administrative cost of manually onboarding a single employee is higher than most organizations realize. Research from human capital benchmarking studies estimates that HR professionals spend an average of 10.4 hours per new hire on purely administrative tasks: chasing paperwork, coordinating system access, emailing reminders, and tracking checklist completion across spreadsheets. IT provisioning adds another 3.5 hours on average. Direct managers contribute roughly 12 hours over the first 30 days. Tallied together at fully loaded labor rates, the internal cost of bringing one employee through a manual onboarding process falls between $975 and $1,200, before any consideration of productivity lost while the new hire waits for equipment, credentials, or answers.</p>
+        <p>The administrative cost of manually onboarding a single employee is higher than most organizations realize.
+          Research from human capital benchmarking studies estimates that HR professionals spend an average of 10.4
+          hours per new hire on purely administrative tasks: chasing paperwork, coordinating system access, emailing
+          reminders, and tracking checklist completion across spreadsheets. IT provisioning adds another 3.5 hours on
+          average. Direct managers contribute roughly 12 hours over the first 30 days. Tallied together at fully loaded
+          labor rates, the internal cost of bringing one employee through a manual onboarding process falls between $975
+          and $1,200, before any consideration of productivity lost while the new hire waits for equipment, credentials,
+          or answers.</p>
 
-        <p>The automation case is not subtle. Organizations using automated onboarding workflows report that HR administrative time per hire drops to approximately 2 hours, with IT provisioning falling to under 30 minutes for standard role configurations. Brandon Hall Group benchmark data indicates that automated onboarding correlates with a 54 percent improvement in new hire productivity within the first 90 days. Microsoft's own New Employee Onboarding (NEO) Solution Accelerator, published on GitHub and documented at Microsoft Learn, demonstrates how SharePoint, Teams, and Power Platform can be combined to achieve exactly this outcome at scale.</p>
+        <p>The automation case is not subtle. Organizations using automated onboarding workflows report that HR
+          administrative time per hire drops to approximately 2 hours, with IT provisioning falling to under 30 minutes
+          for standard role configurations. Brandon Hall Group benchmark data indicates that automated onboarding
+          correlates with a 54 percent improvement in new hire productivity within the first 90 days. Microsoft's own
+          New Employee Onboarding (NEO) Solution Accelerator, published on GitHub and documented at Microsoft Learn,
+          demonstrates how SharePoint, Teams, and Power Platform can be combined to achieve exactly this outcome at
+          scale.</p>
 
-        <p>This post describes how to build the architecture. It is structured as a step-by-step walkthrough covering four components: a Power Apps intake form, a Power Automate orchestration layer, a Copilot Studio agent for new hire support, and a SharePoint backbone for documents and task tracking. Each section includes concrete configuration guidance, naming decisions, and the specific Microsoft connectors involved.</p>
+        <p>This post describes how to build the architecture. It is structured as a step-by-step walkthrough covering
+          four components: a Power Apps intake form, a Power Automate orchestration layer, a Copilot Studio agent for
+          new hire support, and a SharePoint backbone for documents and task tracking. Each section includes concrete
+          configuration guidance, naming decisions, and the specific Microsoft connectors involved.</p>
 
         <h2>The Architecture at a Glance</h2>
 
-        <p>Before stepping through each component individually, it is useful to understand how the pieces connect. The data flow moves in one direction from intake to activation, with feedback loops handled by the workflow layer.</p>
+        <p>Before stepping through each component individually, it is useful to understand how the pieces connect. The
+          data flow moves in one direction from intake to activation, with feedback loops handled by the workflow layer.
+        </p>
 
-        <p>An HR coordinator submits a new hire record through the Power Apps intake form. That submission writes a row to a SharePoint list, which serves as the system of record throughout the process. Power Automate detects the new row and begins executing the orchestration: it sends a manager approval request, provisions the Microsoft Entra ID (formerly Azure Active Directory) account once approved, generates a populated onboarding document package from Word templates stored in SharePoint, posts a welcome message to the new hire's Teams channel, and creates a structured Day 1 task checklist. The Copilot Studio agent sits alongside this pipeline, deployed into Teams, and answers the new hire's questions using the SharePoint HR Onboarding site as its grounded knowledge source. No HR coordinator needs to monitor the process after submission.</p>
+        <p>An HR coordinator submits a new hire record through the Power Apps intake form. That submission writes a row
+          to a SharePoint list, which serves as the system of record throughout the process. Power Automate detects the
+          new row and begins executing the orchestration: it sends a manager approval request, provisions the Microsoft
+          Entra ID (formerly Azure Active Directory) account once approved, generates a populated onboarding document
+          package from Word templates stored in SharePoint, posts a welcome message to the new hire's Teams channel, and
+          creates a structured Day 1 task checklist. The Copilot Studio agent sits alongside this pipeline, deployed
+          into Teams, and answers the new hire's questions using the SharePoint HR Onboarding site as its grounded
+          knowledge source. No HR coordinator needs to monitor the process after submission.</p>
 
         <h2>Step 1: Build the SharePoint Foundation</h2>
 
-        <p>SharePoint performs two distinct roles in this architecture: it stores the dynamic data that drives the workflow, and it stores the static knowledge that the Copilot agent will use to answer questions. Conflating these two roles into a single site is technically possible but organizationally messy. The recommended approach is two separate sites.</p>
+        <p>SharePoint performs two distinct roles in this architecture: it stores the dynamic data that drives the
+          workflow, and it stores the static knowledge that the Copilot agent will use to answer questions. Conflating
+          these two roles into a single site is technically possible but organizationally messy. The recommended
+          approach is two separate sites.</p>
 
         <div class="step-block">
           <div class="step-label">Configuration</div>
-          <p><strong>Site 1: HR Onboarding Hub (Knowledge Source).</strong> Create a communication site. Populate it with policy documents, benefits guides, IT setup instructions, equipment request procedures, and FAQ pages formatted as SharePoint pages rather than attached PDFs where possible. SharePoint's semantic search indexing works most effectively on native page content. This site becomes the grounding source for your Copilot Studio agent.</p>
-          <p><strong>Site 2: Onboarding Operations (Data Source).</strong> Create a team site. Add two lists: <code>NewHireRequests</code> and <code>OnboardingTasks</code>. In <code>NewHireRequests</code>, include columns for full name, personal email, job title, department, start date, assigned manager, location, equipment package (choice field), and status (choice field with values: Submitted, Approved, Provisioning, Complete, Rejected). In <code>OnboardingTasks</code>, include columns for employee ID (lookup to <code>NewHireRequests</code>), task name, assigned team (HR, IT, Facilities), due date, and completion status.</p>
-          <p><strong>Document Library: OnboardingTemplates.</strong> Upload Word .docx templates for the IT equipment sign-off form, the role-specific onboarding plan, and the temporary credentials handout. Each template uses Word content controls with descriptive tags -- for example, <code>«EmployeeFullName»</code>, <code>«StartDate»</code>, <code>«Department»</code> -- which Power Automate will populate dynamically at runtime.</p>
+          <p><strong>Site 1: HR Onboarding Hub (Knowledge Source).</strong> Create a communication site. Populate it
+            with policy documents, benefits guides, IT setup instructions, equipment request procedures, and FAQ pages
+            formatted as SharePoint pages rather than attached PDFs where possible. SharePoint's semantic search
+            indexing works most effectively on native page content. This site becomes the grounding source for your
+            Copilot Studio agent.</p>
+          <p><strong>Site 2: Onboarding Operations (Data Source).</strong> Create a team site. Add two lists:
+            <code>NewHireRequests</code> and <code>OnboardingTasks</code>. In <code>NewHireRequests</code>, include
+            columns for full name, personal email, job title, department, start date, assigned manager, location,
+            equipment package (choice field), and status (choice field with values: Submitted, Approved, Provisioning,
+            Complete, Rejected). In <code>OnboardingTasks</code>, include columns for employee ID (lookup to
+            <code>NewHireRequests</code>), task name, assigned team (HR, IT, Facilities), due date, and completion
+            status.</p>
+          <p><strong>Document Library: OnboardingTemplates.</strong> Upload Word .docx templates for the IT equipment
+            sign-off form, the role-specific onboarding plan, and the temporary credentials handout. Each template uses
+            Word content controls with descriptive tags, for example, <code>«EmployeeFullName»</code>,
+            <code>«StartDate»</code>, <code>«Department»</code>, which Power Automate will populate dynamically at
+            runtime.</p>
         </div>
 
         <h2>Step 2: Build the Power Apps Intake Form</h2>
 
-        <p>The intake form is the human entry point for the entire system. It should collect everything the downstream automation needs, validate that data before submission, and present a clean experience that HR coordinators will actually use consistently. A Canvas App connected directly to the <code>NewHireRequests</code> SharePoint list is the appropriate choice here. Model-Driven Apps are more appropriate when complex relational data or custom business logic at the table level is required; for a straightforward intake form, Canvas gives you precise layout control with far less configuration overhead.</p>
+        <p>The intake form is the human entry point for the entire system. It should collect everything the downstream
+          automation needs, validate that data before submission, and present a clean experience that HR coordinators
+          will actually use consistently. A Canvas App connected directly to the <code>NewHireRequests</code> SharePoint
+          list is the appropriate choice here. Model-Driven Apps are more appropriate when complex relational data or
+          custom business logic at the table level is required; for a straightforward intake form, Canvas gives you
+          precise layout control with far less configuration overhead.</p>
 
         <div class="step-block">
           <div class="step-label">Configuration</div>
-          <p><strong>Connect the data source.</strong> In Power Apps Studio, add a SharePoint data connection pointing to your <code>NewHireRequests</code> list on Site 2. Verify that the service account running the app has Contribute permissions on the list.</p>
-          <p><strong>Build the form screen.</strong> Use a multi-screen layout with a progress indicator. Screen 1 collects personal details (full name, personal email, job title, department). Screen 2 collects role logistics (start date, manager lookup using a combo box connected to an Office 365 Users connector to pull real names, work location, equipment package). Screen 3 shows a summary and a Submit button.</p>
-          <p><strong>Add validation.</strong> Before allowing the user to advance from each screen, validate required fields with <code>IsBlank()</code> checks. For the start date, add a rule that prevents submission if the date is fewer than 5 business days from today, giving IT adequate provisioning lead time. Display inline error messages rather than blocking pop-ups, which are more disruptive to workflow.</p>
-          <p><strong>Submit action.</strong> The Submit button calls <code>Patch(NewHireRequests, Defaults(NewHireRequests), {FullName: txtName.Text, PersonalEmail: txtEmail.Text, Status: "Submitted", ...})</code>. Set <code>Status</code> to "Submitted" at this point. Power Automate will update it as the process advances. Show a confirmation screen with a reference number (the SharePoint item ID) so the coordinator has a trackable record.</p>
+          <p><strong>Connect the data source.</strong> In Power Apps Studio, add a SharePoint data connection pointing
+            to your <code>NewHireRequests</code> list on Site 2. Verify that the service account running the app has
+            Contribute permissions on the list.</p>
+          <p><strong>Build the form screen.</strong> Use a multi-screen layout with a progress indicator. Screen 1
+            collects personal details (full name, personal email, job title, department). Screen 2 collects role
+            logistics (start date, manager lookup using a combo box connected to an Office 365 Users connector to pull
+            real names, work location, equipment package). Screen 3 shows a summary and a Submit button.</p>
+          <p><strong>Add validation.</strong> Before allowing the user to advance from each screen, validate required
+            fields with <code>IsBlank()</code> checks. For the start date, add a rule that prevents submission if the
+            date is fewer than 5 business days from today, giving IT adequate provisioning lead time. Display inline
+            error messages rather than blocking pop-ups, which are more disruptive to workflow.</p>
+          <p><strong>Submit action.</strong> The Submit button calls
+            <code>Patch(NewHireRequests, Defaults(NewHireRequests), {FullName: txtName.Text, PersonalEmail: txtEmail.Text, Status: "Submitted", ...})</code>.
+            Set <code>Status</code> to "Submitted" at this point. Power Automate will update it as the process advances.
+            Show a confirmation screen with a reference number (the SharePoint item ID) so the coordinator has a
+            trackable record.</p>
         </div>
 
         <h3>A Note on Permissions</h3>
-        <p>Power Apps inherits the SharePoint permissions of the signed-in user. HR coordinators need Contribute access to <code>NewHireRequests</code> but should not have direct access to <code>OnboardingTasks</code>, which is populated and managed exclusively by the Power Automate flow. Use SharePoint item-level permissions to enforce this separation without requiring a more complex Dataverse setup.</p>
+        <p>Power Apps inherits the SharePoint permissions of the signed-in user. HR coordinators need Contribute access
+          to <code>NewHireRequests</code> but should not have direct access to <code>OnboardingTasks</code>, which is
+          populated and managed exclusively by the Power Automate flow. Use SharePoint item-level permissions to enforce
+          this separation without requiring a more complex Dataverse setup.</p>
 
         <h2>Step 3: Build the Power Automate Orchestration Flow</h2>
 
-        <p>This is where the onboarding process becomes self-running. The flow listens for new items in <code>NewHireRequests</code> and executes a sequential chain of actions that replaces what would otherwise require email coordination between HR, IT, and the hiring manager across several days.</p>
+        <p>This is where the onboarding process becomes self-running. The flow listens for new items in
+          <code>NewHireRequests</code> and executes a sequential chain of actions that replaces what would otherwise
+          require email coordination between HR, IT, and the hiring manager across several days.</p>
 
         <div class="step-block">
           <div class="step-label">Trigger</div>
-          <p>Use the SharePoint trigger <strong>When an item is created</strong>, pointing to <code>NewHireRequests</code> on Site 2. This fires immediately when the Power Apps form submits a new row.</p>
+          <p>Use the SharePoint trigger <strong>When an item is created</strong>, pointing to
+            <code>NewHireRequests</code> on Site 2. This fires immediately when the Power Apps form submits a new row.
+          </p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 1: Manager Approval</div>
-          <p>Add the <strong>Start and wait for an approval</strong> action (Approvals connector). Set Approval Type to "Approve/Reject -- First to respond". Set Assigned To to the manager field captured in the intake form. Include the new hire's name, start date, department, and equipment package in the approval details so the manager has full context without opening a separate system.</p>
-          <p>Add a Condition checking <code>Outcome is equal to Approve</code>. The "No" branch sends a rejection notification back to the HR coordinator via Outlook and updates the SharePoint status field to "Rejected". The "Yes" branch continues to the remaining actions.</p>
+          <p>Add the <strong>Start and wait for an approval</strong> action (Approvals connector). Set Approval Type to
+            "Approve/Reject - First to respond". Set Assigned To to the manager field captured in the intake form.
+            Include the new hire's name, start date, department, and equipment package in the approval details so the
+            manager has full context without opening a separate system.</p>
+          <p>Add a Condition checking <code>Outcome is equal to Approve</code>. The "No" branch sends a rejection
+            notification back to the HR coordinator via Outlook and updates the SharePoint status field to "Rejected".
+            The "Yes" branch continues to the remaining actions.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 2: Update Status</div>
-          <p>Use <strong>Update item</strong> (SharePoint connector) to set the <code>NewHireRequests</code> row status to "Provisioning". This gives HR coordinators real-time visibility into where each request stands.</p>
+          <p>Use <strong>Update item</strong> (SharePoint connector) to set the <code>NewHireRequests</code> row status
+            to "Provisioning". This gives HR coordinators real-time visibility into where each request stands.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 3: Entra ID Account Creation</div>
-          <p>Use the <strong>Microsoft Entra ID</strong> connector action <strong>Create user</strong>. Pass in the display name, job title, department, and a constructed work email (typically combining first name and last name with your domain). Assign the appropriate Microsoft 365 license using <strong>Assign license to user</strong>. Add the user to the relevant security groups using <strong>Add user to group</strong>, which automatically grants them access to the relevant SharePoint sites and Teams channels for their department.</p>
-          <p>This connector requires that the flow run under a connection authenticated with a service account holding the User Administrator role in Entra ID. Do not use a personal account for this connection. If the service account holder leaves the organization, a personally authenticated connection breaks the entire flow.</p>
+          <p>Use the <strong>Microsoft Entra ID</strong> connector action <strong>Create user</strong>. Pass in the
+            display name, job title, department, and a constructed work email (typically combining first name and last
+            name with your domain). Assign the appropriate Microsoft 365 license using <strong>Assign license to
+              user</strong>. Add the user to the relevant security groups using <strong>Add user to group</strong>,
+            which automatically grants them access to the relevant SharePoint sites and Teams channels for their
+            department.</p>
+          <p>This connector requires that the flow run under a connection authenticated with a service account holding
+            the User Administrator role in Entra ID. Do not use a personal account for this connection. If the service
+            account holder leaves the organization, a personally authenticated connection breaks the entire flow.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 4: Generate the Document Package</div>
-          <p>Use the <strong>Populate a Microsoft Word template</strong> action (Word Online connector). Select the onboarding plan template from the <code>OnboardingTemplates</code> library. Map each content control tag to the corresponding dynamic value from the trigger: <code>«EmployeeFullName»</code> maps to the Full Name field, <code>«StartDate»</code> maps to the Start Date field, and so on.</p>
-          <p>After population, use the <strong>Create file</strong> action (SharePoint connector) to save the generated document to a folder named after the new hire within a <code>NewHireDocuments</code> library on Site 2. Use a folder path expression like <code>concat('/NewHireDocuments/', triggerBody()?['FullName'])</code> to keep documents organized per employee. Repeat this pattern for each template in your package.</p>
+          <p>Use the <strong>Populate a Microsoft Word template</strong> action (Word Online connector). Select the
+            onboarding plan template from the <code>OnboardingTemplates</code> library. Map each content control tag to
+            the corresponding dynamic value from the trigger: <code>«EmployeeFullName»</code> maps to the Full Name
+            field, <code>«StartDate»</code> maps to the Start Date field, and so on.</p>
+          <p>After population, use the <strong>Create file</strong> action (SharePoint connector) to save the generated
+            document to a folder named after the new hire within a <code>NewHireDocuments</code> library on Site 2. Use
+            a folder path expression like <code>concat('/NewHireDocuments/', triggerBody()?['FullName'])</code> to keep
+            documents organized per employee. Repeat this pattern for each template in your package.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 5: Create the Day 1 Task Checklist</div>
-          <p>Use <strong>Create item</strong> (SharePoint connector) in a loop to write individual rows to the <code>OnboardingTasks</code> list. Define a JSON array at the beginning of the flow containing your standard task set -- for example, "Laptop configured and staged" (IT, due 2 days before start date), "Badge and building access activated" (Facilities, due day before start), "Benefits enrollment link sent" (HR, due Day 1), "Manager introduction meeting scheduled" (Hiring Manager, due Day 1). The loop reads each object in the array and creates a task row linked to the new hire's record ID.</p>
+          <p>Use <strong>Create item</strong> (SharePoint connector) in a loop to write individual rows to the
+            <code>OnboardingTasks</code> list. Define a JSON array at the beginning of the flow containing your standard
+            task set, for example, "Laptop configured and staged" (IT, due 2 days before start date), "Badge and
+            building access activated" (Facilities, due day before start), "Benefits enrollment link sent" (HR, due Day
+            1), "Manager introduction meeting scheduled" (Hiring Manager, due Day 1). The loop reads each object in the
+            array and creates a task row linked to the new hire's record ID.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 6: Welcome Notification</div>
-          <p>Send a personalized welcome email via the <strong>Outlook</strong> connector to the new hire's personal email address. Include their start date, their manager's name, a link to the HR Onboarding Hub SharePoint site, and instructions for completing their Microsoft Authenticator setup on Day 1. Simultaneously, post a message to the hiring team's Microsoft Teams channel using the Teams connector action <strong>Post message in a chat or channel</strong>, announcing the new hire's name, role, and start date so the team is aware before Day 1 arrives.</p>
+          <p>Send a personalized welcome email via the <strong>Outlook</strong> connector to the new hire's personal
+            email address. Include their start date, their manager's name, a link to the HR Onboarding Hub SharePoint
+            site, and instructions for completing their Microsoft Authenticator setup on Day 1. Simultaneously, post a
+            message to the hiring team's Microsoft Teams channel using the Teams connector action <strong>Post message
+              in a chat or channel</strong>, announcing the new hire's name, role, and start date so the team is aware
+            before Day 1 arrives.</p>
         </div>
 
         <div class="step-block">
           <div class="step-label">Action 7: Final Status Update</div>
-          <p>Use <strong>Update item</strong> to set the <code>NewHireRequests</code> status to "Complete". The entire flow from trigger to completion typically runs in under 3 minutes for a standard provisioning scenario.</p>
+          <p>Use <strong>Update item</strong> to set the <code>NewHireRequests</code> status to "Complete". The entire
+            flow from trigger to completion typically runs in under 3 minutes for a standard provisioning scenario.</p>
         </div>
 
         <h2>Step 4: Build the Copilot Studio Onboarding Agent</h2>
 
-        <p>Even with a well-automated provisioning pipeline, new hires generate questions during their first weeks that no checklist fully anticipates. What is the reimbursement process for a home office purchase? Where do I find the engineering team's documentation? How do I request additional software licenses? These questions currently land in HR inboxes, creating reactive work. A Copilot Studio agent grounded in the HR Onboarding Hub SharePoint site answers them without human involvement.</p>
+        <p>Even with a well-automated provisioning pipeline, new hires generate questions during their first weeks that
+          no checklist fully anticipates. What is the reimbursement process for a home office purchase? Where do I find
+          the engineering team's documentation? How do I request additional software licenses? These questions currently
+          land in HR inboxes, creating reactive work. A Copilot Studio agent grounded in the HR Onboarding Hub
+          SharePoint site answers them without human involvement.</p>
 
         <div class="step-block">
           <div class="step-label">Configuration</div>
-          <p><strong>Create the agent.</strong> In Copilot Studio, create a new agent. Set the display name and description. Under Knowledge, add the HR Onboarding Hub SharePoint site URL as a knowledge source. Copilot Studio uses SharePoint's semantic search and respects the site's permission model: users who do not have access to a specific page will not receive answers drawn from it, which is the correct behavior for confidential HR documents.</p>
-          <p><strong>Configure Generative Answers.</strong> Enable the Generative Answers feature, which allows the agent to synthesize responses from SharePoint content without requiring a manually authored topic for every possible question. Set a clear fallback message for questions the agent cannot answer, directing the user to the HR team's email address. This prevents the agent from fabricating answers when its knowledge source does not contain the relevant information.</p>
-          <p><strong>Add a structured onboarding topic.</strong> Create a custom topic triggered by phrases like "start my onboarding" or "I'm a new hire". Design a conversation that walks the new hire through their Day 1 checklist items one by one, collecting confirmations as they complete each step. Use a Power Automate action within the topic to write each confirmation back to the <code>OnboardingTasks</code> SharePoint list, updating the completion status. This keeps HR's task tracking accurate without requiring new hires to navigate a separate application.</p>
-          <p><strong>Deploy to Teams.</strong> Publish the agent and add it as a tab or bot within the new hire's onboarding Teams channel. For organizations using Microsoft's NEO Solution Accelerator, the agent can be embedded directly within the NEO Teams app tab that new hires already use for their onboarding journey.</p>
+          <p><strong>Create the agent.</strong> In Copilot Studio, create a new agent. Set the display name and
+            description. Under Knowledge, add the HR Onboarding Hub SharePoint site URL as a knowledge source. Copilot
+            Studio uses SharePoint's semantic search and respects the site's permission model: users who do not have
+            access to a specific page will not receive answers drawn from it, which is the correct behavior for
+            confidential HR documents.</p>
+          <p><strong>Configure Generative Answers.</strong> Enable the Generative Answers feature, which allows the
+            agent to synthesize responses from SharePoint content without requiring a manually authored topic for every
+            possible question. Set a clear fallback message for questions the agent cannot answer, directing the user to
+            the HR team's email address. This prevents the agent from fabricating answers when its knowledge source does
+            not contain the relevant information.</p>
+          <p><strong>Add a structured onboarding topic.</strong> Create a custom topic triggered by phrases like "start
+            my onboarding" or "I'm a new hire". Design a conversation that walks the new hire through their Day 1
+            checklist items one by one, collecting confirmations as they complete each step. Use a Power Automate action
+            within the topic to write each confirmation back to the <code>OnboardingTasks</code> SharePoint list,
+            updating the completion status. This keeps HR's task tracking accurate without requiring new hires to
+            navigate a separate application.</p>
+          <p><strong>Deploy to Teams.</strong> Publish the agent and add it as a tab or bot within the new hire's
+            onboarding Teams channel. For organizations using Microsoft's NEO Solution Accelerator, the agent can be
+            embedded directly within the NEO Teams app tab that new hires already use for their onboarding journey.</p>
         </div>
 
         <h2>What Works Well and Where to Be Careful</h2>
 
-        <p>The strengths of this architecture are concrete. The provisioning pipeline removes the most time-consuming coordination tasks from HR entirely. A new hire can receive their Entra ID account, Microsoft 365 licenses, team memberships, personalized onboarding documents, and a Day 1 task list within minutes of an HR coordinator clicking Submit, without any IT involvement for standard role configurations. The Copilot agent reduces first-week inquiry volume to the HR team noticeably, particularly for benefits questions and policy lookups. The SharePoint task list provides HR leadership with a real-time view of onboarding completion rates across the organization, data that was previously unavailable or required manual status emails to assemble.</p>
+        <p>The strengths of this architecture are concrete. The provisioning pipeline removes the most time-consuming
+          coordination tasks from HR entirely. A new hire can receive their Entra ID account, Microsoft 365 licenses,
+          team memberships, personalized onboarding documents, and a Day 1 task list within minutes of an HR coordinator
+          clicking Submit, without any IT involvement for standard role configurations. The Copilot agent reduces
+          first-week inquiry volume to the HR team noticeably, particularly for benefits questions and policy lookups.
+          The SharePoint task list provides HR leadership with a real-time view of onboarding completion rates across
+          the organization, data that was previously unavailable or required manual status emails to assemble.</p>
 
-        <p>Several limitations deserve equal attention. The Entra ID connector requires careful service account management. If the connection is authenticated using a named user's credentials rather than a dedicated service account, and that user's account is deactivated when they leave the organization, every new hire submission will fail silently. Establishing a dedicated service account with the minimum required administrative roles -- User Administrator in Entra ID, and Contribute on the relevant SharePoint lists -- is not optional. It is the single most common failure point in production deployments of this architecture.</p>
+        <p>Several limitations deserve equal attention. The Entra ID connector requires careful service account
+          management. If the connection is authenticated using a named user's credentials rather than a dedicated
+          service account, and that user's account is deactivated when they leave the organization, every new hire
+          submission will fail silently. Establishing a dedicated service account with the minimum required
+          administrative roles, User Administrator in Entra ID, and Contribute on the relevant SharePoint lists, is not
+          optional. It is the single most common failure point in production deployments of this architecture.</p>
 
-        <p>The Copilot agent's answer quality depends entirely on the quality of the SharePoint knowledge source. An agent grounded in a SharePoint site containing outdated policy documents, broken links, or PDF attachments with poor text extraction will return inaccurate or incomplete answers. Before deploying to new hires, the HR team should conduct a content audit of the Onboarding Hub, replacing scanned PDFs with native SharePoint pages and updating any policy documents that reference superseded procedures. Maintaining the knowledge source is ongoing work, not a one-time setup task.</p>
+        <p>The Copilot agent's answer quality depends entirely on the quality of the SharePoint knowledge source. An
+          agent grounded in a SharePoint site containing outdated policy documents, broken links, or PDF attachments
+          with poor text extraction will return inaccurate or incomplete answers. Before deploying to new hires, the HR
+          team should conduct a content audit of the Onboarding Hub, replacing scanned PDFs with native SharePoint pages
+          and updating any policy documents that reference superseded procedures. Maintaining the knowledge source is
+          ongoing work, not a one-time setup task.</p>
 
-        <p>Additionally, the automated account creation step handles standard role configurations well but requires human review for roles with non-standard access requirements -- specialized software licenses, elevated security clearances, or access to restricted data environments. Building a condition into the flow that flags non-standard equipment or access packages and routes them to an IT review queue before proceeding is a more resilient design than attempting to automate every edge case. Automation should handle the predictable majority; exception routing should handle everything else.</p>
+        <p>Additionally, the automated account creation step handles standard role configurations well but requires
+          human review for roles with non-standard access requirements, specialized software licenses, elevated security
+          clearances, or access to restricted data environments. Building a condition into the flow that flags
+          non-standard equipment or access packages and routes them to an IT review queue before proceeding is a more
+          resilient design than attempting to automate every edge case. Automation should handle the predictable
+          majority; exception routing should handle everything else.</p>
 
         <h2>Governance Considerations Before You Go Live</h2>
 
-        <p>Microsoft's Power Platform documentation recommends establishing a solution in a dedicated environment rather than the default Power Platform environment for production workloads of this kind. Using solutions (the Power Platform packaging mechanism) keeps all components -- the Canvas App, the Cloud Flow, and the environment variables pointing to your SharePoint sites -- bundled together and portable across development, test, and production environments.</p>
+        <p>Microsoft's Power Platform documentation recommends establishing a solution in a dedicated environment rather
+          than the default Power Platform environment for production workloads of this kind. Using solutions (the Power
+          Platform packaging mechanism) keeps all components, the Canvas App, the Cloud Flow, and the environment
+          variables pointing to your SharePoint sites, bundled together and portable across development, test, and
+          production environments.</p>
 
-        <p>Set up Power Platform environment-level Data Loss Prevention (DLP) policies that explicitly allow the connectors this solution requires: SharePoint, Microsoft Entra ID, Outlook, Microsoft Teams, and Word Online. Restrict all other connectors in the environment to minimize the surface area for unauthorized data flows. Document the service account credentials, the environment variables, and the SharePoint site URLs in a configuration record stored in SharePoint, so the next administrator can understand and maintain the system without reverse-engineering the flow from scratch.</p>
+        <p>Set up Power Platform environment-level Data Loss Prevention (DLP) policies that explicitly allow the
+          connectors this solution requires: SharePoint, Microsoft Entra ID, Outlook, Microsoft Teams, and Word Online.
+          Restrict all other connectors in the environment to minimize the surface area for unauthorized data flows.
+          Document the service account credentials, the environment variables, and the SharePoint site URLs in a
+          configuration record stored in SharePoint, so the next administrator can understand and maintain the system
+          without reverse-engineering the flow from scratch.</p>
 
-        <p>For organizations handling personally identifiable information under GDPR or similar regulations, the new hire's personal email address collected in the intake form should be stored only for the duration required to send the welcome communication, then cleared from the SharePoint list. Configure a Power Automate scheduled flow to null out the personal email field 24 hours after the welcome notification sends. This is a small addition but a meaningful governance control.</p>
+        <p>For organizations handling personally identifiable information under GDPR or similar regulations, the new
+          hire's personal email address collected in the intake form should be stored only for the duration required to
+          send the welcome communication, then cleared from the SharePoint list. Configure a Power Automate scheduled
+          flow to null out the personal email field 24 hours after the welcome notification sends. This is a small
+          addition but a meaningful governance control.</p>
 
         <h2>Starting Small and Scaling Up</h2>
 
-        <p>The full architecture described above is not a single afternoon's work. A more sustainable approach is to build it in phases. Phase 1 is the SharePoint list and a minimal Power Automate flow that handles manager approval and sends a welcome email. This alone eliminates the most common coordination bottleneck. Phase 2 adds the Power Apps intake form, replacing any existing Microsoft Forms or email-based intake process. Phase 3 adds Entra ID provisioning for standard roles. Phase 4 adds document generation and task list creation. Phase 5 adds the Copilot Studio agent once the SharePoint knowledge source has been audited and organized.</p>
+        <p>The full architecture described above is not a single afternoon's work. A more sustainable approach is to
+          build it in phases. Phase 1 is the SharePoint list and a minimal Power Automate flow that handles manager
+          approval and sends a welcome email. This alone eliminates the most common coordination bottleneck. Phase 2
+          adds the Power Apps intake form, replacing any existing Microsoft Forms or email-based intake process. Phase 3
+          adds Entra ID provisioning for standard roles. Phase 4 adds document generation and task list creation. Phase
+          5 adds the Copilot Studio agent once the SharePoint knowledge source has been audited and organized.</p>
 
-        <p>Each phase delivers measurable value independently. An organization that completes only the first two phases still eliminates a substantial portion of the manual coordination work that consumes HR and IT time today. The architecture's modularity means each phase can be validated and refined before the next layer is added, which is considerably less risky than attempting to deploy all five components simultaneously.</p>
+        <p>Each phase delivers measurable value independently. An organization that completes only the first two phases
+          still eliminates a substantial portion of the manual coordination work that consumes HR and IT time today. The
+          architecture's modularity means each phase can be validated and refined before the next layer is added, which
+          is considerably less risky than attempting to deploy all five components simultaneously.</p>
 
-        <p>The goal is not to build a complex system. It is to build a reliable one -- one where submitting a new hire record on Monday morning means that by Monday afternoon, the employee has an account, the manager has approved the start, the documents are generated, and the IT team has their provisioning task in queue. Every hour between intake and readiness that the system eliminates is an hour that HR, IT, and the hiring manager spend on work that cannot be automated.</p>
+        <p>The goal is not to build a complex system. It is to build a reliable one where submitting a new hire record
+          on Monday morning means that by Monday afternoon, the employee has an account, the manager has approved the
+          start, the documents are generated, and the IT team has their provisioning task in queue. Every hour between
+          intake and readiness that the system eliminates is an hour that HR, IT, and the hiring manager spend on work
+          that cannot be automated.</p>
 
       </div>
     </article>
 
-    <aside style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
-      <h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">About the Author</h2>
+    <aside
+      style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+      <h2
+        style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+        About the Author</h2>
       <div style="display:flex;align-items:flex-start;gap:1.5rem;">
         <div>
-          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park</p>
-          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp; Business Intelligence Professional</p>
-          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
-          <a href="https://www.linkedin.com/in/developerjp/" target="_blank" style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect on LinkedIn &rarr;</a>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park
+          </p>
+          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+            Business Intelligence Professional</p>
+          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and
+            business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and
+            applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+          <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+            style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+            on LinkedIn &rarr;</a>
         </div>
       </div>
     </aside>
@@ -251,7 +493,8 @@
 
   <footer class="site-footer">
     <div class="container" style="text-align:center;padding:var(--space-l) 0;">
-      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
     </div>
   </footer>
 </body>
