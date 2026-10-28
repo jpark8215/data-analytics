@@ -2,11 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jpark8215.github.io/data-analytics/index.html</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-10-27</lastmod>
   </url>
   <url>
     <loc>https://jpark8215.github.io/data-analytics/all-posts.html</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-10-27</lastmod>
+  </url>
+  <url>
+    <loc>https://jpark8215.github.io/data-analytics/blogs/smart-on-fhir-oauth-launch-flows-explained.html</loc>
+    <lastmod>2026-10-27</lastmod>
   </url>
   <url>
     <loc>https://jpark8215.github.io/data-analytics/blogs/employee-onboarding-app-power-platform.html</loc>
