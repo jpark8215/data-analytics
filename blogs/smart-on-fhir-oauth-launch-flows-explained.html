@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -110,10 +110,19 @@
       border-radius: var(--radius-m);
       padding: 1.5rem;
       margin: var(--space-m) 0;
+      overflow-x: auto;
+    }
+
+    .flow-diagram pre {
       font-family: 'Courier New', monospace;
-      font-size: 0.875rem;
-      line-height: 1.9;
+      font-size: 0.8rem;
+      line-height: 1.7;
       color: #c7d2fe;
+      white-space: pre;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
       overflow-x: auto;
     }
 
@@ -288,35 +297,43 @@
           initiate everything from scratch and the patient must authenticate directly with their health system.</p>
 
         <div class="flow-label">Sequence Diagram: Patient Standalone Launch</div>
-        <div class="flow-diagram">
-          Patient App Authorization Server FHIR Server
-          | | |
-          |-- GET /.well-known/smart-configuration ------------->|
-          |<-- { authorization_endpoint, token_endpoint } -------| | | | |-- Redirect to authorization_endpoint | |
-            ?response_type=code | | &amp;client_id=my-app | | &amp;redirect_uri=https://myapp.com/callback | |
-            &amp;scope=launch/patient patient/*.rs openid fhirUser | | &amp;state=random-state-value | |
-            &amp;code_challenge=S256-hash | | &amp;code_challenge_method=S256 ------>| |
-            | | |
-            | [Patient logs in at health system portal] |
-            | [Patient selects which data to share] |
-            | [Patient grants consent] |
-            | | |
-            |&lt;-- Redirect to redirect_uri |
-            | ?code=AUTH_CODE&amp;state=random-state-value |
-            | | |
-            |-- POST /token | |
-            | grant_type=authorization_code |
-            | code=AUTH_CODE |
-            | redirect_uri=https://myapp.com/callback |
-            | code_verifier=original-verifier ------>| |
-            | | |
-            |&lt;-- { access_token, patient: "Patient/123", |
-            | token_type: "Bearer", expires_in: 3600 } |
-            | | |
-            |-- GET /fhir/R4/Patient/123 ----------------------->|
-            | Authorization: Bearer {access_token} |
-            |&lt;-- Patient resource (JSON) -------------------------|
-        </div>
+        <div class="flow-diagram"><pre>
+  Patient App                  Auth Server                 FHIR Server
+       |                            |                           |
+       |-- GET /.well-known/smart-configuration --------------->|
+       |&lt;-- { authorization_endpoint, token_endpoint } --------|
+       |                            |                           |
+       |-- Redirect browser to authorization_endpoint           |
+       |   ?response_type=code                                  |
+       |   &amp;client_id=my-app                                    |
+       |   &amp;redirect_uri=https://myapp.com/callback             |
+       |   &amp;scope=launch/patient patient/*.rs openid            |
+       |   &amp;state=abc123                                        |
+       |   &amp;code_challenge=BASE64URL(SHA256(verifier))          |
+       |   &amp;code_challenge_method=S256                          |
+       |                            |                           |
+       |      [ Patient logs in via health system portal    ]   |
+       |      [ Patient reviews and grants data consent     ]   |
+       |                            |                           |
+       |&lt;-- Redirect to redirect_uri                            |
+       |    ?code=AUTH_CODE&amp;state=abc123                        |
+       |                            |                           |
+       |-- POST /token ---------------------------->            |
+       |   grant_type=authorization_code                        |
+       |   code=AUTH_CODE                                       |
+       |   code_verifier=ORIGINAL_RANDOM_STRING                 |
+       |   redirect_uri=https://myapp.com/callback              |
+       |                            |                           |
+       |&lt;-- 200 OK                                              |
+       |    { "access_token": "eyJ...",                         |
+       |      "patient": "Patient/123",                         |
+       |      "token_type": "Bearer",                           |
+       |      "expires_in": 3600 }                              |
+       |                            |                           |
+       |-- GET /fhir/R4/Patient/123 -------------------------->|
+       |   Authorization: Bearer eyJ...                         |
+       |&lt;-- 200 OK  Patient resource JSON -------------------- |
+</pre></div>
 
         <p>Several elements in this diagram deserve attention. The <code>scope=launch/patient</code> value tells the
           authorization server that when the user logs in, it should present them with a patient picker interface so
@@ -344,45 +361,47 @@
           to the SMART app automatically.</p>
 
         <div class="flow-label">Sequence Diagram: EHR Launch</div>
-        <div class="flow-diagram">
-          EHR System SMART App Authorization Server FHIR Server
-          | | | |
-          |-- Open app's | | |
-          | launch_uri | | |
-          | ?iss=https://fhir.example.com | |
-          | &amp;launch=LAUNCH_TOKEN ------>| | |
-          | | | |
-          | |-- GET /.well-known/smart-configuration ------>|
-          | |&lt;-- { authorization_endpoint, token_endpoint } |
-          | | | |
-          | |-- Redirect to authorization_endpoint |
-          | | ?response_type=code |
-          | | &amp;client_id=risk-app |
-          | | &amp;redirect_uri=https://riskapp.com/callback |
-          | | &amp;scope=launch openid fhirUser patient/*.rs |
-          | | &amp;launch=LAUNCH_TOKEN | |
-          | | &amp;aud=https://fhir.example.com |
-          | | &amp;code_challenge=S256-hash ------->| |
-          | | | |
-          | [EHR confirms clinician identity; no re-login needed] |
-          | [Patient context inherited from EHR session] |
-          | | | |
-          | |&lt;-- Redirect to redirect_uri |
-          | | ?code=AUTH_CODE | |
-          | | | |
-          | |-- POST /token | |
-          | | grant_type=authorization_code |
-          | | code=AUTH_CODE |
-          | | code_verifier=original-verifier ------>| |
-          | | | |
-          | |&lt;-- { access_token, patient: "Patient/456", |
-          | | encounter: "Encounter/789", |
-          | | fhirUser: "Practitioner/001" } |
-          | | | |
-          | |-- GET /fhir/R4/Observation?patient=456 ------>|
-          | | Authorization: Bearer {access_token} |
-          | |&lt;-- Observation bundle (JSON) ----------------|
-        </div>
+        <div class="flow-diagram"><pre>
+  EHR System         SMART App           Auth Server         FHIR Server
+      |                  |                    |                    |
+      |-- Launch app     |                    |                    |
+      |   launch_uri     |                    |                    |
+      |   ?iss=https://fhir.example.com       |                    |
+      |   &amp;launch=LAUNCH_TOKEN ----------->   |                    |
+      |                  |                    |                    |
+      |                  |-- GET /.well-known/smart-configuration->|
+      |                  |&lt;-- { authorization_endpoint, ... } ----|
+      |                  |                    |                    |
+      |                  |-- Redirect to authorization_endpoint    |
+      |                  |   ?response_type=code                   |
+      |                  |   &amp;client_id=risk-app                   |
+      |                  |   &amp;redirect_uri=https://app.com/cb      |
+      |                  |   &amp;scope=launch openid patient/*.rs     |
+      |                  |   &amp;launch=LAUNCH_TOKEN                  |
+      |                  |   &amp;aud=https://fhir.example.com         |
+      |                  |   &amp;code_challenge=S256-hash ---------->  |
+      |                  |                    |                    |
+      |  [ EHR confirms clinician; no re-login required         ]  |
+      |  [ Patient context inherited automatically from session  ]  |
+      |                  |                    |                    |
+      |                  |&lt;-- Redirect: ?code=AUTH_CODE           |
+      |                  |                    |                    |
+      |                  |-- POST /token ---->|                    |
+      |                  |   grant_type=authorization_code         |
+      |                  |   code=AUTH_CODE                        |
+      |                  |   code_verifier=ORIGINAL_STRING         |
+      |                  |                    |                    |
+      |                  |&lt;-- 200 OK          |                    |
+      |                  |   { "access_token": "eyJ...",           |
+      |                  |     "patient": "Patient/456",           |
+      |                  |     "encounter": "Encounter/789",       |
+      |                  |     "fhirUser": "Practitioner/001" }    |
+      |                  |                    |                    |
+      |                  |-- GET /fhir/R4/Observation ----------->|
+      |                  |   ?patient=456                          |
+      |                  |   Authorization: Bearer eyJ...          |
+      |                  |&lt;-- 200 OK  Observation bundle ---------|
+</pre></div>
 
         <p>The critical difference from a standalone launch is the <code>launch</code> parameter. The EHR generates an
           opaque context token (the <code>LAUNCH_TOKEN</code>) when it opens the app's registered launch URL. This token
@@ -411,43 +430,51 @@
           access token. No browser. No user. No redirect.</p>
 
         <div class="flow-label">Sequence Diagram: Backend Services</div>
-        <div class="flow-diagram">
-          Backend Service Authorization Server FHIR Server
-          | | |
-          |-- GET /.well-known/smart-configuration ---------------->|
-          |&lt;-- { token_endpoint, token_endpoint_auth_methods: ["private_key_jwt"] }
-          | | |
-          | [Build client_assertion JWT] | |
-          | Header: { alg: "RS384", kid: "my-key-id" } |
-          | Payload: { | |
-          | iss: "my-backend-client-id", |
-          | sub: "my-backend-client-id", |
-          | aud: "https://fhir.example.com/oauth/token", |
-          | jti: "unique-nonce-value", |
-          | iat: 1761609600, | |
-          | exp: 1761609900 | |
-          | } | |
-          | [Sign with RSA private key] | |
-          | | |
-          |-- POST /oauth/token | |
-          | grant_type=client_credentials |
-          | scope=system/Patient.read system/Observation.read |
-          | client_assertion_type=urn:ietf:params:oauth: |
-          | client-assertion-type:jwt-bearer |
-          | client_assertion=eyJhbGci... ------>| |
-          | | |
-          | [Server verifies JWT signature |
-          | using registered public key] |
-          | [Server checks jti is not replayed] |
-          | [Server checks exp is not past] |
-          | | |
-          |&lt;-- { access_token, token_type: "Bearer", |
-          | expires_in: 300, scope: "system/Patient.read system/Observation.read" }
-          | | |
-          |-- GET /fhir/R4/Patient?_count=100 ---------------------->|
-          | Authorization: Bearer {access_token} |
-          |&lt;-- Patient bundle (all patients within authorized scope) |
-        </div>
+        <div class="flow-diagram"><pre>
+  Backend Service              Auth Server                 FHIR Server
+       |                            |                           |
+       |-- GET /.well-known/smart-configuration --------------->|
+       |&lt;-- { token_endpoint,                                   |
+       |       token_endpoint_auth_methods:                     |
+       |         ["private_key_jwt"] }                          |
+       |                            |                           |
+       |  [ Build client_assertion JWT ]                        |
+       |  Header:  { "alg": "RS384", "kid": "my-key-id" }      |
+       |  Payload: {                                            |
+       |    "iss": "my-backend-client-id",                      |
+       |    "sub": "my-backend-client-id",                      |
+       |    "aud": "https://fhir.example.com/oauth/token",      |
+       |    "jti": "unique-nonce-never-reuse",                  |
+       |    "iat": 1761609600,                                   |
+       |    "exp": 1761609900  (5 min max window)               |
+       |  }                                                     |
+       |  [ Sign payload with RSA private key ]                 |
+       |                            |                           |
+       |-- POST /oauth/token ------>|                           |
+       |   grant_type=client_credentials                        |
+       |   scope=system/Patient.read                            |
+       |          system/Observation.read                       |
+       |   client_assertion_type=                               |
+       |     urn:ietf:params:oauth:                             |
+       |     client-assertion-type:jwt-bearer                   |
+       |   client_assertion=eyJhbGci...                         |
+       |                            |                           |
+       |       [ Verify JWT signature with registered           |
+       |         public key from JWKS endpoint            ]     |
+       |       [ Confirm jti has not been used before     ]     |
+       |       [ Confirm exp timestamp is not expired     ]     |
+       |                            |                           |
+       |&lt;-- 200 OK                                              |
+       |    { "access_token": "eyJ...",                         |
+       |      "token_type": "Bearer",                           |
+       |      "expires_in": 300,                                |
+       |      "scope": "system/Patient.read                     |
+       |                system/Observation.read" }              |
+       |                            |                           |
+       |-- GET /fhir/R4/Patient?_count=100 ------------------>|
+       |   Authorization: Bearer eyJ...                         |
+       |&lt;-- 200 OK  Patient bundle (all authorized patients) ---|
+</pre></div>
 
         <p>The <code>jti</code> (JWT ID) claim in the client assertion is a replay attack prevention mechanism. Each JWT
           assertion must carry a unique identifier, and the authorization server must reject any assertion whose
