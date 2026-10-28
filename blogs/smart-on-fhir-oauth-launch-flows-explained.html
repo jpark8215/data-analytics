@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -104,26 +104,21 @@
       margin-bottom: 0;
     }
 
-    .flow-diagram {
-      background: rgba(10, 15, 30, 0.6);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
       border-radius: var(--radius-m);
-      padding: 1.5rem;
-      margin: var(--space-m) 0;
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
       overflow-x: auto;
     }
 
-    .flow-diagram pre {
-      font-family: 'Courier New', monospace;
-      font-size: 0.8rem;
-      line-height: 1.7;
-      color: #c7d2fe;
-      white-space: pre;
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      border: none;
-      overflow-x: auto;
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
     }
 
     .flow-label {
@@ -298,44 +293,77 @@
           initiate everything from scratch and the patient must authenticate directly with their health system.</p>
 
         <div class="flow-label">Sequence Diagram: Patient Standalone Launch</div>
-        <div class="flow-diagram">
-          <pre>
-  Patient App                  Auth Server                 FHIR Server
-       |                            |                           |
-       |-- GET /.well-known/smart-configuration --------------->|
-       |&lt;-- { authorization_endpoint, token_endpoint } ------|
-       |                            |                           |
-       |-- Redirect browser to authorization_endpoint           |
-       |   ?response_type=code                                  |
-       |   &amp;client_id=my-app                                |
-       |   &amp;redirect_uri=https://myapp.com/callback         |
-       |   &amp;scope=launch/patient patient/*.rs openid        |
-       |   &amp;state=abc123                                    |
-       |   &amp;code_challenge=BASE64URL(SHA256(verifier))      |
-       |   &amp;code_challenge_method=S256                      |
-       |                            |                           |
-       |      [ Patient logs in via health system portal    ]   |
-       |      [ Patient reviews and grants data consent     ]   |
-       |                            |                           |
-       |&lt;-- Redirect to redirect_uri                         |
-       |    ?code=AUTH_CODE&amp;state=abc123                    |
-       |                            |                           |
-       |-- POST /token ---------------------------->            |
-       |   grant_type=authorization_code                        |
-       |   code=AUTH_CODE                                       |
-       |   code_verifier=ORIGINAL_RANDOM_STRING                 |
-       |   redirect_uri=https://myapp.com/callback              |
-       |                            |                           |
-       |&lt;-- 200 OK                                           |
-       |    { "access_token": "eyJ...",                         |
-       |      "patient": "Patient/123",                         |
-       |      "token_type": "Bearer",                           |
-       |      "expires_in": 3600 }                              |
-       |                            |                           |
-       |-- GET /fhir/R4/Patient/123 --------------------------> |
-       |   Authorization: Bearer eyJ...                         |
-       |&lt;-- 200 OK  Patient resource JSON -------------------|
-</pre>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 550" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:680px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#60a5fa" />
+              </marker>
+              <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399" />
+              </marker>
+            </defs>
+
+            <!-- Participant 1: Patient App -->
+            <rect x="35" y="15" width="150" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="110" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">Patient App</text>
+            <line x1="110" y1="53" x2="110" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="35" y="495" width="150" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="110" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">Patient App</text>
+
+            <!-- Participant 2: Auth Server -->
+            <rect x="300" y="15" width="160" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="380" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">Auth Server</text>
+            <line x1="380" y1="53" x2="380" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="300" y="495" width="160" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="380" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">Auth Server</text>
+
+            <!-- Participant 3: FHIR Server -->
+            <rect x="575" y="15" width="150" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="650" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">FHIR Server</text>
+            <line x1="650" y1="53" x2="650" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="575" y="495" width="150" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="650" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">FHIR Server</text>
+
+            <!-- Step 1: Discovery Request -->
+            <text x="380" y="80" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#93c5fd">1. GET /.well-known/smart-configuration</text>
+            <line x1="110" y1="88" x2="642" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue)" />
+
+            <!-- Step 2: Discovery Response -->
+            <text x="380" y="116" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#a7f3d0">2. 200 OK: { authorization_endpoint, token_endpoint, capabilities }</text>
+            <line x1="650" y1="124" x2="118" y2="124" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green)" />
+
+            <!-- Step 3: Authorize Redirect -->
+            <text x="245" y="156" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#93c5fd">3. Redirect browser to /authorize?response_type=code</text>
+            <text x="245" y="170" text-anchor="middle" font-family="Consolas, monospace" font-size="10" fill="#64748b">scope=launch/patient patient/*.rs openid &amp; code_challenge</text>
+            <line x1="110" y1="176" x2="372" y2="176" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue)" />
+
+            <!-- Step 4: Login & Consent Action Box -->
+            <rect x="260" y="196" width="240" height="42" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#6366f1" stroke-width="1.2" />
+            <text x="380" y="213" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" font-weight="500" fill="#e0e7ff">Patient logs in at health portal</text>
+            <text x="380" y="228" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#a5b4fc">Patient reviews and grants scope consent</text>
+
+            <!-- Step 5: Code Redirect Callback -->
+            <text x="245" y="262" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#a7f3d0">4. Redirect to redirect_uri with auth code</text>
+            <line x1="380" y1="270" x2="118" y2="270" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green)" />
+
+            <!-- Step 6: Token Exchange -->
+            <text x="245" y="306" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#93c5fd">5. POST /token (grant_type=authorization_code, code, verifier)</text>
+            <line x1="110" y1="314" x2="372" y2="314" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue)" />
+
+            <!-- Step 7: Token Response -->
+            <text x="245" y="350" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#a7f3d0">6. 200 OK: access_token, patient: "Patient/123", expires_in</text>
+            <line x1="380" y1="358" x2="118" y2="358" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green)" />
+
+            <!-- Step 8: FHIR API Call -->
+            <text x="380" y="404" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#93c5fd">7. GET /fhir/R4/Patient/123 (Authorization: Bearer access_token)</text>
+            <line x1="110" y1="412" x2="642" y2="412" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue)" />
+
+            <!-- Step 9: FHIR Data Return -->
+            <text x="380" y="448" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#a7f3d0">8. 200 OK: Patient resource JSON (demographics, identifiers)</text>
+            <line x1="650" y1="456" x2="118" y2="456" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green)" />
+          </svg>
+          <p class="diagram-caption">Figure 1: Patient standalone launch flow utilizing PKCE and returning patient context binding.</p>
         </div>
 
         <p>Several elements in this diagram deserve attention. The <code>scope=launch/patient</code> value tells the
@@ -364,49 +392,91 @@
           clinician is. Rather than making the user re-authenticate and re-select a patient, the EHR passes that context
           to the SMART app automatically.</p>
 
-        <div class="flow-label">Sequence Diagram: EHR Launch</div>
-        <div class="flow-diagram">
-          <pre>
-  EHR System         SMART App           Auth Server         FHIR Server
-      |                  |                    |                    |
-      |-- Launch app     |                    |                    |
-      |   launch_uri     |                    |                    |
-      |   ?iss=https://fhir.example.com       |                    |
-      |   &amp;launch=LAUNCH_TOKEN ---------->|                    |
-      |                  |                    |                    |
-      |                  |-- GET /.well-known/smart-configuration->|
-      |                  |&lt;-- { authorization_endpoint, ... } --|
-      |                  |                    |                    |
-      |                  |-- Redirect to authorization_endpoint    |
-      |                  |   ?response_type=code                   |
-      |                  |   &amp;client_id=risk-app               |
-      |                  |   &amp;redirect_uri=https://app.com/cb  |
-      |                  |   &amp;scope=launch openid patient/*.rs |
-      |                  |   &amp;launch=LAUNCH_TOKEN              |
-      |                  |   &amp;aud=https://fhir.example.com     |
-      |                  |   &amp;code_challenge=S256-hash ------->|
-      |                  |                    |                    |
-      |  [ EHR confirms clinician; no re-login required         ]  |
-      |  [ Patient context inherited automatically from session  ] |
-      |                  |                    |                    |
-      |                  |&lt;-- Redirect: ?code=AUTH_CODE         |
-      |                  |                    |                    |
-      |                  |-- POST /token ---->|                    |
-      |                  |   grant_type=authorization_code         |
-      |                  |   code=AUTH_CODE                        |
-      |                  |   code_verifier=ORIGINAL_STRING         |
-      |                  |                    |                    |
-      |                  |&lt;-- 200 OK       |                    |
-      |                  |   { "access_token": "eyJ...",           |
-      |                  |     "patient": "Patient/456",           |
-      |                  |     "encounter": "Encounter/789",       |
-      |                  |     "fhirUser": "Practitioner/001" }    |
-      |                  |                    |                    |
-      |                  |-- GET /fhir/R4/Observation -----------> |
-      |                  |   ?patient=456                          |
-      |                  |   Authorization: Bearer eyJ...          |
-      |                  |&lt;-- 200 OK  Observation bundle -------|
-</pre>
+                <div class="flow-label">Sequence Diagram: EHR Launch</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 570" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:680px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arr-blue-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#60a5fa" />
+              </marker>
+              <marker id="arr-green-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399" />
+              </marker>
+              <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#a78bfa" />
+              </marker>
+            </defs>
+
+            <!-- Participant 1: EHR System -->
+            <rect x="15" y="15" width="140" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="85" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">EHR Session</text>
+            <line x1="85" y1="53" x2="85" y2="520" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="15" y="520" width="140" height="28" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="85" y="539" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">EHR Session</text>
+
+            <!-- Participant 2: SMART App -->
+            <rect x="205" y="15" width="140" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="275" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">SMART App</text>
+            <line x1="275" y1="53" x2="275" y2="520" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="205" y="520" width="140" height="28" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="275" y="539" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">SMART App</text>
+
+            <!-- Participant 3: Auth Server -->
+            <rect x="400" y="15" width="150" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="475" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">Auth Server</text>
+            <line x1="475" y1="53" x2="475" y2="520" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="400" y="520" width="150" height="28" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="475" y="539" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">Auth Server</text>
+
+            <!-- Participant 4: FHIR Server -->
+            <rect x="595" y="15" width="140" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="665" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">FHIR Server</text>
+            <line x1="665" y1="53" x2="665" y2="520" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="595" y="520" width="140" height="28" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="665" y="539" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">FHIR Server</text>
+
+            <!-- Step 1: Launch Trigger with Context -->
+            <text x="180" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#c4b5fd">1. Launch URL (?iss=FHIR_URL &amp; launch=TOKEN)</text>
+            <line x1="85" y1="88" x2="267" y2="88" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-purple)" />
+
+            <!-- Step 2: Discovery Request -->
+            <text x="470" y="118" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#93c5fd">2. GET /.well-known/smart-configuration</text>
+            <line x1="275" y1="126" x2="657" y2="126" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-2)" />
+
+            <!-- Step 3: Discovery Response -->
+            <text x="470" y="154" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#a7f3d0">3. 200 OK: { authorization_endpoint, token_endpoint }</text>
+            <line x1="665" y1="162" x2="283" y2="162" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-2)" />
+
+            <!-- Step 4: Authorize with launch handle -->
+            <text x="375" y="194" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#93c5fd">4. Redirect /authorize (launch=TOKEN, aud=FHIR_URL, scopes)</text>
+            <line x1="275" y1="202" x2="467" y2="202" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-2)" />
+
+            <!-- Step 5: Session Inheritance Box -->
+            <rect x="350" y="222" width="250" height="42" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#6366f1" stroke-width="1.2" />
+            <text x="475" y="239" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#e0e7ff">Clinician identity confirmed by EHR</text>
+            <text x="475" y="254" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#a5b4fc">Patient and encounter context inherited seamlessly</text>
+
+            <!-- Step 6: Code Callback -->
+            <text x="375" y="287" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#a7f3d0">5. Redirect to callback with authorization code</text>
+            <line x1="475" y1="295" x2="283" y2="295" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-2)" />
+
+            <!-- Step 7: Token Exchange -->
+            <text x="375" y="332" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#93c5fd">6. POST /token (code, code_verifier, redirect_uri)</text>
+            <line x1="275" y1="340" x2="467" y2="340" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-2)" />
+
+            <!-- Step 8: Token Response with Multi-Context -->
+            <text x="375" y="377" text-anchor="middle" font-family="Consolas, monospace" font-size="10" fill="#a7f3d0">7. 200 OK: access_token, patient: "456", encounter: "789", fhirUser</text>
+            <line x1="475" y1="385" x2="283" y2="385" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-2)" />
+
+            <!-- Step 9: In-Context FHIR Query -->
+            <text x="470" y="427" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#93c5fd">8. GET /Observation?patient=456 (Bearer token)</text>
+            <line x1="275" y1="435" x2="657" y2="435" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-2)" />
+
+            <!-- Step 10: In-Context Data Return -->
+            <text x="470" y="470" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#a7f3d0">9. 200 OK: Observation bundle JSON (vitals, labs in context)</text>
+            <line x1="665" y1="478" x2="283" y2="478" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-2)" />
+          </svg>
+          <p class="diagram-caption">Figure 2: EHR launch flow with session context inheritance (patient, encounter, clinician).</p>
         </div>
 
         <p>The critical difference from a standalone launch is the <code>launch</code> parameter. The EHR generates an
@@ -436,53 +506,76 @@
           the corresponding public key (which was registered with the server in advance), and if valid, returns an
           access token. No browser. No user. No redirect.</p>
 
-        <div class="flow-label">Sequence Diagram: Backend Services</div>
-        <div class="flow-diagram">
-          <pre>
-  Backend Service              Auth Server                 FHIR Server
-       |                            |                           |
-       |-- GET /.well-known/smart-configuration --------------->|
-       |&lt;-- { token_endpoint,                                |
-       |       token_endpoint_auth_methods:                     |
-       |         ["private_key_jwt"] }                          |
-       |                            |                           |
-       |  [ Build client_assertion JWT ]                        |
-       |  Header:  { "alg": "RS384", "kid": "my-key-id" }       |
-       |  Payload: {                                            |
-       |    "iss": "my-backend-client-id",                      |
-       |    "sub": "my-backend-client-id",                      |
-       |    "aud": "https://fhir.example.com/oauth/token",      |
-       |    "jti": "unique-nonce-never-reuse",                  |
-       |    "iat": 1761609600,                                  |
-       |    "exp": 1761609900  (5 min max window)               |
-       |  }                                                     |
-       |  [ Sign payload with RSA private key ]                 |
-       |                            |                           |
-       |-- POST /oauth/token ------>|                           |
-       |   grant_type=client_credentials                        |
-       |   scope=system/Patient.read                            |
-       |          system/Observation.read                       |
-       |   client_assertion_type=                               |
-       |     urn:ietf:params:oauth:                             |
-       |     client-assertion-type:jwt-bearer                   |
-       |   client_assertion=eyJhbGci...                         |
-       |                            |                           |
-       |       [ Verify JWT signature with registered           |
-       |         public key from JWKS endpoint            ]     |
-       |       [ Confirm jti has not been used before     ]     |
-       |       [ Confirm exp timestamp is not expired     ]     |
-       |                            |                           |
-       |&lt;-- 200 OK                                           |
-       |    { "access_token": "eyJ...",                         |
-       |      "token_type": "Bearer",                           |
-       |      "expires_in": 300,                                |
-       |      "scope": "system/Patient.read                     |
-       |                system/Observation.read" }              |
-       |                            |                           |
-       |-- GET /fhir/R4/Patient?_count=100 ------------------>  |
-       |   Authorization: Bearer eyJ...                         |
-       |&lt;-- 200 OK  Patient bundle (all authorized patients)-|
-</pre>
+                <div class="flow-label">Sequence Diagram: Backend Services</div>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 550" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:680px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arr-blue-3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#60a5fa" />
+              </marker>
+              <marker id="arr-green-3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399" />
+              </marker>
+            </defs>
+
+            <!-- Participant 1: Backend Pipeline -->
+            <rect x="40" y="15" width="160" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="120" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">Backend Service</text>
+            <line x1="120" y1="53" x2="120" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="40" y="495" width="160" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="120" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">Backend Service</text>
+
+            <!-- Participant 2: Auth Server -->
+            <rect x="305" y="15" width="160" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="385" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">Auth Server</text>
+            <line x1="385" y1="53" x2="385" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="305" y="495" width="160" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="385" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">Auth Server</text>
+
+            <!-- Participant 3: FHIR Server -->
+            <rect x="575" y="15" width="150" height="38" rx="6" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="650" y="39" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="#f1f5f9">FHIR Server</text>
+            <line x1="650" y1="53" x2="650" y2="495" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+            <rect x="575" y="495" width="150" height="30" rx="4" fill="rgba(30, 41, 59, 0.9)" stroke="#475569" stroke-width="1.5" />
+            <text x="650" y="515" text-anchor="middle" font-family="Inter, sans-serif" font-weight="500" font-size="11" fill="#94a3b8">FHIR Server</text>
+
+            <!-- Step 1: Discovery -->
+            <text x="385" y="80" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#93c5fd">1. GET /.well-known/smart-configuration</text>
+            <line x1="120" y1="88" x2="642" y2="88" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-3)" />
+
+            <!-- Step 2: Discovery Return -->
+            <text x="385" y="116" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#a7f3d0">2. 200 OK: token_endpoint, auth_methods: ["private_key_jwt"]</text>
+            <line x1="650" y1="124" x2="128" y2="124" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-3)" />
+
+            <!-- Step 3: Local Action Box at Backend -->
+            <rect x="15" y="148" width="210" height="52" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#6366f1" stroke-width="1.2" />
+            <text x="120" y="166" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="500" fill="#e0e7ff">Generate client_assertion JWT</text>
+            <text x="120" y="180" text-anchor="middle" font-family="Consolas, monospace" font-size="9.5" fill="#a5b4fc">iss, sub, aud, jti (nonce), exp</text>
+            <text x="120" y="193" text-anchor="middle" font-family="Inter, sans-serif" font-size="9.5" fill="#94a3b8">Sign with RSA / EC private key</text>
+
+            <!-- Step 4: Token Request -->
+            <text x="250" y="222" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" fill="#93c5fd">3. POST /token (grant_type=client_credentials, client_assertion=JWT)</text>
+            <text x="250" y="234" text-anchor="middle" font-family="Consolas, monospace" font-size="10" fill="#64748b">scope=system/Patient.read system/Observation.read</text>
+            <line x1="120" y1="240" x2="377" y2="240" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-3)" />
+
+            <!-- Step 5: Verification Action Box at Auth Server -->
+            <rect x="270" y="258" width="230" height="48" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#6366f1" stroke-width="1.2" />
+            <text x="385" y="276" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="500" fill="#e0e7ff">Validate JWT via registered JWKS</text>
+            <text x="385" y="291" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#a5b4fc">Verify jti nonce unused and exp valid</text>
+
+            <!-- Step 6: Token Return -->
+            <text x="250" y="330" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#a7f3d0">4. 200 OK: access_token, token_type: Bearer, expires_in: 300</text>
+            <line x1="385" y1="338" x2="128" y2="338" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-3)" />
+
+            <!-- Step 7: Bulk Data Call -->
+            <text x="385" y="390" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" fill="#93c5fd">5. GET /fhir/R4/Patient?_count=100 (Bearer token)</text>
+            <line x1="120" y1="398" x2="642" y2="398" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue-3)" />
+
+            <!-- Step 8: Bulk Data Return -->
+            <text x="385" y="437" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#a7f3d0">6. 200 OK: Patient bundle JSON (population health export)</text>
+            <line x1="650" y1="445" x2="128" y2="445" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-green-3)" />
+          </svg>
+          <p class="diagram-caption">Figure 3: System-to-system backend services flow using asymmetric private-key JWT authentication.</p>
         </div>
 
         <p>The <code>jti</code> (JWT ID) claim in the client assertion is a replay attack prevention mechanism. Each JWT
