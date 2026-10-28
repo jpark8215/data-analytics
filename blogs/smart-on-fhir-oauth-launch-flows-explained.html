@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMART on FHIR Explained: OAuth 2.0 for Healthcare Apps, Launch Flows, and Scopes Without the Jargon - Data Analytics &amp; Beyond</title>
+  <title>SMART on FHIR Explained: OAuth 2.0 for Healthcare Apps, Launch Flows, and Scopes Without the Jargon - Data
+    Analytics &amp; Beyond</title>
   <meta name="description"
     content="A plain-language guide to SMART on FHIR: the three launch flows, how OAuth 2.0 scopes work in healthcare, and a working token request example against the HAPI FHIR test server.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
@@ -12,14 +13,58 @@
   <link rel="stylesheet" href="../assets/css/variables.css">
   <link rel="stylesheet" href="../assets/css/blog.css">
   <style>
-    .post-container { max-width: var(--content-width); margin: var(--space-xl) auto; padding: 0 var(--space-m); }
-    .post-header { text-align: center; margin-bottom: var(--space-xl); }
-    .post-image { width: 100%; border-radius: var(--radius-l); margin-bottom: var(--space-xl); box-shadow: var(--shadow-md); }
-    .post-content { font-size: 1.125rem; line-height: 1.8; color: var(--clr-text-main); }
-    .post-content h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--clr-surface-invert); margin: var(--space-xl) 0 var(--space-m); }
-    .post-content h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: var(--clr-surface-invert); margin: var(--space-l) 0 var(--space-s); }
-    .post-content p { margin-bottom: var(--space-m); }
-    .post-content code { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 4px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.9em; color: #60a5fa; }
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
     .post-content pre {
       background: rgba(10, 15, 30, 0.7);
       border: 1px solid rgba(59, 130, 246, 0.2);
@@ -32,8 +77,17 @@
       color: #93c5fd;
       margin: var(--space-m) 0;
     }
-    .post-content ul, .post-content ol { margin-bottom: var(--space-m); padding-left: 2rem; }
-    .post-content li { margin-bottom: 0.5rem; }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
     .callout {
       background: rgba(59, 130, 246, 0.06);
       border-left: 4px solid rgba(59, 130, 246, 0.5);
@@ -41,8 +95,15 @@
       padding: 1.25rem 1.5rem;
       margin: var(--space-m) 0;
     }
-    .callout p { margin-bottom: 0.5rem; }
-    .callout p:last-child { margin-bottom: 0; }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
     .flow-diagram {
       background: rgba(10, 15, 30, 0.6);
       border: 1px solid rgba(99, 102, 241, 0.3);
@@ -55,6 +116,7 @@
       color: #c7d2fe;
       overflow-x: auto;
     }
+
     .flow-label {
       font-family: 'Outfit', sans-serif;
       font-size: 0.8rem;
@@ -64,19 +126,44 @@
       letter-spacing: 0.08em;
       margin-bottom: 0.75rem;
     }
-    .scope-table { width: 100%; border-collapse: collapse; margin: var(--space-l) 0; font-size: 1rem; }
-    .scope-table th { background: rgba(59, 130, 246, 0.15); color: #60a5fa; text-align: left; padding: 0.75rem 1rem; font-weight: 600; }
-    .scope-table td { border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0.75rem 1rem; vertical-align: top; }
-    .scope-table tr:last-child td { border-bottom: none; }
+
+    .scope-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .scope-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .scope-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .scope-table tr:last-child td {
+      border-bottom: none;
+    }
   </style>
-  <meta property="og:title" content="SMART on FHIR Explained: OAuth 2.0 for Healthcare Apps, Launch Flows, and Scopes Without the Jargon">
+  <meta property="og:title"
+    content="SMART on FHIR Explained: OAuth 2.0 for Healthcare Apps, Launch Flows, and Scopes Without the Jargon">
   <meta property="og:description"
     content="A plain-language guide to SMART on FHIR: the three launch flows, how OAuth 2.0 scopes work in healthcare, and a working token request example.">
-  <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/smart_fhir_healthcare_api.jpg">
-  <meta property="og:url" content="https://jpark8215.github.io/data-analytics/blogs/smart-on-fhir-oauth-launch-flows-explained.html">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/smart_fhir_healthcare_api.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/smart-on-fhir-oauth-launch-flows-explained.html">
   <meta property="og:type" content="article">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="https://jpark8215.github.io/data-analytics/blogs/smart-on-fhir-oauth-launch-flows-explained.html">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/smart-on-fhir-oauth-launch-flows-explained.html">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -116,9 +203,12 @@
     <article>
       <header class="post-header">
         <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:#34d399;">Engineering</span>
-        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">SMART on FHIR Explained: OAuth 2.0 for Healthcare Apps, Launch Flows, and Scopes Without the Jargon</h1>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">SMART on FHIR Explained: OAuth 2.0 for
+          Healthcare Apps, Launch Flows, and Scopes Without the Jargon</h1>
         <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-          SMART on FHIR is the security layer that lets third-party healthcare apps connect to electronic health records safely. This post explains the three launch flows with sequence diagrams, decodes the scope syntax, and walks through a real token request step by step.
+          SMART on FHIR is the security layer that lets third-party healthcare apps connect to electronic health records
+          safely. This post explains the three launch flows with sequence diagrams, decodes the scope syntax, and walks
+          through a real token request step by step.
         </p>
         <p class="post-meta">Published: <time>October 27, 2026</time></p>
       </header>
@@ -129,19 +219,37 @@
 
       <div class="post-content">
 
-        <p>If you have spent any time building or integrating with electronic health record (EHR) systems, you have likely encountered the term SMART on FHIR. The documentation is thorough, the specification is well-maintained by HL7, and the concept is widely referenced in federal interoperability mandates. What is remarkably scarce, however, is a plain-language explanation that actually shows you how the pieces connect. This post is an attempt to fill that gap.</p>
+        <p>If you have spent any time building or integrating with electronic health record (EHR) systems, you have
+          likely encountered the term SMART on FHIR. The documentation is thorough, the specification is well-maintained
+          by HL7, and the concept is widely referenced in federal interoperability mandates. What is remarkably scarce,
+          however, is a plain-language explanation that actually shows you how the pieces connect. This post is an
+          attempt to fill that gap.</p>
 
-        <p>SMART on FHIR is not a single technology. It is a security framework that sits on top of two widely understood protocols: OAuth 2.0 (for authorization) and OpenID Connect (for identity). What SMART adds is a set of healthcare-specific conventions -- standardized launch flows, a defined scope vocabulary, and a discovery mechanism -- that allow any conformant app to securely connect to any conformant EHR without bespoke integration work. The official specification is maintained by HL7 as the SMART App Launch Implementation Guide, currently at version 2.2.0.</p>
+        <p>SMART on FHIR is not a single technology. It is a security framework that sits on top of two widely
+          understood protocols: OAuth 2.0 (for authorization) and OpenID Connect (for identity). What SMART adds is a
+          set of healthcare-specific conventions, standardized launch flows, a defined scope vocabulary, and a discovery
+          mechanism, that allow any conformant app to securely connect to any conformant EHR without bespoke integration
+          work. The official specification is maintained by HL7 as the SMART App Launch Implementation Guide, currently
+          at version 2.2.0.</p>
 
-        <p>The regulatory importance of SMART on FHIR is also concrete. The 21st Century Cures Act prohibited information blocking by certified EHR vendors and required them to expose standardized FHIR APIs. The ONC Health IT Certification Program and CMS interoperability rules (including the CMS-0057-F Prior Authorization and Interoperability rule) specifically require SMART App Launch v2 as the security layer over those FHIR R4 APIs. If you are building a healthcare application that needs to access patient data held by a major EHR, you are building with SMART on FHIR whether you realize it or not.</p>
+        <p>The regulatory importance of SMART on FHIR is also concrete. The 21st Century Cures Act prohibited
+          information blocking by certified EHR vendors and required them to expose standardized FHIR APIs. The ONC
+          Health IT Certification Program and CMS interoperability rules (including the CMS-0057-F Prior Authorization
+          and Interoperability rule) specifically require SMART App Launch v2 as the security layer over those FHIR R4
+          APIs. If you are building a healthcare application that needs to access patient data held by a major EHR, you
+          are building with SMART on FHIR whether you realize it or not.</p>
 
         <h2>The Foundation: How Discovery Works</h2>
 
-        <p>Before any authorization happens, a SMART-enabled app needs to find the EHR's OAuth 2.0 endpoints. It does this through a standardized discovery document. Every SMART-compliant FHIR server publishes a JSON file at a fixed path relative to its FHIR base URL.</p>
+        <p>Before any authorization happens, a SMART-enabled app needs to find the EHR's OAuth 2.0 endpoints. It does
+          this through a standardized discovery document. Every SMART-compliant FHIR server publishes a JSON file at a
+          fixed path relative to its FHIR base URL.</p>
 
         <pre>GET [FHIR_BASE_URL]/.well-known/smart-configuration</pre>
 
-        <p>The response contains everything an app needs: the authorization endpoint, the token endpoint, the supported grant types, the supported SMART capabilities, and the algorithms the server accepts for signed assertions. A representative response looks like this:</p>
+        <p>The response contains everything an app needs: the authorization endpoint, the token endpoint, the supported
+          grant types, the supported SMART capabilities, and the algorithms the server accepts for signed assertions. A
+          representative response looks like this:</p>
 
         <pre>{
   "issuer": "https://fhir.example.com",
@@ -163,162 +271,208 @@
                        "patient/*.rs", "user/*.rs", "system/*.rs"]
 }</pre>
 
-        <p>The <code>capabilities</code> array tells you exactly which SMART features this server supports. If <code>launch-ehr</code> appears, the server can initiate an EHR launch. If <code>client-confidential-asymmetric</code> appears, the server supports backend services using signed JWTs. Checking this document first prevents a category of integration errors where apps assume capabilities that the server does not advertise.</p>
+        <p>The <code>capabilities</code> array tells you exactly which SMART features this server supports. If
+          <code>launch-ehr</code> appears, the server can initiate an EHR launch. If
+          <code>client-confidential-asymmetric</code> appears, the server supports backend services using signed JWTs.
+          Checking this document first prevents a category of integration errors where apps assume capabilities that the
+          server does not advertise.</p>
 
         <h2>Flow 1: Patient Standalone Launch</h2>
 
-        <p>The patient standalone launch is the most common flow for consumer-facing health apps -- think mobile apps that patients use to review their lab results, manage their medications, or share records with a new provider. The app opens outside the EHR entirely. The patient starts from their phone's home screen or a web browser and connects to their health system's FHIR server.</p>
+        <p>The patient standalone launch is the most common flow for consumer-facing health apps, think mobile apps that
+          patients use to review their lab results, manage their medications, or share records with a new provider. The
+          app opens outside the EHR entirely. The patient starts from their phone's home screen or a web browser and
+          connects to their health system's FHIR server.</p>
 
-        <p>The term "standalone" means there is no pre-existing EHR session handing the app a context. The app must initiate everything from scratch and the patient must authenticate directly with their health system.</p>
+        <p>The term "standalone" means there is no pre-existing EHR session handing the app a context. The app must
+          initiate everything from scratch and the patient must authenticate directly with their health system.</p>
 
         <div class="flow-label">Sequence Diagram: Patient Standalone Launch</div>
         <div class="flow-diagram">
-Patient App             Authorization Server          FHIR Server
-    |                          |                          |
-    |-- GET /.well-known/smart-configuration ------------->|
-    |<-- { authorization_endpoint, token_endpoint } -------|
-    |                          |                          |
-    |-- Redirect to authorization_endpoint                 |
-    |   ?response_type=code                                |
-    |   &amp;client_id=my-app                                  |
-    |   &amp;redirect_uri=https://myapp.com/callback           |
-    |   &amp;scope=launch/patient patient/*.rs openid fhirUser |
-    |   &amp;state=random-state-value                          |
-    |   &amp;code_challenge=S256-hash                          |
-    |   &amp;code_challenge_method=S256 ------>|               |
-    |                          |                          |
-    |          [Patient logs in at health system portal]   |
-    |          [Patient selects which data to share]       |
-    |          [Patient grants consent]                    |
-    |                          |                          |
-    |&lt;-- Redirect to redirect_uri                         |
-    |    ?code=AUTH_CODE&amp;state=random-state-value          |
-    |                          |                          |
-    |-- POST /token            |                          |
-    |   grant_type=authorization_code                      |
-    |   code=AUTH_CODE                                     |
-    |   redirect_uri=https://myapp.com/callback            |
-    |   code_verifier=original-verifier ------>|           |
-    |                          |                          |
-    |&lt;-- { access_token, patient: "Patient/123",           |
-    |       token_type: "Bearer", expires_in: 3600 }       |
-    |                          |                          |
-    |-- GET /fhir/R4/Patient/123 ----------------------->|
-    |   Authorization: Bearer {access_token}               |
-    |&lt;-- Patient resource (JSON) -------------------------|
+          Patient App Authorization Server FHIR Server
+          | | |
+          |-- GET /.well-known/smart-configuration ------------->|
+          |<-- { authorization_endpoint, token_endpoint } -------| | | | |-- Redirect to authorization_endpoint | |
+            ?response_type=code | | &amp;client_id=my-app | | &amp;redirect_uri=https://myapp.com/callback | |
+            &amp;scope=launch/patient patient/*.rs openid fhirUser | | &amp;state=random-state-value | |
+            &amp;code_challenge=S256-hash | | &amp;code_challenge_method=S256 ------>| |
+            | | |
+            | [Patient logs in at health system portal] |
+            | [Patient selects which data to share] |
+            | [Patient grants consent] |
+            | | |
+            |&lt;-- Redirect to redirect_uri |
+            | ?code=AUTH_CODE&amp;state=random-state-value |
+            | | |
+            |-- POST /token | |
+            | grant_type=authorization_code |
+            | code=AUTH_CODE |
+            | redirect_uri=https://myapp.com/callback |
+            | code_verifier=original-verifier ------>| |
+            | | |
+            |&lt;-- { access_token, patient: "Patient/123", |
+            | token_type: "Bearer", expires_in: 3600 } |
+            | | |
+            |-- GET /fhir/R4/Patient/123 ----------------------->|
+            | Authorization: Bearer {access_token} |
+            |&lt;-- Patient resource (JSON) -------------------------|
         </div>
 
-        <p>Several elements in this diagram deserve attention. The <code>scope=launch/patient</code> value tells the authorization server that when the user logs in, it should present them with a patient picker interface so they can confirm which patient record the app should access. For a patient-facing app where the logged-in user is the patient, this is typically automatic. For a clinician standalone app, it prompts the clinician to select a patient.</p>
+        <p>Several elements in this diagram deserve attention. The <code>scope=launch/patient</code> value tells the
+          authorization server that when the user logs in, it should present them with a patient picker interface so
+          they can confirm which patient record the app should access. For a patient-facing app where the logged-in user
+          is the patient, this is typically automatic. For a clinician standalone app, it prompts the clinician to
+          select a patient.</p>
 
-        <p>The <code>code_challenge</code> and <code>code_challenge_method=S256</code> parameters implement PKCE (Proof Key for Code Exchange, defined in RFC 7636). PKCE prevents an attacker who intercepts the authorization code from using it. The app generates a random <code>code_verifier</code> string, computes its SHA-256 hash (the <code>code_challenge</code>), and sends the hash with the initial request. At token exchange, it sends the original verifier. The server verifies that the hash matches, confirming the token request came from the same party that initiated the authorization request. PKCE is mandatory for public clients (native apps, single-page applications) in SMART App Launch v2.</p>
+        <p>The <code>code_challenge</code> and <code>code_challenge_method=S256</code> parameters implement PKCE (Proof
+          Key for Code Exchange, defined in RFC 7636). PKCE prevents an attacker who intercepts the authorization code
+          from using it. The app generates a random <code>code_verifier</code> string, computes its SHA-256 hash (the
+          <code>code_challenge</code>), and sends the hash with the initial request. At token exchange, it sends the
+          original verifier. The server verifies that the hash matches, confirming the token request came from the same
+          party that initiated the authorization request. PKCE is mandatory for public clients (native apps, single-page
+          applications) in SMART App Launch v2.</p>
 
-        <p>The token response includes a <code>patient</code> field containing the FHIR resource ID of the patient who consented. The app uses this ID for all subsequent data requests, scoped to that patient's record only.</p>
+        <p>The token response includes a <code>patient</code> field containing the FHIR resource ID of the patient who
+          consented. The app uses this ID for all subsequent data requests, scoped to that patient's record only.</p>
 
         <h2>Flow 2: EHR Launch</h2>
 
-        <p>The EHR launch happens when a clinician is already working inside an EHR and opens a SMART app from within that EHR session. A cardiologist viewing a patient's chart might click a button to open a risk-scoring app directly from the chart. The EHR already knows which patient is active, which encounter is open, and who the clinician is. Rather than making the user re-authenticate and re-select a patient, the EHR passes that context to the SMART app automatically.</p>
+        <p>The EHR launch happens when a clinician is already working inside an EHR and opens a SMART app from within
+          that EHR session. A cardiologist viewing a patient's chart might click a button to open a risk-scoring app
+          directly from the chart. The EHR already knows which patient is active, which encounter is open, and who the
+          clinician is. Rather than making the user re-authenticate and re-select a patient, the EHR passes that context
+          to the SMART app automatically.</p>
 
         <div class="flow-label">Sequence Diagram: EHR Launch</div>
         <div class="flow-diagram">
-EHR System          SMART App              Authorization Server    FHIR Server
-    |                   |                          |                    |
-    |-- Open app's      |                          |                    |
-    |   launch_uri      |                          |                    |
-    |   ?iss=https://fhir.example.com              |                    |
-    |   &amp;launch=LAUNCH_TOKEN ------>|              |                    |
-    |                   |                          |                    |
-    |                   |-- GET /.well-known/smart-configuration ------>|
-    |                   |&lt;-- { authorization_endpoint, token_endpoint } |
-    |                   |                          |                    |
-    |                   |-- Redirect to authorization_endpoint          |
-    |                   |   ?response_type=code                         |
-    |                   |   &amp;client_id=risk-app                         |
-    |                   |   &amp;redirect_uri=https://riskapp.com/callback  |
-    |                   |   &amp;scope=launch openid fhirUser patient/*.rs  |
-    |                   |   &amp;launch=LAUNCH_TOKEN   |                    |
-    |                   |   &amp;aud=https://fhir.example.com               |
-    |                   |   &amp;code_challenge=S256-hash ------->|         |
-    |                   |                          |                    |
-    |          [EHR confirms clinician identity; no re-login needed]    |
-    |          [Patient context inherited from EHR session]             |
-    |                   |                          |                    |
-    |                   |&lt;-- Redirect to redirect_uri                   |
-    |                   |    ?code=AUTH_CODE        |                   |
-    |                   |                          |                    |
-    |                   |-- POST /token            |                    |
-    |                   |   grant_type=authorization_code               |
-    |                   |   code=AUTH_CODE                              |
-    |                   |   code_verifier=original-verifier ------>|   |
-    |                   |                          |                    |
-    |                   |&lt;-- { access_token, patient: "Patient/456",   |
-    |                   |      encounter: "Encounter/789",              |
-    |                   |      fhirUser: "Practitioner/001" }           |
-    |                   |                          |                    |
-    |                   |-- GET /fhir/R4/Observation?patient=456 ------>|
-    |                   |   Authorization: Bearer {access_token}        |
-    |                   |&lt;-- Observation bundle (JSON) ----------------|
+          EHR System SMART App Authorization Server FHIR Server
+          | | | |
+          |-- Open app's | | |
+          | launch_uri | | |
+          | ?iss=https://fhir.example.com | |
+          | &amp;launch=LAUNCH_TOKEN ------>| | |
+          | | | |
+          | |-- GET /.well-known/smart-configuration ------>|
+          | |&lt;-- { authorization_endpoint, token_endpoint } |
+          | | | |
+          | |-- Redirect to authorization_endpoint |
+          | | ?response_type=code |
+          | | &amp;client_id=risk-app |
+          | | &amp;redirect_uri=https://riskapp.com/callback |
+          | | &amp;scope=launch openid fhirUser patient/*.rs |
+          | | &amp;launch=LAUNCH_TOKEN | |
+          | | &amp;aud=https://fhir.example.com |
+          | | &amp;code_challenge=S256-hash ------->| |
+          | | | |
+          | [EHR confirms clinician identity; no re-login needed] |
+          | [Patient context inherited from EHR session] |
+          | | | |
+          | |&lt;-- Redirect to redirect_uri |
+          | | ?code=AUTH_CODE | |
+          | | | |
+          | |-- POST /token | |
+          | | grant_type=authorization_code |
+          | | code=AUTH_CODE |
+          | | code_verifier=original-verifier ------>| |
+          | | | |
+          | |&lt;-- { access_token, patient: "Patient/456", |
+          | | encounter: "Encounter/789", |
+          | | fhirUser: "Practitioner/001" } |
+          | | | |
+          | |-- GET /fhir/R4/Observation?patient=456 ------>|
+          | | Authorization: Bearer {access_token} |
+          | |&lt;-- Observation bundle (JSON) ----------------|
         </div>
 
-        <p>The critical difference from a standalone launch is the <code>launch</code> parameter. The EHR generates an opaque context token (the <code>LAUNCH_TOKEN</code>) when it opens the app's registered launch URL. This token encodes the current session state -- the patient, the encounter, the user -- on the EHR's side. The SMART app echoes this token back in the authorization request. When the authorization server receives it, it resolves the context and includes the patient ID, encounter ID, and practitioner identity in the token response.</p>
+        <p>The critical difference from a standalone launch is the <code>launch</code> parameter. The EHR generates an
+          opaque context token (the <code>LAUNCH_TOKEN</code>) when it opens the app's registered launch URL. This token
+          encodes the current session state, the patient, the encounter, the user, on the EHR's side. The SMART app
+          echoes this token back in the authorization request. When the authorization server receives it, it resolves
+          the context and includes the patient ID, encounter ID, and practitioner identity in the token response.</p>
 
-        <p>Because the clinician is already authenticated in the EHR, they typically do not see a separate login screen. The EHR handles identity confirmation internally and passes the authorization code back to the app. From the clinician's perspective, the app simply opens within the EHR interface with the correct patient's data already loaded. The token response also carries <code>fhirUser</code>, identifying the practitioner as a FHIR <code>Practitioner</code> resource, which the app can use for audit logging or role-based UI decisions.</p>
+        <p>Because the clinician is already authenticated in the EHR, they typically do not see a separate login screen.
+          The EHR handles identity confirmation internally and passes the authorization code back to the app. From the
+          clinician's perspective, the app simply opens within the EHR interface with the correct patient's data already
+          loaded. The token response also carries <code>fhirUser</code>, identifying the practitioner as a FHIR
+          <code>Practitioner</code> resource, which the app can use for audit logging or role-based UI decisions.</p>
 
         <h2>Flow 3: Backend Services</h2>
 
-        <p>The backend services flow addresses a fundamentally different scenario: no human is present. A population health pipeline needs to query all diabetic patients in a health system for a quality reporting run. A care management platform needs to pull overnight ADT (Admit, Discharge, Transfer) notifications to update patient rosters. These are system-to-system operations running on a schedule or in response to events, with no user to authenticate and no browser to redirect.</p>
+        <p>The backend services flow addresses a fundamentally different scenario: no human is present. A population
+          health pipeline needs to query all diabetic patients in a health system for a quality reporting run. A care
+          management platform needs to pull overnight ADT (Admit, Discharge, Transfer) notifications to update patient
+          rosters. These are system-to-system operations running on a schedule or in response to events, with no user to
+          authenticate and no browser to redirect.</p>
 
-        <p>Backend services use the OAuth 2.0 <code>client_credentials</code> grant, but with an important healthcare-specific modification: instead of a shared client secret, the client proves its identity using an asymmetric key pair. The client signs a JWT with its private key, the authorization server verifies it using the corresponding public key (which was registered with the server in advance), and if valid, returns an access token. No browser. No user. No redirect.</p>
+        <p>Backend services use the OAuth 2.0 <code>client_credentials</code> grant, but with an important
+          healthcare-specific modification: instead of a shared client secret, the client proves its identity using an
+          asymmetric key pair. The client signs a JWT with its private key, the authorization server verifies it using
+          the corresponding public key (which was registered with the server in advance), and if valid, returns an
+          access token. No browser. No user. No redirect.</p>
 
         <div class="flow-label">Sequence Diagram: Backend Services</div>
         <div class="flow-diagram">
-Backend Service             Authorization Server          FHIR Server
-    |                               |                          |
-    |-- GET /.well-known/smart-configuration ---------------->|
-    |&lt;-- { token_endpoint, token_endpoint_auth_methods: ["private_key_jwt"] }
-    |                               |                          |
-    |  [Build client_assertion JWT] |                          |
-    |  Header: { alg: "RS384", kid: "my-key-id" }             |
-    |  Payload: {                   |                          |
-    |    iss: "my-backend-client-id",                          |
-    |    sub: "my-backend-client-id",                          |
-    |    aud: "https://fhir.example.com/oauth/token",          |
-    |    jti: "unique-nonce-value",                            |
-    |    iat: 1761609600,           |                          |
-    |    exp: 1761609900            |                          |
-    |  }                            |                          |
-    |  [Sign with RSA private key]  |                          |
-    |                               |                          |
-    |-- POST /oauth/token           |                          |
-    |   grant_type=client_credentials                          |
-    |   scope=system/Patient.read system/Observation.read      |
-    |   client_assertion_type=urn:ietf:params:oauth:           |
-    |     client-assertion-type:jwt-bearer                     |
-    |   client_assertion=eyJhbGci... ------>|                  |
-    |                               |                          |
-    |               [Server verifies JWT signature             |
-    |                using registered public key]              |
-    |               [Server checks jti is not replayed]        |
-    |               [Server checks exp is not past]            |
-    |                               |                          |
-    |&lt;-- { access_token, token_type: "Bearer",               |
-    |       expires_in: 300, scope: "system/Patient.read system/Observation.read" }
-    |                               |                          |
-    |-- GET /fhir/R4/Patient?_count=100 ---------------------->|
-    |   Authorization: Bearer {access_token}                   |
-    |&lt;-- Patient bundle (all patients within authorized scope) |
+          Backend Service Authorization Server FHIR Server
+          | | |
+          |-- GET /.well-known/smart-configuration ---------------->|
+          |&lt;-- { token_endpoint, token_endpoint_auth_methods: ["private_key_jwt"] }
+          | | |
+          | [Build client_assertion JWT] | |
+          | Header: { alg: "RS384", kid: "my-key-id" } |
+          | Payload: { | |
+          | iss: "my-backend-client-id", |
+          | sub: "my-backend-client-id", |
+          | aud: "https://fhir.example.com/oauth/token", |
+          | jti: "unique-nonce-value", |
+          | iat: 1761609600, | |
+          | exp: 1761609900 | |
+          | } | |
+          | [Sign with RSA private key] | |
+          | | |
+          |-- POST /oauth/token | |
+          | grant_type=client_credentials |
+          | scope=system/Patient.read system/Observation.read |
+          | client_assertion_type=urn:ietf:params:oauth: |
+          | client-assertion-type:jwt-bearer |
+          | client_assertion=eyJhbGci... ------>| |
+          | | |
+          | [Server verifies JWT signature |
+          | using registered public key] |
+          | [Server checks jti is not replayed] |
+          | [Server checks exp is not past] |
+          | | |
+          |&lt;-- { access_token, token_type: "Bearer", |
+          | expires_in: 300, scope: "system/Patient.read system/Observation.read" }
+          | | |
+          |-- GET /fhir/R4/Patient?_count=100 ---------------------->|
+          | Authorization: Bearer {access_token} |
+          |&lt;-- Patient bundle (all patients within authorized scope) |
         </div>
 
-        <p>The <code>jti</code> (JWT ID) claim in the client assertion is a replay attack prevention mechanism. Each JWT assertion must carry a unique identifier, and the authorization server must reject any assertion whose <code>jti</code> has already been used. This prevents an attacker who intercepts a signed JWT from reusing it after the legitimate request has completed. The specification requires that assertions expire within five minutes of their <code>iat</code> (issued-at) timestamp, limiting the window during which a stolen assertion could be replayed.</p>
+        <p>The <code>jti</code> (JWT ID) claim in the client assertion is a replay attack prevention mechanism. Each JWT
+          assertion must carry a unique identifier, and the authorization server must reject any assertion whose
+          <code>jti</code> has already been used. This prevents an attacker who intercepts a signed JWT from reusing it
+          after the legitimate request has completed. The specification requires that assertions expire within five
+          minutes of their <code>iat</code> (issued-at) timestamp, limiting the window during which a stolen assertion
+          could be replayed.</p>
 
-        <p>The public key must be registered with the authorization server before the backend service can authenticate. The SMART specification supports two registration approaches: a static JWKS (JSON Web Key Set) document uploaded during client registration, or a resolvable JWKS URL that the authorization server fetches dynamically. The URL-based approach is preferable in production because it allows key rotation without re-registering the client.</p>
+        <p>The public key must be registered with the authorization server before the backend service can authenticate.
+          The SMART specification supports two registration approaches: a static JWKS (JSON Web Key Set) document
+          uploaded during client registration, or a resolvable JWKS URL that the authorization server fetches
+          dynamically. The URL-based approach is preferable in production because it allows key rotation without
+          re-registering the client.</p>
 
         <h2>Understanding SMART Scopes</h2>
 
-        <p>SMART scopes are the mechanism by which an app declares what data it needs access to. The scope syntax in SMART App Launch v2 follows a predictable pattern:</p>
+        <p>SMART scopes are the mechanism by which an app declares what data it needs access to. The scope syntax in
+          SMART App Launch v2 follows a predictable pattern:</p>
 
         <pre>[context]/[ResourceType].[permissions]</pre>
 
-        <p>The context prefix determines who the access applies to. The resource type is any FHIR resource type (or <code>*</code> as a wildcard). The permissions suffix uses a compact notation: <code>c</code> for create, <code>r</code> for read, <code>u</code> for update, <code>d</code> for delete, <code>s</code> for search. These can be combined, so <code>.rs</code> means read and search.</p>
+        <p>The context prefix determines who the access applies to. The resource type is any FHIR resource type (or
+          <code>*</code> as a wildcard). The permissions suffix uses a compact notation: <code>c</code> for create,
+          <code>r</code> for read, <code>u</code> for update, <code>d</code> for delete, <code>s</code> for search.
+          These can be combined, so <code>.rs</code> means read and search.</p>
 
         <table class="scope-table">
           <thead>
@@ -369,15 +523,32 @@ Backend Service             Authorization Server          FHIR Server
           </tbody>
         </table>
 
-        <p>The scope context prefix is not a cosmetic distinction. A server that receives a token containing <code>patient/Observation.rs</code> is contractually obligated to enforce that the token can only access Observation resources belonging to the specific patient encoded in the token's <code>patient</code> claim. A <code>user/</code> scope enforces the clinician's existing access control rules as defined in the EHR. A <code>system/</code> scope operates independently of any user session and typically requires pre-authorization by a system administrator, not end-user consent. Using the wrong scope prefix -- particularly requesting <code>system/</code> scopes from a user-facing app -- will be rejected by compliant authorization servers, and for good reason.</p>
+        <p>The scope context prefix is not a cosmetic distinction. A server that receives a token containing
+          <code>patient/Observation.rs</code> is contractually obligated to enforce that the token can only access
+          Observation resources belonging to the specific patient encoded in the token's <code>patient</code> claim. A
+          <code>user/</code> scope enforces the clinician's existing access control rules as defined in the EHR. A
+          <code>system/</code> scope operates independently of any user session and typically requires pre-authorization
+          by a system administrator, not end-user consent. Using the wrong scope prefix, particularly requesting
+          <code>system/</code> scopes from a user-facing app, will be rejected by compliant authorization servers, and
+          for good reason.</p>
 
-        <p>SMART v1 used broad scopes like <code>patient/*.read</code>. SMART v2 encourages granular scopes like <code>patient/Observation.rs</code> to align with HIPAA's minimum-necessary principle. Many EHR vendors still support the v1 syntax for backward compatibility, but new applications should request only the specific resource types and operations they actually need.</p>
+        <p>SMART v1 used broad scopes like <code>patient/*.read</code>. SMART v2 encourages granular scopes like
+          <code>patient/Observation.rs</code> to align with HIPAA's minimum-necessary principle. Many EHR vendors still
+          support the v1 syntax for backward compatibility, but new applications should request only the specific
+          resource types and operations they actually need.</p>
 
         <h2>A Working Token Request Example</h2>
 
-        <p>The public HAPI FHIR test server at <code>hapi.fhir.org/baseR4</code> is an openly accessible sandbox for basic FHIR API testing and does not enforce SMART authorization out of the box. However, the token request format shown below is exactly what you would send against any SMART-compliant authorization server. Organizations building against a production server -- such as a health system running Smile CDR, Microsoft Azure Health Data Services, or Google Cloud Healthcare API -- can use this same pattern against those environments with valid credentials.</p>
+        <p>The public HAPI FHIR test server at <code>hapi.fhir.org/baseR4</code> is an openly accessible sandbox for
+          basic FHIR API testing and does not enforce SMART authorization out of the box. However, the token request
+          format shown below is exactly what you would send against any SMART-compliant authorization server.
+          Organizations building against a production server, such as a health system running Smile CDR, Microsoft Azure
+          Health Data Services, or Google Cloud Healthcare API, can use this same pattern against those environments
+          with valid credentials.</p>
 
-        <p>The following curl example demonstrates a backend services token request. Before running it, you need two things: a registered client ID and a private RSA key whose corresponding public key has been registered with the target authorization server.</p>
+        <p>The following curl example demonstrates a backend services token request. Before running it, you need two
+          things: a registered client ID and a private RSA key whose corresponding public key has been registered with
+          the target authorization server.</p>
 
         <p><strong>Step 1: Discover the token endpoint.</strong></p>
 
@@ -388,7 +559,8 @@ Backend Service             Authorization Server          FHIR Server
 
         <p><strong>Step 2: Build and sign the client assertion JWT.</strong></p>
 
-        <p>Most production implementations use a JWT library in their language of choice. The following Python snippet illustrates the payload construction:</p>
+        <p>Most production implementations use a JWT library in their language of choice. The following Python snippet
+          illustrates the payload construction:</p>
 
         <pre>import uuid, time, jwt  # pip install PyJWT cryptography
 
@@ -420,7 +592,8 @@ print(token)</pre>
   --data-urlencode "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer" \
   --data-urlencode "client_assertion=eyJhbGciOiJSUzM4NCIsImtpZCI6..."</pre>
 
-        <p>A successful response returns an access token valid for the duration specified in <code>expires_in</code> (typically 300 seconds for backend service tokens):</p>
+        <p>A successful response returns an access token valid for the duration specified in <code>expires_in</code>
+          (typically 300 seconds for backend service tokens):</p>
 
         <pre>{
   "access_token": "eyJhbGciOiJSUzI1NiIs...",
@@ -434,43 +607,94 @@ print(token)</pre>
         <pre>curl https://fhir.example.com/baseR4/Patient?_count=10 \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIs..."</pre>
 
-        <p>The FHIR server validates the bearer token against the authorization server (either introspecting it directly or verifying a signed JWT), confirms that the requested resource type and operation fall within the token's approved scopes, and returns the Patient bundle.</p>
+        <p>The FHIR server validates the bearer token against the authorization server (either introspecting it directly
+          or verifying a signed JWT), confirms that the requested resource type and operation fall within the token's
+          approved scopes, and returns the Patient bundle.</p>
 
         <h2>What Works Well and Where Friction Remains</h2>
 
-        <p>SMART on FHIR has delivered genuine progress on healthcare interoperability. The standardization of launch flows means that a SMART-compliant app developed against one EHR can, in principle, be connected to any other SMART-compliant EHR without rebuilding the authentication layer. The ONC certification requirements have driven major EHR vendors -- Epic, Cerner (Oracle Health), Meditech, and others -- to implement conformant endpoints, creating a real ecosystem of portable healthcare applications. The CMS Patient Access API mandates, which require payers to expose FHIR R4 APIs secured with SMART, have extended this ecosystem to the insurance industry.</p>
+        <p>SMART on FHIR has delivered genuine progress on healthcare interoperability. The standardization of launch
+          flows means that a SMART-compliant app developed against one EHR can, in principle, be connected to any other
+          SMART-compliant EHR without rebuilding the authentication layer. The ONC certification requirements have
+          driven major EHR vendors, Epic, Cerner (Oracle Health), Meditech, and others, to implement conformant
+          endpoints, creating a real ecosystem of portable healthcare applications. The CMS Patient Access API mandates,
+          which require payers to expose FHIR R4 APIs secured with SMART, have extended this ecosystem to the insurance
+          industry.</p>
 
-        <p>The friction points are worth naming honestly. First, "SMART-compliant" in practice varies. The specification defines a large capability set, and individual server implementations support different subsets. An app that works against Epic's SMART implementation may encounter scope naming differences, token lifetimes, or registration requirements that differ from a Cerner environment. The <code>.well-known/smart-configuration</code> discovery document helps, but it does not eliminate the need for environment-specific testing.</p>
+        <p>The friction points are worth naming honestly. First, "SMART-compliant" in practice varies. The specification
+          defines a large capability set, and individual server implementations support different subsets. An app that
+          works against Epic's SMART implementation may encounter scope naming differences, token lifetimes, or
+          registration requirements that differ from a Cerner environment. The
+          <code>.well-known/smart-configuration</code> discovery document helps, but it does not eliminate the need for
+          environment-specific testing.</p>
 
-        <p>Second, app registration is still a manual, offline process at most health systems. Before your app can initiate any SMART flow, a health system's IT and security team must review and approve it, assign a client ID, and register your redirect URIs and public keys. This process can take weeks to months at large institutions, which creates a meaningful barrier for startups and smaller development teams. No part of SMART automates this approval process.</p>
+        <p>Second, app registration is still a manual, offline process at most health systems. Before your app can
+          initiate any SMART flow, a health system's IT and security team must review and approve it, assign a client
+          ID, and register your redirect URIs and public keys. This process can take weeks to months at large
+          institutions, which creates a meaningful barrier for startups and smaller development teams. No part of SMART
+          automates this approval process.</p>
 
-        <p>Third, the backend services flow requires asymmetric key management discipline. Rotating keys, ensuring the JWKS URL remains accessible, and handling key expiration without breaking production pipelines demands operational maturity that many healthcare IT teams are still developing. A backend service whose JWKS URL becomes unreachable will fail silently at token request time, and debugging that failure in a production pipeline is non-trivial.</p>
+        <p>Third, the backend services flow requires asymmetric key management discipline. Rotating keys, ensuring the
+          JWKS URL remains accessible, and handling key expiration without breaking production pipelines demands
+          operational maturity that many healthcare IT teams are still developing. A backend service whose JWKS URL
+          becomes unreachable will fail silently at token request time, and debugging that failure in a production
+          pipeline is non-trivial.</p>
 
-        <p>Fourth, SMART on FHIR secures the transport and authorization layer, but it does not guarantee data quality or completeness. A valid access token against a compliant FHIR endpoint still returns whatever data the health system has actually entered into its EHR. Gaps, inconsistencies, and variations in clinical documentation practices all pass through SMART authorization unchanged.</p>
+        <p>Fourth, SMART on FHIR secures the transport and authorization layer, but it does not guarantee data quality
+          or completeness. A valid access token against a compliant FHIR endpoint still returns whatever data the health
+          system has actually entered into its EHR. Gaps, inconsistencies, and variations in clinical documentation
+          practices all pass through SMART authorization unchanged.</p>
 
         <h2>Choosing the Right Flow for Your Use Case</h2>
 
-        <p>The three flows are not interchangeable. Selecting the wrong one either creates unnecessary user friction or introduces authorization scope that exceeds what the use case warrants.</p>
+        <p>The three flows are not interchangeable. Selecting the wrong one either creates unnecessary user friction or
+          introduces authorization scope that exceeds what the use case warrants.</p>
 
-        <p>Use the patient standalone launch when you are building a consumer-facing application that patients use independently, outside any EHR session. The patient authenticates through their health system's patient portal and explicitly consents to what data the app can access. This flow is appropriate for personal health record apps, chronic disease management tools, and any application where the patient is the primary user and the data subject.</p>
+        <p>Use the patient standalone launch when you are building a consumer-facing application that patients use
+          independently, outside any EHR session. The patient authenticates through their health system's patient portal
+          and explicitly consents to what data the app can access. This flow is appropriate for personal health record
+          apps, chronic disease management tools, and any application where the patient is the primary user and the data
+          subject.</p>
 
-        <p>Use the EHR launch when you are building a clinical tool designed to be used by clinicians within the EHR workflow. The app opens in the context of a patient chart, inherits the session, and does not interrupt the clinician with a separate login. This flow is appropriate for clinical decision support tools, specialty documentation apps, and any application where seamless integration with the EHR workflow is more important than standalone portability.</p>
+        <p>Use the EHR launch when you are building a clinical tool designed to be used by clinicians within the EHR
+          workflow. The app opens in the context of a patient chart, inherits the session, and does not interrupt the
+          clinician with a separate login. This flow is appropriate for clinical decision support tools, specialty
+          documentation apps, and any application where seamless integration with the EHR workflow is more important
+          than standalone portability.</p>
 
-        <p>Use the backend services flow when no human user is present. Population health analytics, care gap identification pipelines, bulk data exports for quality reporting, and system-to-system data synchronization all fall into this category. The backend services flow carries the highest level of access -- <code>system/</code> scopes can access data across the entire patient population -- and accordingly requires the most rigorous pre-authorization and organizational approval before a server will issue tokens against it.</p>
+        <p>Use the backend services flow when no human user is present. Population health analytics, care gap
+          identification pipelines, bulk data exports for quality reporting, and system-to-system data synchronization
+          all fall into this category. The backend services flow carries the highest level of access, as
+          <code>system/</code> scopes can access data across the entire patient population, and accordingly requires the
+          most rigorous pre-authorization and organizational approval before a server will issue tokens against it.</p>
 
-        <p>SMART on FHIR is, ultimately, a sensible application of standard security protocols to a domain that needed them badly. Healthcare data has historically been siloed not because of malice but because there was no agreed-upon, secure mechanism for sharing it across systems and organizations. SMART provides that mechanism. Understanding its three launch flows, its scope vocabulary, and its token request patterns is increasingly a prerequisite for anyone building or integrating healthcare applications in a regulatory environment where interoperability is now a legal requirement rather than an aspiration.</p>
+        <p>SMART on FHIR is, ultimately, a sensible application of standard security protocols to a domain that needed
+          them badly. Healthcare data has historically been siloed not because of malice but because there was no
+          agreed-upon, secure mechanism for sharing it across systems and organizations. SMART provides that mechanism.
+          Understanding its three launch flows, its scope vocabulary, and its token request patterns is increasingly a
+          prerequisite for anyone building or integrating healthcare applications in a regulatory environment where
+          interoperability is now a legal requirement rather than an aspiration.</p>
 
       </div>
     </article>
 
-    <aside style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
-      <h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">About the Author</h2>
+    <aside
+      style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+      <h2
+        style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+        About the Author</h2>
       <div style="display:flex;align-items:flex-start;gap:1.5rem;">
         <div>
-          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park</p>
-          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp; Business Intelligence Professional</p>
-          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
-          <a href="https://www.linkedin.com/in/developerjp/" target="_blank" style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect on LinkedIn &rarr;</a>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park
+          </p>
+          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+            Business Intelligence Professional</p>
+          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and
+            business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and
+            applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+          <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+            style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+            on LinkedIn &rarr;</a>
         </div>
       </div>
     </aside>
@@ -478,7 +702,8 @@ print(token)</pre>
 
   <footer class="site-footer">
     <div class="container" style="text-align:center;padding:var(--space-l) 0;">
-      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
     </div>
   </footer>
 </body>
