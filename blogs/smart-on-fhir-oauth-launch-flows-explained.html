@@ -284,7 +284,8 @@
           <code>launch-ehr</code> appears, the server can initiate an EHR launch. If
           <code>client-confidential-asymmetric</code> appears, the server supports backend services using signed JWTs.
           Checking this document first prevents a category of integration errors where apps assume capabilities that the
-          server does not advertise.</p>
+          server does not advertise.
+        </p>
 
         <h2>Flow 1: Patient Standalone Launch</h2>
 
@@ -297,26 +298,27 @@
           initiate everything from scratch and the patient must authenticate directly with their health system.</p>
 
         <div class="flow-label">Sequence Diagram: Patient Standalone Launch</div>
-        <div class="flow-diagram"><pre>
+        <div class="flow-diagram">
+          <pre>
   Patient App                  Auth Server                 FHIR Server
        |                            |                           |
        |-- GET /.well-known/smart-configuration --------------->|
-       |&lt;-- { authorization_endpoint, token_endpoint } --------|
+       |&lt;-- { authorization_endpoint, token_endpoint } ------|
        |                            |                           |
        |-- Redirect browser to authorization_endpoint           |
        |   ?response_type=code                                  |
-       |   &amp;client_id=my-app                                    |
-       |   &amp;redirect_uri=https://myapp.com/callback             |
-       |   &amp;scope=launch/patient patient/*.rs openid            |
-       |   &amp;state=abc123                                        |
-       |   &amp;code_challenge=BASE64URL(SHA256(verifier))          |
-       |   &amp;code_challenge_method=S256                          |
+       |   &amp;client_id=my-app                                |
+       |   &amp;redirect_uri=https://myapp.com/callback         |
+       |   &amp;scope=launch/patient patient/*.rs openid        |
+       |   &amp;state=abc123                                    |
+       |   &amp;code_challenge=BASE64URL(SHA256(verifier))      |
+       |   &amp;code_challenge_method=S256                      |
        |                            |                           |
        |      [ Patient logs in via health system portal    ]   |
        |      [ Patient reviews and grants data consent     ]   |
        |                            |                           |
-       |&lt;-- Redirect to redirect_uri                            |
-       |    ?code=AUTH_CODE&amp;state=abc123                        |
+       |&lt;-- Redirect to redirect_uri                         |
+       |    ?code=AUTH_CODE&amp;state=abc123                    |
        |                            |                           |
        |-- POST /token ---------------------------->            |
        |   grant_type=authorization_code                        |
@@ -324,16 +326,17 @@
        |   code_verifier=ORIGINAL_RANDOM_STRING                 |
        |   redirect_uri=https://myapp.com/callback              |
        |                            |                           |
-       |&lt;-- 200 OK                                              |
+       |&lt;-- 200 OK                                           |
        |    { "access_token": "eyJ...",                         |
        |      "patient": "Patient/123",                         |
        |      "token_type": "Bearer",                           |
        |      "expires_in": 3600 }                              |
        |                            |                           |
-       |-- GET /fhir/R4/Patient/123 -------------------------->|
+       |-- GET /fhir/R4/Patient/123 --------------------------> |
        |   Authorization: Bearer eyJ...                         |
-       |&lt;-- 200 OK  Patient resource JSON -------------------- |
-</pre></div>
+       |&lt;-- 200 OK  Patient resource JSON -------------------|
+</pre>
+        </div>
 
         <p>Several elements in this diagram deserve attention. The <code>scope=launch/patient</code> value tells the
           authorization server that when the user logs in, it should present them with a patient picker interface so
@@ -347,7 +350,8 @@
           <code>code_challenge</code>), and sends the hash with the initial request. At token exchange, it sends the
           original verifier. The server verifies that the hash matches, confirming the token request came from the same
           party that initiated the authorization request. PKCE is mandatory for public clients (native apps, single-page
-          applications) in SMART App Launch v2.</p>
+          applications) in SMART App Launch v2.
+        </p>
 
         <p>The token response includes a <code>patient</code> field containing the FHIR resource ID of the patient who
           consented. The app uses this ID for all subsequent data requests, scoped to that patient's record only.</p>
@@ -361,47 +365,49 @@
           to the SMART app automatically.</p>
 
         <div class="flow-label">Sequence Diagram: EHR Launch</div>
-        <div class="flow-diagram"><pre>
+        <div class="flow-diagram">
+          <pre>
   EHR System         SMART App           Auth Server         FHIR Server
       |                  |                    |                    |
       |-- Launch app     |                    |                    |
       |   launch_uri     |                    |                    |
       |   ?iss=https://fhir.example.com       |                    |
-      |   &amp;launch=LAUNCH_TOKEN ----------->   |                    |
+      |   &amp;launch=LAUNCH_TOKEN ---------->|                    |
       |                  |                    |                    |
       |                  |-- GET /.well-known/smart-configuration->|
-      |                  |&lt;-- { authorization_endpoint, ... } ----|
+      |                  |&lt;-- { authorization_endpoint, ... } --|
       |                  |                    |                    |
       |                  |-- Redirect to authorization_endpoint    |
       |                  |   ?response_type=code                   |
-      |                  |   &amp;client_id=risk-app                   |
-      |                  |   &amp;redirect_uri=https://app.com/cb      |
-      |                  |   &amp;scope=launch openid patient/*.rs     |
-      |                  |   &amp;launch=LAUNCH_TOKEN                  |
-      |                  |   &amp;aud=https://fhir.example.com         |
-      |                  |   &amp;code_challenge=S256-hash ---------->  |
+      |                  |   &amp;client_id=risk-app               |
+      |                  |   &amp;redirect_uri=https://app.com/cb  |
+      |                  |   &amp;scope=launch openid patient/*.rs |
+      |                  |   &amp;launch=LAUNCH_TOKEN              |
+      |                  |   &amp;aud=https://fhir.example.com     |
+      |                  |   &amp;code_challenge=S256-hash ------->|
       |                  |                    |                    |
       |  [ EHR confirms clinician; no re-login required         ]  |
-      |  [ Patient context inherited automatically from session  ]  |
+      |  [ Patient context inherited automatically from session  ] |
       |                  |                    |                    |
-      |                  |&lt;-- Redirect: ?code=AUTH_CODE           |
+      |                  |&lt;-- Redirect: ?code=AUTH_CODE         |
       |                  |                    |                    |
       |                  |-- POST /token ---->|                    |
       |                  |   grant_type=authorization_code         |
       |                  |   code=AUTH_CODE                        |
       |                  |   code_verifier=ORIGINAL_STRING         |
       |                  |                    |                    |
-      |                  |&lt;-- 200 OK          |                    |
+      |                  |&lt;-- 200 OK       |                    |
       |                  |   { "access_token": "eyJ...",           |
       |                  |     "patient": "Patient/456",           |
       |                  |     "encounter": "Encounter/789",       |
       |                  |     "fhirUser": "Practitioner/001" }    |
       |                  |                    |                    |
-      |                  |-- GET /fhir/R4/Observation ----------->|
+      |                  |-- GET /fhir/R4/Observation -----------> |
       |                  |   ?patient=456                          |
       |                  |   Authorization: Bearer eyJ...          |
-      |                  |&lt;-- 200 OK  Observation bundle ---------|
-</pre></div>
+      |                  |&lt;-- 200 OK  Observation bundle -------|
+</pre>
+        </div>
 
         <p>The critical difference from a standalone launch is the <code>launch</code> parameter. The EHR generates an
           opaque context token (the <code>LAUNCH_TOKEN</code>) when it opens the app's registered launch URL. This token
@@ -413,7 +419,8 @@
           The EHR handles identity confirmation internally and passes the authorization code back to the app. From the
           clinician's perspective, the app simply opens within the EHR interface with the correct patient's data already
           loaded. The token response also carries <code>fhirUser</code>, identifying the practitioner as a FHIR
-          <code>Practitioner</code> resource, which the app can use for audit logging or role-based UI decisions.</p>
+          <code>Practitioner</code> resource, which the app can use for audit logging or role-based UI decisions.
+        </p>
 
         <h2>Flow 3: Backend Services</h2>
 
@@ -430,22 +437,23 @@
           access token. No browser. No user. No redirect.</p>
 
         <div class="flow-label">Sequence Diagram: Backend Services</div>
-        <div class="flow-diagram"><pre>
+        <div class="flow-diagram">
+          <pre>
   Backend Service              Auth Server                 FHIR Server
        |                            |                           |
        |-- GET /.well-known/smart-configuration --------------->|
-       |&lt;-- { token_endpoint,                                   |
+       |&lt;-- { token_endpoint,                                |
        |       token_endpoint_auth_methods:                     |
        |         ["private_key_jwt"] }                          |
        |                            |                           |
        |  [ Build client_assertion JWT ]                        |
-       |  Header:  { "alg": "RS384", "kid": "my-key-id" }      |
+       |  Header:  { "alg": "RS384", "kid": "my-key-id" }       |
        |  Payload: {                                            |
        |    "iss": "my-backend-client-id",                      |
        |    "sub": "my-backend-client-id",                      |
        |    "aud": "https://fhir.example.com/oauth/token",      |
        |    "jti": "unique-nonce-never-reuse",                  |
-       |    "iat": 1761609600,                                   |
+       |    "iat": 1761609600,                                  |
        |    "exp": 1761609900  (5 min max window)               |
        |  }                                                     |
        |  [ Sign payload with RSA private key ]                 |
@@ -464,24 +472,26 @@
        |       [ Confirm jti has not been used before     ]     |
        |       [ Confirm exp timestamp is not expired     ]     |
        |                            |                           |
-       |&lt;-- 200 OK                                              |
+       |&lt;-- 200 OK                                           |
        |    { "access_token": "eyJ...",                         |
        |      "token_type": "Bearer",                           |
        |      "expires_in": 300,                                |
        |      "scope": "system/Patient.read                     |
        |                system/Observation.read" }              |
        |                            |                           |
-       |-- GET /fhir/R4/Patient?_count=100 ------------------>|
+       |-- GET /fhir/R4/Patient?_count=100 ------------------>  |
        |   Authorization: Bearer eyJ...                         |
-       |&lt;-- 200 OK  Patient bundle (all authorized patients) ---|
-</pre></div>
+       |&lt;-- 200 OK  Patient bundle (all authorized patients)-|
+</pre>
+        </div>
 
         <p>The <code>jti</code> (JWT ID) claim in the client assertion is a replay attack prevention mechanism. Each JWT
           assertion must carry a unique identifier, and the authorization server must reject any assertion whose
           <code>jti</code> has already been used. This prevents an attacker who intercepts a signed JWT from reusing it
           after the legitimate request has completed. The specification requires that assertions expire within five
           minutes of their <code>iat</code> (issued-at) timestamp, limiting the window during which a stolen assertion
-          could be replayed.</p>
+          could be replayed.
+        </p>
 
         <p>The public key must be registered with the authorization server before the backend service can authenticate.
           The SMART specification supports two registration approaches: a static JWKS (JSON Web Key Set) document
@@ -499,7 +509,8 @@
         <p>The context prefix determines who the access applies to. The resource type is any FHIR resource type (or
           <code>*</code> as a wildcard). The permissions suffix uses a compact notation: <code>c</code> for create,
           <code>r</code> for read, <code>u</code> for update, <code>d</code> for delete, <code>s</code> for search.
-          These can be combined, so <code>.rs</code> means read and search.</p>
+          These can be combined, so <code>.rs</code> means read and search.
+        </p>
 
         <table class="scope-table">
           <thead>
@@ -557,12 +568,14 @@
           <code>system/</code> scope operates independently of any user session and typically requires pre-authorization
           by a system administrator, not end-user consent. Using the wrong scope prefix, particularly requesting
           <code>system/</code> scopes from a user-facing app, will be rejected by compliant authorization servers, and
-          for good reason.</p>
+          for good reason.
+        </p>
 
         <p>SMART v1 used broad scopes like <code>patient/*.read</code>. SMART v2 encourages granular scopes like
           <code>patient/Observation.rs</code> to align with HIPAA's minimum-necessary principle. Many EHR vendors still
           support the v1 syntax for backward compatibility, but new applications should request only the specific
-          resource types and operations they actually need.</p>
+          resource types and operations they actually need.
+        </p>
 
         <h2>A Working Token Request Example</h2>
 
@@ -653,7 +666,8 @@ print(token)</pre>
           works against Epic's SMART implementation may encounter scope naming differences, token lifetimes, or
           registration requirements that differ from a Cerner environment. The
           <code>.well-known/smart-configuration</code> discovery document helps, but it does not eliminate the need for
-          environment-specific testing.</p>
+          environment-specific testing.
+        </p>
 
         <p>Second, app registration is still a manual, offline process at most health systems. Before your app can
           initiate any SMART flow, a health system's IT and security team must review and approve it, assign a client
@@ -693,7 +707,8 @@ print(token)</pre>
           identification pipelines, bulk data exports for quality reporting, and system-to-system data synchronization
           all fall into this category. The backend services flow carries the highest level of access, as
           <code>system/</code> scopes can access data across the entire patient population, and accordingly requires the
-          most rigorous pre-authorization and organizational approval before a server will issue tokens against it.</p>
+          most rigorous pre-authorization and organizational approval before a server will issue tokens against it.
+        </p>
 
         <p>SMART on FHIR is, ultimately, a sensible application of standard security protocols to a domain that needed
           them badly. Healthcare data has historically been siloed not because of malice but because there was no
