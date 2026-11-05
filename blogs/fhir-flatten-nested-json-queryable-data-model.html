@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Flatten FHIR's Deeply Nested JSON into a Queryable Data Model: Data Analytics &amp; Beyond</title>
+  <meta name="description"
+    content="A Python-based step-by-step guide to flattening FHIR R4 Patient and Observation resources using pandas and jsonpath-ng, producing clean denormalized tables for SQL, Microsoft Fabric Lakehouse, and Azure Synapse.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content pre {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      margin: var(--space-m) 0;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-m);
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    .pipeline-step {
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .pipeline-step-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+
+  <meta property="og:title" content="How to Flatten FHIR's Deeply Nested JSON into a Queryable Data Model">
+  <meta property="og:description"
+    content="A Python-based step-by-step guide to flattening FHIR R4 Patient and Observation resources using pandas and jsonpath-ng, producing clean denormalized tables for SQL, Microsoft Fabric Lakehouse, and Azure Synapse.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/fhir_json_flattening_data_engineer.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/fhir-flatten-nested-json-queryable-data-model.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/fhir-flatten-nested-json-queryable-data-model.html">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to Flatten FHIR's Deeply Nested JSON into a Queryable Data Model",
+      "description": "A Python-based step-by-step guide to flattening FHIR R4 Patient and Observation resources using pandas and jsonpath-ng, producing clean denormalized tables for SQL, Microsoft Fabric Lakehouse, and Azure Synapse.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/fhir_json_flattening_data_engineer.jpg",
+      "datePublished": "2026-11-04",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "agentic AI engineer and business intelligence professional",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">&#8592; Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:#34d399;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">How to Flatten FHIR's Deeply Nested JSON into
+          a Queryable Data Model</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          The step most tutorials skip: a practical Python guide to converting Patient and Observation resources into
+          clean, denormalized tables that load into SQL, Microsoft Fabric Lakehouse, and Azure Synapse without schema
+          drift.
+        </p>
+        <p class="post-meta">Published: <time>November 4, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/fhir_json_flattening_data_engineer.jpg"
+        alt="A data engineer at a modern workstation reviewing organized tabular data on a large monitor in a professional office environment"
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>Every data engineer who encounters FHIR for the first time arrives with a reasonable assumption: JSON is
+          straightforward, and flattening it into a relational table is a solved problem. That assumption collapses
+          within minutes of inspecting a real Patient resource. A FHIR Patient carries a <code>name</code> array where
+          each element itself contains a <code>given</code> array. Its <code>telecom</code> array holds multiple contact
+          points of varying types. Its <code>address</code> array nests a <code>line</code> array inside each address
+          record. And then there are extensions: a parallel array of arbitrary key-value pairs attached at any level of
+          the document, keyed by URL rather than field name. Observation resources are structurally more severe still,
+          because their primary value field changes its own key depending on the LOINC code category being recorded.</p>
+
+        <p>The official HL7 FHIR R4 specification defines nearly every element in the Patient resource with a
+          cardinality
+          of <code>0..*</code>, meaning most fields are entirely optional and may repeat an unlimited number of times.
+          This design is intentional and architecturally sound for interoperability. However, it creates a category of
+          engineering problem that generic tutorials do not address: how to safely extract, normalize, and load these
+          structures into SQL-queryable tables without data loss, schema drift errors, or silent null-column
+          proliferation.
+          This post works through that problem systematically, using Python, pandas, and jsonpath-ng against realistic
+          FHIR R4 Bundle JSON.</p>
+
+        <h2>Understanding the Nesting Problem Before Writing Any Code</h2>
+
+        <p>A clear mental model of the nesting patterns is a prerequisite for designing a correct flattening strategy.
+          FHIR resources exhibit three distinct nesting categories, each demanding a different engineering response.</p>
+
+        <p>The first category is the <strong>repeating scalar array</strong>. The <code>Patient.name[].given</code>
+          field
+          is a plain array of strings: <code>["Peter", "James"]</code>. Flattening this naively by joining the array
+          into
+          a single comma-delimited string is tempting but destroys downstream queryability. The correct approach is to
+          select a single representative value using a priority rule, or to persist the full array in a child dimension
+          table linked by a foreign key.</p>
+
+        <p>The second category is the <strong>repeating object array</strong>. <code>Patient.telecom</code> is an array
+          of ContactPoint objects, each containing its own <code>system</code>, <code>value</code>, and <code>use</code>
+          sub-fields. A patient may have a home phone, a work phone, and an email address simultaneously. Collapsing
+          these into a single row via a cross-join without filtering by <code>use</code> first produces a Cartesian
+          multiplication of rows that silently corrupts counts in any downstream aggregate query.</p>
+
+        <p>The third category, and the most disruptive, is the <strong>polymorphic choice element</strong>. The
+          Observation resource defines a <code>value[x]</code> field where the actual JSON key changes based on the
+          data type being stored. A heart-rate observation carries <code>valueQuantity</code>; a discharge-disposition
+          observation carries <code>valueCodeableConcept</code>; a free-text note carries <code>valueString</code>. A
+          fixed-schema table definition cannot accommodate all three under a single column name. Any extraction logic
+          that hard-codes <code>resource["valueQuantity"]</code> will raise a <code>KeyError</code> on any other
+          Observation type and fail silently if the caller uses <code>.get()</code> without fallback handling.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 860 380" width="100%" height="380" xmlns="http://www.w3.org/2000/svg">
+            <rect width="860" height="380" rx="12" fill="#0b1120" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <text x="430" y="34" text-anchor="middle" fill="#f8fafc" font-family="'Outfit',sans-serif" font-size="16"
+              font-weight="700">FHIR Nesting Patterns and Target Table Strategy</text>
+
+            <!-- Left: Raw FHIR JSON block -->
+            <rect x="20" y="55" width="250" height="300" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="145" y="80" text-anchor="middle" fill="#60a5fa" font-family="'Outfit',sans-serif" font-size="13"
+              font-weight="700">Raw FHIR Bundle JSON</text>
+            <text x="35" y="108" fill="#94a3b8" font-size="11">Patient</text>
+            <text x="50" y="128" fill="#e2e8f0" font-size="11">name[ ] (repeating objects)</text>
+            <text x="65" y="146" fill="#64748b" font-size="10">given[ ] (repeating strings)</text>
+            <text x="50" y="166" fill="#e2e8f0" font-size="11">telecom[ ] (repeating objects)</text>
+            <text x="50" y="186" fill="#e2e8f0" font-size="11">address[ ] (repeating objects)</text>
+            <text x="65" y="204" fill="#64748b" font-size="10">line[ ] (repeating strings)</text>
+            <text x="50" y="224" fill="#e2e8f0" font-size="11">extension[ ] (URL-keyed)</text>
+            <text x="35" y="252" fill="#94a3b8" font-size="11">Observation</text>
+            <text x="50" y="272" fill="#e2e8f0" font-size="11">valueQuantity | valueString</text>
+            <text x="65" y="290" fill="#64748b" font-size="10">valueCodeableConcept ...</text>
+            <text x="50" y="310" fill="#e2e8f0" font-size="11">component[ ] (nested obs)</text>
+            <text x="50" y="330" fill="#e2e8f0" font-size="11">referenceRange[ ]</text>
+
+            <!-- Arrow -->
+            <line x1="270" y1="205" x2="330" y2="205" stroke="#818cf8" stroke-width="2" />
+            <polygon points="330,200 342,205 330,210" fill="#818cf8" />
+            <text x="306" y="197" text-anchor="middle" fill="#818cf8" font-size="10">flatten</text>
+
+            <!-- Middle: Python transform box -->
+            <rect x="342" y="130" width="175" height="150" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5" />
+            <text x="429" y="155" text-anchor="middle" fill="#a78bfa" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="700">Python Transform</text>
+            <text x="429" y="178" text-anchor="middle" fill="#e2e8f0" font-size="11">jsonpath-ng extraction</text>
+            <text x="429" y="198" text-anchor="middle" fill="#e2e8f0" font-size="11">pd.json_normalize()</text>
+            <text x="429" y="218" text-anchor="middle" fill="#e2e8f0" font-size="11">Priority-rule selectors</text>
+            <text x="429" y="238" text-anchor="middle" fill="#e2e8f0" font-size="11">Safe .get() fallbacks</text>
+            <text x="429" y="258" text-anchor="middle" fill="#e2e8f0" font-size="11">value[x] type detection</text>
+
+            <!-- Arrow to tables -->
+            <line x1="517" y1="205" x2="572" y2="205" stroke="#34d399" stroke-width="2" />
+            <polygon points="572,200 584,205 572,210" fill="#34d399" />
+            <text x="548" y="197" text-anchor="middle" fill="#34d399" font-size="10">load</text>
+
+            <!-- Right: Output tables -->
+            <rect x="584" y="60" width="255" height="55" rx="6" fill="#1e293b" stroke="#34d399" stroke-width="1.5" />
+            <text x="711" y="82" text-anchor="middle" fill="#34d399" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="600">dim_patient</text>
+            <text x="711" y="102" text-anchor="middle" fill="#94a3b8" font-size="10">patient_id | gender | birth_date |
+              mrn</text>
+
+            <rect x="584" y="128" width="255" height="55" rx="6" fill="#1e293b" stroke="#34d399" stroke-width="1.5" />
+            <text x="711" y="150" text-anchor="middle" fill="#34d399" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="600">dim_patient_telecom</text>
+            <text x="711" y="170" text-anchor="middle" fill="#94a3b8" font-size="10">patient_id | system | value |
+              use</text>
+
+            <rect x="584" y="196" width="255" height="55" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="711" y="218" text-anchor="middle" fill="#fbbf24" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="600">fact_observation</text>
+            <text x="711" y="238" text-anchor="middle" fill="#94a3b8" font-size="10">obs_id | patient_id | loinc |
+              value_num | unit</text>
+
+            <rect x="584" y="264" width="255" height="55" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="711" y="286" text-anchor="middle" fill="#fbbf24" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="600">obs_component</text>
+            <text x="711" y="306" text-anchor="middle" fill="#94a3b8" font-size="10">obs_id | component_code | value_num
+              | unit</text>
+
+            <rect x="584" y="332" width="255" height="40" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="711" y="357" text-anchor="middle" fill="#fbbf24" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="600">obs_reference_range</text>
+          </svg>
+          <div class="diagram-caption">Figure 1: FHIR Bundle nesting patterns mapped to target star-schema tables via
+            Python transformation. Each array type requires a distinct extraction strategy to avoid Cartesian row
+            multiplication.</div>
+        </div>
+
+        <h2>Setting Up the Environment</h2>
+
+        <p>The flattening pipeline demonstrated in this post requires three libraries. Install them with pip before
+          proceeding.</p>
+
+        <pre>pip install pandas jsonpath-ng requests</pre>
+
+        <p>The <code>jsonpath-ng</code> library provides JSONPath expression parsing that aims for RFC 9535 alignment,
+          and it's useful for declaratively expressing filter-style lookups — such as finding a specific typed
+          identifier inside an array by matching a field value — that would otherwise require a manual loop. Most of
+          the flattening logic in this post still relies on straightforward Python dict and list traversal, since
+          FHIR's resource shapes are varied enough that explicit, readable loops are often clearer than deeply chained
+          JSONPath expressions; jsonpath-ng is reached for selectively rather than everywhere. Note also that its
+          filter syntax is an extension feature — it requires importing <code>parse</code> from
+          <code>jsonpath_ng.ext</code> rather than the base package, as shown below. The standard library
+          <code>json</code> module handles deserialization. All examples below target data retrieved from the public
+          SMART Health IT FHIR R4 sandbox at <code>https://r4.smarthealthit.org</code>, which serves synthetic patient
+          data under no authentication requirement and is therefore suitable for prototyping and testing.
+        </p>
+
+        <h2>Step 1: Fetching and Parsing a FHIR Bundle</h2>
+
+        <p>FHIR servers deliver paginated search results as Bundle resources. Each Bundle wraps an <code>entry</code>
+          array, and each entry object nests the actual clinical resource inside a <code>resource</code> key. The first
+          engineering task is to reliably extract the resource array from every page of results.</p>
+
+        <pre>import requests
+import json
+import pandas as pd
+from jsonpath_ng.ext import parse
+
+BASE_URL = "https://r4.smarthealthit.org"
+
+def fetch_all_resources(resource_type: str, params: dict = None, max_records: int = 500) -&gt; list:
+    """Fetch up to max_records of a FHIR resource type, returning a flat list of resource dicts.
+
+    A cap is enforced by default because r4.smarthealthit.org is a shared, public,
+    unauthenticated sandbox: following every 'next' link with no limit can pull far
+    more data than intended and puts unnecessary load on a community resource.
+    """
+    resources = []
+    url = f"{BASE_URL}/{resource_type}"
+    query = params or {"_count": 50}
+
+    while url and len(resources) &lt; max_records:
+        response = requests.get(url, params=query, timeout=30)
+        response.raise_for_status()
+        bundle = response.json()
+
+        # Extract resource objects from each entry
+        for entry in bundle.get("entry", []):
+            resource = entry.get("resource", {})
+            if resource:
+                resources.append(resource)
+            if len(resources) &gt;= max_records:
+                break
+
+        # Follow the 'next' link for pagination
+        url = None
+        query = {}  # params only needed on first request
+        for link in bundle.get("link", []):
+            if link.get("relation") == "next":
+                url = link.get("url")
+                break
+
+    return resources
+
+patients_raw = fetch_all_resources("Patient")
+print(f"Fetched {len(patients_raw)} Patient resources")</pre>
+
+        <div class="callout">
+          <p><strong>Note on pagination:</strong> FHIR Bundle resources include a <code>link</code> array. The entry
+            with <code>"relation": "next"</code> provides the URL for the subsequent page. Always consume all pages
+            before beginning transformation; a partial dataset produces misleading aggregate results when loaded into
+            a reporting layer. Pair this with a sensible <code>max_records</code> cap on a shared public sandbox, so
+            "consume all pages" means all pages of your intended cohort, not an unbounded crawl of the entire server.
+          </p>
+        </div>
+
+        <h2>Step 2: Flattening the Patient Resource</h2>
+
+        <p>The Patient resource contains four structurally distinct nesting levels that each require a separate
+          extraction strategy: the root-level scalar fields, the <code>name</code> array of HumanName objects, the
+          <code>telecom</code> array of ContactPoint objects, and the <code>address</code> array of Address objects.
+          The correct approach is to produce one primary dimension table and one child table per multi-valued array.
+        </p>
+
+        <h3>Extracting Root-Level Scalar Fields</h3>
+
+        <p>Root-level scalar fields such as <code>id</code>, <code>gender</code>, and <code>birthDate</code> are
+          straightforward. The complexity begins immediately when extracting the Medical Record Number from the
+          <code>identifier</code> array, which contains typed identifier objects. Using jsonpath-ng's filter extension
+          allows declarative extraction without fragile index assumptions — remembering that filter expressions
+          require an <code>@.</code> prefix on the field being tested and parentheses around the whole condition.
+        </p>
+
+        <pre>def extract_patient_core(resource: dict) -&gt; dict:
+    """Extract flat scalar fields from a single Patient resource dict."""
+
+    # Build a JSONPath expression to find the MRN identifier by system URL.
+    # Filter expressions are a jsonpath_ng.ext feature: the tested field needs
+    # an `@.` prefix, and the condition needs enclosing parentheses.
+    mrn_expr = parse("identifier[?(@.system = 'http://hospital.org/mrns')].value")
+    mrn_matches = [m.value for m in mrn_expr.find(resource)]
+    mrn = mrn_matches[0] if mrn_matches else None
+
+    # Select the official name, falling back to the first name in the array
+    official_name = None
+    for name_obj in resource.get("name", []):
+        if name_obj.get("use") == "official":
+            official_name = name_obj
+            break
+    if official_name is None and resource.get("name"):
+        official_name = resource["name"][0]
+
+    family = official_name.get("family") if official_name else None
+    given_list = official_name.get("given", []) if official_name else []
+    # Join multiple given names with a space; store separately if queryability is needed
+    given = " ".join(given_list) if given_list else None
+
+    return {
+        "patient_id": resource.get("id"),
+        "mrn": mrn,
+        "family_name": family,
+        "given_name": given,
+        "gender": resource.get("gender"),
+        "birth_date": resource.get("birthDate"),
+        # FHIR defines no default for Patient.active when the field is absent.
+        # Treating a missing value as True is a pipeline-level assumption, not
+        # a spec requirement — confirm it matches your source system's
+        # convention before relying on it downstream.
+        "active": resource.get("active", True),
+    }
+
+patient_core_rows = [extract_patient_core(p) for p in patients_raw]
+df_patient = pd.DataFrame(patient_core_rows)
+print(df_patient.dtypes)</pre>
+
+        <h3>Producing a Child Table for Telecom and Address</h3>
+
+        <p>Telecom and address data must never be flattened into the same row as the core patient record using a join,
+          because doing so produces one row per telecom per address per patient. A patient with two phone numbers and
+          two addresses would generate four rows in the core table, quadrupling every aggregate count. Instead, extract
+          them into separate grain-specific child tables linked by <code>patient_id</code>.</p>
+
+        <pre>def extract_patient_telecom(resource: dict) -&gt; list:
+    """Return one row dict per telecom entry for this patient."""
+    patient_id = resource.get("id")
+    rows = []
+    for contact in resource.get("telecom", []):
+        rows.append({
+            "patient_id": patient_id,
+            "system": contact.get("system"),    # phone | fax | email | url | sms
+            "value": contact.get("value"),
+            "use": contact.get("use"),          # home | work | temp | old | mobile
+            "rank": contact.get("rank"),
+        })
+    return rows
+
+def extract_patient_address(resource: dict) -&gt; list:
+    """Return one row dict per address entry for this patient."""
+    patient_id = resource.get("id")
+    rows = []
+    for addr in resource.get("address", []):
+        # address.line is itself an array of street address strings
+        line = " ".join(addr.get("line", []))
+        rows.append({
+            "patient_id": patient_id,
+            "use": addr.get("use"),             # home | work | temp | old | billing
+            "address_type": addr.get("type"),   # postal | physical | both
+            "line": line,
+            "city": addr.get("city"),
+            "state": addr.get("state"),
+            "postal_code": addr.get("postalCode"),
+            "country": addr.get("country"),
+        })
+    return rows
+
+# Build child DataFrames from all patients
+telecom_rows = []
+address_rows = []
+for p in patients_raw:
+    telecom_rows.extend(extract_patient_telecom(p))
+    address_rows.extend(extract_patient_address(p))
+
+df_telecom = pd.DataFrame(telecom_rows)
+df_address = pd.DataFrame(address_rows)
+
+print(f"Core patients:  {len(df_patient)} rows")
+print(f"Telecom entries: {len(df_telecom)} rows")
+print(f"Address entries: {len(df_address)} rows")</pre>
+
+        <h3>Handling Extensions Safely</h3>
+
+        <p>Extensions present the most opaque challenge because their structure is keyed by arbitrary URL strings
+          rather than stable JSON field names. The HL7 FHIR R4 specification allows every resource and data type to
+          carry a parallel <code>extension</code> array at any nesting level. Common US Core extensions include
+          race, ethnicity, and birth sex. Extracting a specific extension requires matching on its URL and then
+          reading whichever <code>value[x]</code> sub-field the extension author chose.</p>
+
+        <pre>def extract_extension_by_url(resource: dict, url: str) -&gt; any:
+    """Extract the first value from a root-level extension matching the given URL."""
+    for ext in resource.get("extension", []):
+        if ext.get("url") == url:
+            # Extensions use the same value[x] polymorphism as Observation
+            # Try each possible value key in order of likelihood
+            for key in ("valueCode", "valueString", "valueCoding",
+                        "valueBoolean", "valueInteger", "valueAddress"):
+                if key in ext:
+                    val = ext[key]
+                    # If the value is itself a complex object, extract display text
+                    if isinstance(val, dict):
+                        return val.get("display") or val.get("code") or str(val)
+                    return val
+    return None
+
+# Example: extract US Core birth-sex extension for each patient
+BIRTH_SEX_URL = "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex"
+df_patient["birth_sex"] = [
+    extract_extension_by_url(p, BIRTH_SEX_URL) for p in patients_raw
+]</pre>
+
+        <h2>Step 3: Flattening the Observation Resource</h2>
+
+        <p>The Observation resource is architecturally more complex than Patient because its primary value is
+          polymorphic, its <code>component</code> array can contain nested sub-observations, and its
+          <code>referenceRange</code> array may carry multiple population-specific bounds. Each of these patterns
+          requires a distinct extraction function.
+        </p>
+
+        <h3>Resolving the value[x] Polymorphism</h3>
+
+        <p>The FHIR specification defines the Observation value as a choice of eleven possible types. The JSON key
+          changes with each type: <code>valueQuantity</code> for a numeric measurement,
+          <code>valueCodeableConcept</code>
+          for a coded result, <code>valueString</code> for a free-text result, <code>valueBoolean</code> for a
+          binary result, and so forth. A production-grade extraction function must check for all variants and map
+          them to consistent output columns.</p>
+
+        <pre>VALUE_X_KEYS = [
+    "valueQuantity",
+    "valueCodeableConcept",
+    "valueString",
+    "valueBoolean",
+    "valueInteger",
+    "valueRange",
+    "valueRatio",
+    "valueSampledData",
+    "valueTime",
+    "valueDateTime",
+    "valuePeriod",
+]
+
+def resolve_value_x(resource: dict, prefix: str = "") -&gt; dict:
+    """
+    Detect which value[x] key is present and normalize to consistent columns.
+    Works for both root Observation and nested component objects.
+    prefix: optional string to disambiguate component columns from root columns.
+    """
+    result = {
+        f"{prefix}value_type": None,
+        f"{prefix}value_num": None,
+        f"{prefix}value_unit": None,
+        f"{prefix}value_string": None,
+        f"{prefix}value_code": None,
+    }
+
+    for key in VALUE_X_KEYS:
+        if key not in resource:
+            continue
+
+        val = resource[key]
+        type_label = key.replace("value", "", 1)  # e.g., "Quantity", "CodeableConcept"
+        result[f"{prefix}value_type"] = type_label
+
+        if key == "valueQuantity":
+            result[f"{prefix}value_num"] = val.get("value")
+            result[f"{prefix}value_unit"] = val.get("unit")
+            result[f"{prefix}value_code"] = val.get("code")
+
+        elif key == "valueCodeableConcept":
+            codings = val.get("coding", [])
+            if codings:
+                result[f"{prefix}value_code"] = codings[0].get("code")
+                result[f"{prefix}value_string"] = codings[0].get("display")
+            result[f"{prefix}value_string"] = result[f"{prefix}value_string"] or val.get("text")
+
+        elif key in ("valueString", "valueTime", "valueDateTime"):
+            result[f"{prefix}value_string"] = str(val)
+
+        elif key == "valueBoolean":
+            result[f"{prefix}value_string"] = "true" if val else "false"
+
+        elif key == "valueInteger":
+            result[f"{prefix}value_num"] = float(val)
+
+        elif key == "valueRange":
+            # Store low and high as a text representation
+            low = val.get("low", {}).get("value")
+            high = val.get("high", {}).get("value")
+            result[f"{prefix}value_string"] = f"{low}-{high}"
+            result[f"{prefix}value_unit"] = val.get("low", {}).get("unit")
+
+        break  # Only one value[x] key will ever be present per resource
+
+    return result</pre>
+
+        <h3>Extracting the Core Observation Row</h3>
+
+        <pre>def extract_observation_core(resource: dict) -&gt; dict:
+    """Extract a flat row dict from a single Observation resource."""
+
+    # Extract the LOINC code from the nested code.coding array
+    loinc_code = None
+    loinc_display = None
+    for coding in resource.get("code", {}).get("coding", []):
+        if "loinc.org" in coding.get("system", ""):
+            loinc_code = coding.get("code")
+            loinc_display = coding.get("display")
+            break
+
+    # Extract subject patient reference (format: "Patient/abc123")
+    subject_ref = resource.get("subject", {}).get("reference", "")
+    patient_id = subject_ref.split("/")[-1] if "/" in subject_ref else None
+
+    row = {
+        "observation_id": resource.get("id"),
+        "patient_id": patient_id,
+        "status": resource.get("status"),
+        "loinc_code": loinc_code,
+        "loinc_display": loinc_display,
+        "effective_datetime": resource.get("effectiveDateTime")
+                              or resource.get("effectivePeriod", {}).get("start"),
+        "issued": resource.get("issued"),
+    }
+
+    # Merge the resolved value[x] columns into the row
+    row.update(resolve_value_x(resource))
+
+    # Interpretation: coded result such as "H" (high), "L" (low), "N" (normal)
+    interpretations = resource.get("interpretation", [])
+    if interpretations:
+        interp_codings = interpretations[0].get("coding", [])
+        row["interpretation_code"] = interp_codings[0].get("code") if interp_codings else None
+    else:
+        row["interpretation_code"] = None
+
+    return row
+
+observations_raw = fetch_all_resources("Observation", {"_count": 100})
+obs_core_rows = [extract_observation_core(o) for o in observations_raw]
+df_observation = pd.DataFrame(obs_core_rows)
+print(df_observation[["observation_id", "loinc_code", "value_type", "value_num", "value_unit"]].head(10))</pre>
+
+        <h3>Extracting Components and Reference Ranges into Child Tables</h3>
+
+        <p>The <code>component</code> array appears most often in vital-sign Observations. A blood pressure
+          Observation, for example, carries systolic pressure as one component and diastolic pressure as a second
+          component, each with its own LOINC code and <code>valueQuantity</code>. These must be extracted into a
+          child table rather than flattened as wide columns on the parent row, because the number of components
+          varies across LOINC codes.</p>
+
+        <pre>def extract_observation_components(resource: dict) -&gt; list:
+    """Return one row dict per component for this observation."""
+    obs_id = resource.get("id")
+    rows = []
+    for idx, comp in enumerate(resource.get("component", [])):
+        comp_codings = comp.get("code", {}).get("coding", [])
+        comp_loinc = comp_codings[0].get("code") if comp_codings else None
+        comp_display = comp_codings[0].get("display") if comp_codings else None
+        row = {
+            "observation_id": obs_id,
+            "component_index": idx,
+            "component_loinc": comp_loinc,
+            "component_display": comp_display,
+        }
+        row.update(resolve_value_x(comp))
+        rows.append(row)
+    return rows
+
+def extract_observation_reference_ranges(resource: dict) -&gt; list:
+    """Return one row dict per referenceRange entry for this observation."""
+    obs_id = resource.get("id")
+    rows = []
+    for rr in resource.get("referenceRange", []):
+        low_obj = rr.get("low", {})
+        high_obj = rr.get("high", {})
+        rows.append({
+            "observation_id": obs_id,
+            "range_text": rr.get("text"),
+            "low_value": low_obj.get("value"),
+            "low_unit": low_obj.get("unit"),
+            "high_value": high_obj.get("value"),
+            "high_unit": high_obj.get("unit"),
+        })
+    return rows
+
+component_rows = []
+ref_range_rows = []
+for o in observations_raw:
+    component_rows.extend(extract_observation_components(o))
+    ref_range_rows.extend(extract_observation_reference_ranges(o))
+
+df_components = pd.DataFrame(component_rows)
+df_ref_ranges = pd.DataFrame(ref_range_rows)
+print(f"Observation components:   {len(df_components)} rows")
+print(f"Reference range entries:  {len(df_ref_ranges)} rows")</pre>
+
+        <h2>Step 4: Loading into SQL, Fabric Lakehouse, or Synapse</h2>
+
+        <p>The five DataFrames produced above represent a stable, queryable star schema that loads cleanly into any
+          relational or lakehouse destination. The loading strategy differs slightly across targets, but the DataFrame
+          structure itself requires no further transformation.</p>
+
+        <h3>Loading into a SQL Database via SQLAlchemy</h3>
+
+        <pre>from sqlalchemy import create_engine
+
+# Example connection string for Azure SQL or SQL Server
+engine = create_engine(
+    "mssql+pyodbc://user:password@server/database?driver=ODBC+Driver+18+for+SQL+Server"
+)
+
+# Use if_exists='replace' during development; switch to 'append' for incremental loads
+df_patient.to_sql("dim_patient", engine, if_exists="replace", index=False)
+df_telecom.to_sql("dim_patient_telecom", engine, if_exists="replace", index=False)
+df_address.to_sql("dim_patient_address", engine, if_exists="replace", index=False)
+df_observation.to_sql("fact_observation", engine, if_exists="replace", index=False)
+df_components.to_sql("obs_component", engine, if_exists="replace", index=False)
+df_ref_ranges.to_sql("obs_reference_range", engine, if_exists="replace", index=False)</pre>
+
+        <h3>Writing to Microsoft Fabric Lakehouse via Delta Tables</h3>
+
+        <p>In Microsoft Fabric Lakehouse and Azure Synapse Analytics, the preferred loading target is a Delta table
+          in the Files or Tables section of the Lakehouse. When running this pipeline inside a Fabric Notebook,
+          the Spark session is pre-configured and the DataFrame can be written directly using the Spark writer
+          API after converting from pandas.</p>
+
+        <pre># Inside a Microsoft Fabric Notebook or Azure Synapse Notebook
+# spark is provided automatically as a global variable
+
+from pyspark.sql import SparkSession
+
+# Convert pandas DataFrames to Spark DataFrames
+spark_patient      = spark.createDataFrame(df_patient)
+spark_telecom      = spark.createDataFrame(df_telecom)
+spark_observation  = spark.createDataFrame(df_observation)
+spark_components   = spark.createDataFrame(df_components)
+
+# Write as Delta tables into the Lakehouse
+spark_patient.write.format("delta").mode("overwrite").saveAsTable("fhir.dim_patient")
+spark_telecom.write.format("delta").mode("overwrite").saveAsTable("fhir.dim_patient_telecom")
+spark_observation.write.format("delta").mode("overwrite").saveAsTable("fhir.fact_observation")
+spark_components.write.format("delta").mode("overwrite").saveAsTable("fhir.obs_component")</pre>
+
+        <div class="callout">
+          <p><strong>Schema drift prevention:</strong> Delta Lake's schema-auto-merge is disabled by default, so
+            strict schema enforcement on <code>mode("append")</code> writes is already the baseline behavior.
+            Setting <code>spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "false")</code>
+            explicitly reaffirms that default rather than adding new protection — it's still worth doing so the
+            intent is visible in code and survives a workspace- or session-level override elsewhere in the notebook.
+            One naming note: this key carries the <code>spark.databricks</code> prefix because it originates from
+            Delta Lake's Databricks lineage; Fabric's Spark runtime honors it through open-source Delta Lake
+            compatibility rather than it being a Fabric-native setting. With auto-merge off, a write that introduces
+            an unexpected column fails immediately, surfacing data quality issues before they silently widen the
+            table.</p>
+        </div>
+
+        <h2>Practical Trade-Offs: What This Approach Gets Right and Where It Breaks</h2>
+
+        <p>The pandas-plus-jsonpath-ng extraction strategy is well-suited to development, testing, and modest
+          production cohorts. It runs entirely in a standard Python environment without requiring a Spark cluster,
+          executes deterministically, and produces DataFrames that any analyst can inspect with standard tooling.
+          For cohorts of up to several hundred thousand FHIR resources, the memory footprint is manageable on a
+          reasonably provisioned VM or notebook kernel.</p>
+
+        <p>However, this architecture carries meaningful limitations that mature production implementations must
+          address.</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Strength</th>
+              <th>Limitation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Scalability</strong></td>
+              <td>No cluster infrastructure required; runs in any Python environment.</td>
+              <td>Pandas holds all data in memory. Cohorts exceeding several million resources require chunked reading
+                or a Spark-based alternative.</td>
+            </tr>
+            <tr>
+              <td><strong>Polymorphism handling</strong></td>
+              <td>The <code>resolve_value_x</code> function covers all eleven FHIR value types with consistent output
+                columns.</td>
+              <td>New FHIR R5 value types or custom extensions introduced by specific EHR vendors may add value key
+                variants not covered by the current enumeration.</td>
+            </tr>
+            <tr>
+              <td><strong>Extension extraction</strong></td>
+              <td>URL-keyed extraction is explicit and auditable.</td>
+              <td>Implementation-specific extension URLs vary across Epic, Oracle Health, and Meditech deployments;
+                extraction functions must be adapted per data source.</td>
+            </tr>
+            <tr>
+              <td><strong>Incremental loading</strong></td>
+              <td>The <code>if_exists="append"</code> mode supports incremental writes.</td>
+              <td>FHIR does not guarantee unique resource IDs across servers. Deduplication logic based on
+                <code>resource.id</code> plus source system is required before appending.</td>
+            </tr>
+            <tr>
+              <td><strong>Cardinality correctness</strong></td>
+              <td>Producing separate child tables per array avoids Cartesian row multiplication.</td>
+              <td>Multi-table architecture requires analysts to understand foreign key joins; a single wide table is
+                more accessible but statistically misleading for multi-valued attributes.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Moving Toward a Production Pipeline</h2>
+
+        <p>Organizations moving these functions beyond prototyping should consider three architectural upgrades.
+          First, the extraction functions demonstrated here operate synchronously on a single resource at a time.
+          A production pipeline should wrap them in a chunked iterator that reads FHIR NDJSON (newline-delimited JSON)
+          from Bulk Data exports rather than paginated REST API responses. NDJSON files produced by the FHIR Bulk Data
+          Access specification ($export operation) can be streamed line-by-line, enabling constant-memory processing
+          regardless of cohort size.</p>
+
+        <p>Second, the jsonpath-ng expressions and field mappings in this post are correct for FHIR R4 base resources.
+          US Core 7.0 implementation guides and Epic-specific profiles may impose additional constraints or add
+          must-support extensions that require supplementary extraction logic. Validating the output DataFrames against
+          known record counts from the source system after each pipeline run is a necessary operational control.</p>
+
+        <p>Third, loading into Microsoft Fabric Lakehouse using Delta format introduces an important governance
+          opportunity. Delta table history and time-travel capabilities allow the pipeline to retain prior versions
+          of flattened data, enabling point-in-time audits that satisfy HIPAA data integrity requirements. Combining
+          Delta with Unity Catalog column-level access controls allows the same physical tables to serve both clinical
+          analysts with full patient context and population health researchers with de-identified cohort views.</p>
+
+      </div>
+    </article>
+
+    <aside
+      style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+      <h2
+        style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+        About the Author</h2>
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+        <div>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park
+          </p>
+          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+            Business Intelligence Professional</p>
+          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and
+            business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and
+            applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+          <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+            style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+            on LinkedIn &rarr;</a>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align:center;padding:var(--space-l) 0;">
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>
