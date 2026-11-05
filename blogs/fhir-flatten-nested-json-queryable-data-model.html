@@ -218,7 +218,7 @@
         <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">How to Flatten FHIR's Deeply Nested JSON into
           a Queryable Data Model</h1>
         <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
-          The step most tutorials skip: a practical Python guide to converting Patient and Observation resources into
+          A practical Python guide to converting Patient and Observation resources into
           clean, denormalized tables that load into SQL, Microsoft Fabric Lakehouse, and Azure Synapse without schema
           drift.
         </p>
@@ -362,12 +362,12 @@
         <pre>pip install pandas jsonpath-ng requests</pre>
 
         <p>The <code>jsonpath-ng</code> library provides JSONPath expression parsing that aims for RFC 9535 alignment,
-          and it's useful for declaratively expressing filter-style lookups — such as finding a specific typed
-          identifier inside an array by matching a field value — that would otherwise require a manual loop. Most of
+          and it's useful for declaratively expressing filter-style lookups, such as finding a specific typed
+          identifier inside an array by matching a field value that would otherwise require a manual loop. Most of
           the flattening logic in this post still relies on straightforward Python dict and list traversal, since
           FHIR's resource shapes are varied enough that explicit, readable loops are often clearer than deeply chained
           JSONPath expressions; jsonpath-ng is reached for selectively rather than everywhere. Note also that its
-          filter syntax is an extension feature — it requires importing <code>parse</code> from
+          filter syntax is an extension feature, it requires importing <code>parse</code> from
           <code>jsonpath_ng.ext</code> rather than the base package, as shown below. The standard library
           <code>json</code> module handles deserialization. All examples below target data retrieved from the public
           SMART Health IT FHIR R4 sandbox at <code>https://r4.smarthealthit.org</code>, which serves synthetic patient
@@ -446,7 +446,7 @@ print(f"Fetched {len(patients_raw)} Patient resources")</pre>
         <p>Root-level scalar fields such as <code>id</code>, <code>gender</code>, and <code>birthDate</code> are
           straightforward. The complexity begins immediately when extracting the Medical Record Number from the
           <code>identifier</code> array, which contains typed identifier objects. Using jsonpath-ng's filter extension
-          allows declarative extraction without fragile index assumptions — remembering that filter expressions
+          allows declarative extraction without fragile index assumptions. Remember that filter expressions
           require an <code>@.</code> prefix on the field being tested and parentheses around the whole condition.
         </p>
 
@@ -591,7 +591,8 @@ df_patient["birth_sex"] = [
           <code>valueCodeableConcept</code>
           for a coded result, <code>valueString</code> for a free-text result, <code>valueBoolean</code> for a
           binary result, and so forth. A production-grade extraction function must check for all variants and map
-          them to consistent output columns.</p>
+          them to consistent output columns.
+        </p>
 
         <pre>VALUE_X_KEYS = [
     "valueQuantity",
@@ -813,7 +814,7 @@ spark_components.write.format("delta").mode("overwrite").saveAsTable("fhir.obs_c
           <p><strong>Schema drift prevention:</strong> Delta Lake's schema-auto-merge is disabled by default, so
             strict schema enforcement on <code>mode("append")</code> writes is already the baseline behavior.
             Setting <code>spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "false")</code>
-            explicitly reaffirms that default rather than adding new protection — it's still worth doing so the
+            explicitly reaffirms that default rather than adding new protection. It's still worth doing so the
             intent is visible in code and survives a workspace- or session-level override elsewhere in the notebook.
             One naming note: this key carries the <code>spark.databricks</code> prefix because it originates from
             Delta Lake's Databricks lineage; Fabric's Spark runtime honors it through open-source Delta Lake
@@ -865,7 +866,8 @@ spark_components.write.format("delta").mode("overwrite").saveAsTable("fhir.obs_c
               <td><strong>Incremental loading</strong></td>
               <td>The <code>if_exists="append"</code> mode supports incremental writes.</td>
               <td>FHIR does not guarantee unique resource IDs across servers. Deduplication logic based on
-                <code>resource.id</code> plus source system is required before appending.</td>
+                <code>resource.id</code> plus source system is required before appending.
+              </td>
             </tr>
             <tr>
               <td><strong>Cardinality correctness</strong></td>
