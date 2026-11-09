@@ -355,7 +355,8 @@
           </svg>
           <div class="diagram-caption">Figure 1: Execution flow from T-SQL batch through the SQL Engine outbound HTTPS
             call to the external API, and back through the response envelope that wraps the API payload inside
-            <code>$.result</code>.</div>
+            <code>$.result</code>.
+          </div>
         </div>
 
         <h2>Step 1: Enabling the Feature on SQL Server 2025</h2>
@@ -418,7 +419,7 @@ GO</pre>
 
         <p>Using a stored Database Scoped Credential (covered in Step 4) requires a second, credential-specific
           grant beyond <code>EXECUTE ANY EXTERNAL ENDPOINT</code>. A principal who can execute the procedure but
-          has not been granted <code>REFERENCES</code> on a given credential cannot use that credential — the
+          has not been granted <code>REFERENCES</code> on a given credential cannot use that credential, the
           call will fail rather than silently falling back to an unauthenticated request.</p>
 
         <pre>-- Required in addition to EXECUTE ANY EXTERNAL ENDPOINT, per credential object
@@ -429,7 +430,7 @@ GO</pre>
 
         <p>The simplest possible invocation targets a public endpoint that requires no authentication header. The
           procedure accepts the HTTP method as <code>N'GET'</code>, <code>N'POST'</code>, <code>N'PUT'</code>,
-          <code>N'PATCH'</code>, <code>N'DELETE'</code>, or <code>N'HEAD'</code> — six values in total, though
+          <code>N'PATCH'</code>, <code>N'DELETE'</code>, or <code>N'HEAD'</code>, six values in total, though
           only the first five are commonly used for data retrieval and submission. The <code>@response</code>
           parameter must be declared as an <code>NVARCHAR(MAX)</code> output variable before the call.
         </p>
@@ -492,7 +493,7 @@ GO</pre>
           <p><strong>Azure SQL's endpoint allowlist does not apply here:</strong> Azure SQL Database and Azure SQL
             Managed Instance restrict this procedure to a documented allowlist of Azure service domains (Azure
             Functions, Azure OpenAI, Blob Storage, Event Hubs, and similar). Microsoft's documentation is explicit
-            that this allowlist "only applies to Azure SQL Database and Azure SQL Managed Instance" — SQL Server
+            that this allowlist "only applies to Azure SQL Database and Azure SQL Managed Instance". SQL Server
             2025 on-premises has no equivalent built-in restriction, so any HTTPS endpoint with a trusted TLS
             certificate is reachable by default. This is precisely why the network-layer firewall controls described
             later in this post matter more for on-premises deployments than for Azure SQL.</p>
@@ -649,11 +650,12 @@ GO</pre>
             <tr>
               <td><strong>Parameter Size</strong></td>
               <td>The <code>@url</code> and <code>@headers</code> parameters are each capped at 4,000 characters as
-                declared types. Beyond that, the combined size of all headers actually sent — your <code>@headers</code>
-                value plus any credential-injected headers plus system-supplied headers — is capped at 8 KB, and the
+                declared types. Beyond that, the combined size of all headers actually sent, your <code>@headers</code>
+                value plus any credential-injected headers plus system-supplied headers, is capped at 8 KB, and the
                 fully assembled URL (including any credential-injected query string) is capped at 8 KB. The
                 <code>@payload</code> and <code>@response</code> use <code>NVARCHAR(MAX)</code>, with payload size over
-                the wire limited to 100 MB.</td>
+                the wire limited to 100 MB.
+              </td>
               <td>Very long query strings or complex multi-header authentication schemes may exceed the URL and header
                 size limits even when individual parameters look small, requiring redesign of the target API call or use
                 of POST body instead of query parameters.</td>
@@ -672,7 +674,7 @@ GO</pre>
                 well as Azure SQL.</td>
               <td>Long-running API calls that approach the timeout boundary hold database locks open for the duration,
                 which can cascade into application-level timeouts across unrelated sessions. 230 seconds is a hard
-                ceiling, not a tunable maximum — workflows needing longer-running external calls must poll a status
+                ceiling, not a tunable maximum, workflows needing longer-running external calls must poll a status
                 endpoint across multiple shorter invocations instead.</td>
             </tr>
             <tr>
@@ -680,7 +682,7 @@ GO</pre>
               <td>The optional <code>@retry_count</code> parameter (0–10, default 0) automatically retries on HTTP 408,
                 429, 500, 502, 503, and 504, honoring a <code>Retry-After</code> header when present or falling back to
                 exponential backoff.</td>
-              <td>This covers transport-level retries only, not transactional retry semantics — a POST that partially
+              <td>This covers transport-level retries only, not transactional retry semantics, a POST that partially
                 succeeded on the external system before a retriable error occurred may be resubmitted, so idempotency on
                 the receiving API matters when <code>@retry_count</code> is used for anything beyond GET requests.</td>
             </tr>
@@ -713,7 +715,7 @@ GO</pre>
 
         <p>Additionally, <code>EXECUTE ANY EXTERNAL ENDPOINT</code> is a database-level permission, not an
           object-level permission. Granting it to a user allows that user to call the procedure against any URL,
-          not just a pre-approved allowlist — and, as noted above, SQL Server 2025 on-premises has no native
+          not just a pre-approved allowlist. As noted above, SQL Server 2025 on-premises has no native
           equivalent of the Azure SQL allowlist to fall back on. Mitigating this requires network-layer controls:
           configuring the SQL Server host's outbound firewall rules to restrict HTTPS traffic to known, approved
           API destinations.</p>
@@ -752,7 +754,7 @@ GO</pre>
           database engine does not expose.</p>
 
         <p>For teams already using Azure SQL Database or Managed Instance, the procedure is generally available
-          rather than in preview, and the operational experience is well documented — though worth remembering that
+          rather than in preview, and the operational experience is well documented. It is worth remembering that
           Azure SQL's endpoint allowlist constrains it to approved Azure service domains in a way that SQL Server
           2025 on-premises does not. SQL Server 2025 on-premises brings the same interface to organizations that
           cannot or will not migrate to Azure SQL, and the activation path documented in this post is consistent
