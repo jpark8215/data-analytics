@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call a REST API Directly from T-SQL: sp_invoke_external_rest_endpoint in SQL Server 2025: Data Analytics &amp;
+    Beyond</title>
+  <meta name="description"
+    content="A step-by-step guide to enabling and using sp_invoke_external_rest_endpoint in SQL Server 2025 to call HTTPS REST APIs directly from T-SQL, parse responses with OPENJSON, and load API data into tables without external scripts.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content pre {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      margin: var(--space-m) 0;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.06);
+      border-left: 4px solid rgba(245, 158, 11, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout-warning p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout-warning p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-m);
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    .pipeline-step {
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .pipeline-step-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+
+  <meta property="og:title"
+    content="Call a REST API Directly from T-SQL: sp_invoke_external_rest_endpoint in SQL Server 2025">
+  <meta property="og:description"
+    content="A step-by-step guide to enabling and using sp_invoke_external_rest_endpoint in SQL Server 2025 to call HTTPS REST APIs directly from T-SQL and load API data into tables without external scripts.">
+  <meta property="og:image" content="https://jpark8215.github.io/data-analytics/assets/images/sql_rest_api_tsql.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/sp-invoke-external-rest-endpoint-sql-server-2025.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/sp-invoke-external-rest-endpoint-sql-server-2025.html">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Call a REST API Directly from T-SQL: sp_invoke_external_rest_endpoint in SQL Server 2025",
+      "description": "A step-by-step guide to enabling and using sp_invoke_external_rest_endpoint in SQL Server 2025 to call HTTPS REST APIs directly from T-SQL and load API data into tables without external scripts.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/sql_rest_api_tsql.jpg",
+      "datePublished": "2026-11-09",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "agentic AI engineer and business intelligence professional",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">&#8592; Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(59,130,246,0.2);color:#60a5fa;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Call a REST API Directly from T-SQL:
+          sp_invoke_external_rest_endpoint in SQL Server 2025</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          SQL Server 2025 ships a system stored procedure that calls an HTTPS endpoint from pure T-SQL. Here is how to
+          enable it, how the response envelope works, and what the preview-stage limits mean for production use.
+        </p>
+        <p class="post-meta">Published: <time>November 9, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/sql_rest_api_tsql.jpg"
+        alt="A database developer at a modern workstation with a dark-themed SQL query editor open on a large monitor"
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>For more than two decades, pulling data from an external HTTP API into SQL Server required an intermediary.
+          Developers assembled SSIS packages, wrote CLR assemblies, spawned Python scripts via <code>xp_cmdshell</code>,
+          or built dedicated ETL services that consumed the API separately and then inserted rows through a database
+          connection. Each of those approaches introduced a deployment surface outside the database engine itself,
+          complicating operational ownership and permission auditing. SQL Server 2025 addresses this directly with the
+          system stored procedure <code>sys.sp_invoke_external_rest_endpoint</code>, which invokes an HTTPS REST
+          endpoint from within a T-SQL batch and returns the HTTP response body as an output variable that subsequent
+          T-SQL can parse with <code>OPENJSON</code>.</p>
+
+        <p>The feature was first available in Azure SQL Database and Azure SQL Managed Instance, where Microsoft
+          demonstrated its use for calling Azure OpenAI, Azure Functions, and custom web APIs without leaving the
+          database tier. SQL Server 2025 brings the same capability to on-premises and self-managed instances, with
+          one important distinction: unlike Azure SQL, where the feature is available by default, SQL Server 2025
+          ships with external REST endpoint invocation disabled. A deliberate <code>sp_configure</code> step is
+          required before any call can be made. This post walks through that activation sequence, the full procedure
+          signature, authenticated and unauthenticated call patterns, response parsing, and an honest assessment
+          of the limitations that remain while the feature is in preview on SQL Server 2025.</p>
+
+        <h2>What the Procedure Actually Does</h2>
+
+        <p>The procedure <code>sys.sp_invoke_external_rest_endpoint</code> instructs the SQL Server engine to open
+          an outbound HTTPS connection from the host operating system to the URL you specify, transmit an optional
+          JSON payload, and capture the HTTP response into an output parameter of type <code>NVARCHAR(MAX)</code>.
+          The call is synchronous: the executing T-SQL batch waits for the HTTP response before continuing. The
+          response body is not returned as a result set directly; it is placed into the output variable you declare,
+          and you then use <code>OPENJSON</code> or <code>JSON_VALUE</code> to shred it into rows and columns.</p>
+
+        <p>The full procedure signature accepts more than the handful of parameters most examples show.
+          Alongside <code>@url</code>, <code>@payload</code>, <code>@headers</code>, <code>@method</code>, and
+          <code>@response</code>, the procedure also supports <code>@timeout</code> (a positive <code>smallint</code>
+          in seconds, default 30, accepted range 1–230), <code>@credential</code> (the name of a Database Scoped
+          Credential to use for the call), and <code>@retry_count</code> (a positive <code>tinyint</code> from 0 to
+          10, default 0, controlling automatic retries). <code>@method</code> accepts six values, not five:
+          <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, and
+          <code>HEAD</code>, and if omitted defaults to <code>POST</code>.
+        </p>
+
+        <p>The procedure wraps the actual API response inside its own JSON envelope before writing it to the output
+          variable. The outer object contains a <code>response</code> node with the HTTP status code and response
+          headers, and a <code>result</code> node that holds the raw payload the external API returned. This means
+          any <code>OPENJSON</code> path expression targeting API data must navigate through <code>$.result</code>
+          rather than the root of the JSON document.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 820 300" width="100%" height="300" xmlns="http://www.w3.org/2000/svg">
+            <rect width="820" height="300" rx="12" fill="#0b1120" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <text x="410" y="32" text-anchor="middle" fill="#f8fafc" font-family="'Outfit',sans-serif" font-size="15"
+              font-weight="700">sp_invoke_external_rest_endpoint: Execution Flow</text>
+
+            <!-- T-SQL Batch -->
+            <rect x="20" y="60" width="155" height="180" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+            <text x="97" y="88" text-anchor="middle" fill="#60a5fa" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="700">T-SQL Batch</text>
+            <text x="97" y="112" text-anchor="middle" fill="#94a3b8" font-size="11">DECLARE @resp</text>
+            <text x="97" y="132" text-anchor="middle" fill="#94a3b8" font-size="11">EXEC sys.sp_invoke_</text>
+            <text x="97" y="150" text-anchor="middle" fill="#94a3b8" font-size="11">external_rest_endpoint</text>
+            <text x="97" y="175" text-anchor="middle" fill="#e2e8f0" font-size="11">@url, @method,</text>
+            <text x="97" y="193" text-anchor="middle" fill="#e2e8f0" font-size="11">@payload, @headers</text>
+            <text x="97" y="218" text-anchor="middle" fill="#38bdf8" font-size="11">@response OUTPUT</text>
+
+            <!-- Arrow out -->
+            <line x1="175" y1="150" x2="215" y2="150" stroke="#818cf8" stroke-width="2" />
+            <polygon points="215,145 227,150 215,155" fill="#818cf8" />
+
+            <!-- SQL Engine -->
+            <rect x="227" y="80" width="150" height="140" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5" />
+            <text x="302" y="106" text-anchor="middle" fill="#a78bfa" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="700">SQL Engine</text>
+            <text x="302" y="130" text-anchor="middle" fill="#e2e8f0" font-size="11">Validates HTTPS</text>
+            <text x="302" y="150" text-anchor="middle" fill="#e2e8f0" font-size="11">Checks credential</text>
+            <text x="302" y="170" text-anchor="middle" fill="#e2e8f0" font-size="11">Applies timeout</text>
+            <text x="302" y="195" text-anchor="middle" fill="#94a3b8" font-size="10">OS TLS handshake</text>
+
+            <!-- Arrow out to internet -->
+            <line x1="377" y1="150" x2="417" y2="150" stroke="#34d399" stroke-width="2" />
+            <polygon points="417,145 429,150 417,155" fill="#34d399" />
+
+            <!-- External API -->
+            <rect x="429" y="80" width="150" height="140" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.5" />
+            <text x="504" y="106" text-anchor="middle" fill="#34d399" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="700">External HTTPS API</text>
+            <text x="504" y="130" text-anchor="middle" fill="#e2e8f0" font-size="11">Receives request</text>
+            <text x="504" y="150" text-anchor="middle" fill="#e2e8f0" font-size="11">Returns JSON body</text>
+            <text x="504" y="170" text-anchor="middle" fill="#94a3b8" font-size="10">HTTP 200 + payload</text>
+
+            <!-- Arrow back -->
+            <line x1="429" y1="165" x2="389" y2="165" stroke="#f59e0b" stroke-width="2" />
+            <polygon points="389,160 377,165 389,170" fill="#f59e0b" />
+
+            <!-- Response envelope box -->
+            <rect x="600" y="60" width="200" height="180" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="700" y="85" text-anchor="middle" fill="#fbbf24" font-family="'Outfit',sans-serif" font-size="12"
+              font-weight="700">@response Envelope</text>
+            <text x="615" y="108" fill="#94a3b8" font-size="10">{ "response": {</text>
+            <text x="625" y="124" fill="#94a3b8" font-size="10">"status": {"http":</text>
+            <text x="635" y="140" fill="#94a3b8" font-size="10">{"code": 200}}},</text>
+            <text x="615" y="158" fill="#34d399" font-size="10">"result": [</text>
+            <text x="625" y="174" fill="#34d399" font-size="10">{"id":1,"name":"..."},</text>
+            <text x="625" y="190" fill="#34d399" font-size="10">{"id":2,"name":"..."}</text>
+            <text x="615" y="208" fill="#34d399" font-size="10">] }</text>
+            <text x="700" y="228" text-anchor="middle" fill="#fde68a" font-size="10">Parse with
+              OPENJSON('$.result')</text>
+
+            <line x1="579" y1="150" x2="600" y2="150" stroke="#f59e0b" stroke-width="2" />
+            <polygon points="600,145 612,150 600,155" fill="#f59e0b" />
+          </svg>
+          <div class="diagram-caption">Figure 1: Execution flow from T-SQL batch through the SQL Engine outbound HTTPS
+            call to the external API, and back through the response envelope that wraps the API payload inside
+            <code>$.result</code>.</div>
+        </div>
+
+        <h2>Step 1: Enabling the Feature on SQL Server 2025</h2>
+
+        <p>On SQL Server 2025, the external REST endpoint feature is controlled by a named server configuration
+          option. It is set to 0 (disabled) after a fresh installation. Enabling it requires the <code>sysadmin</code>
+          or <code>serveradmin</code> fixed server role, or the <code>ALTER SETTINGS</code> server-level permission
+          directly, and the change takes effect immediately without a service restart.</p>
+
+        <pre>-- Verify the current state before making any changes
+EXEC sp_configure 'external rest endpoint enabled';
+GO
+
+-- Enable outbound REST calls from T-SQL
+EXEC sp_configure 'external rest endpoint enabled', 1;
+RECONFIGURE WITH OVERRIDE;
+GO
+
+-- Confirm the change applied
+SELECT name, value_in_use
+FROM sys.configurations
+WHERE name = 'external rest endpoint enabled';
+GO</pre>
+
+        <div class="callout-warning">
+          <p><strong>Preview status on SQL Server 2025:</strong> As of the SQL Server 2025 release, this feature
+            carries a preview designation on the on-premises engine. Microsoft's official documentation notes that
+            preview features may have behavioral differences from the generally available Azure SQL implementation
+            and are subject to change before general availability. Organizations should not enable this feature on
+            production instances without evaluating the security implications described later in this post.</p>
+        </div>
+
+        <h2>Step 2: Granting Execute Permission to Database Users</h2>
+
+        <p>Enabling the feature at the server level does not automatically grant all users the ability to invoke
+          external endpoints. Each database principal that needs to call the procedure must receive an explicit
+          permission grant. The permission <code>EXECUTE ANY EXTERNAL ENDPOINT</code> controls this access and
+          should be granted narrowly, following the principle of least privilege.</p>
+
+        <pre>USE YourDatabaseName;
+GO
+
+-- Grant to a specific application service account only
+GRANT EXECUTE ANY EXTERNAL ENDPOINT TO [app_service_account];
+GO
+
+-- Confirm active grants.
+-- EXECUTE ANY EXTERNAL ENDPOINT is a database-level permission (class_desc = 'DATABASE'),
+-- not an object-level permission tied to the procedure itself, so this query does not
+-- join to sys.objects at all -- a join on p.major_id = o.object_id would silently drop
+-- these rows, since a database-level permission's major_id is 0.
+SELECT dp.name           AS principal_name,
+       dp.type_desc      AS principal_type,
+       p.permission_name
+FROM sys.database_permissions p
+JOIN sys.database_principals dp ON p.grantee_principal_id = dp.principal_id
+WHERE p.class_desc = 'DATABASE'
+  AND p.permission_name = 'EXECUTE ANY EXTERNAL ENDPOINT';
+GO</pre>
+
+        <p>Using a stored Database Scoped Credential (covered in Step 4) requires a second, credential-specific
+          grant beyond <code>EXECUTE ANY EXTERNAL ENDPOINT</code>. A principal who can execute the procedure but
+          has not been granted <code>REFERENCES</code> on a given credential cannot use that credential — the
+          call will fail rather than silently falling back to an unauthenticated request.</p>
+
+        <pre>-- Required in addition to EXECUTE ANY EXTERNAL ENDPOINT, per credential object
+GRANT REFERENCES ON DATABASE SCOPED CREDENTIAL::[https://api.example.com] TO [app_service_account];
+GO</pre>
+
+        <h2>Step 3: Calling an Unauthenticated Public API</h2>
+
+        <p>The simplest possible invocation targets a public endpoint that requires no authentication header. The
+          procedure accepts the HTTP method as <code>N'GET'</code>, <code>N'POST'</code>, <code>N'PUT'</code>,
+          <code>N'PATCH'</code>, <code>N'DELETE'</code>, or <code>N'HEAD'</code> — six values in total, though
+          only the first five are commonly used for data retrieval and submission. The <code>@response</code>
+          parameter must be declared as an <code>NVARCHAR(MAX)</code> output variable before the call.
+        </p>
+
+        <p>The example below calls the public JSONPlaceholder test API, which returns an array of synthetic todo
+          records as JSON. No credential is required for this call, so the <code>@credential</code> parameter is
+          simply omitted. After the call, the return code is checked for HTTP success, and the response is
+          immediately parsed with <code>OPENJSON</code> and inserted into a staging table.</p>
+
+        <pre>-- Create a staging table to hold the API results
+DROP TABLE IF EXISTS #todos;
+CREATE TABLE #todos (
+    todo_id     INT,
+    user_id     INT,
+    title       NVARCHAR(500),
+    is_complete BIT
+);
+
+DECLARE @ret      INT;
+DECLARE @response NVARCHAR(MAX);
+
+-- Invoke the external endpoint
+EXEC @ret = sys.sp_invoke_external_rest_endpoint
+    @url     = N'https://jsonplaceholder.typicode.com/todos',
+    @method  = N'GET',
+    @timeout = 30,
+    @response = @response OUTPUT;
+
+-- @ret contains the HTTP status code returned by the endpoint
+IF @ret NOT BETWEEN 200 AND 299
+BEGIN
+    RAISERROR('REST call failed. HTTP status: %d. Details: %s', 16, 1,
+              @ret, @response);
+    RETURN;
+END
+
+-- Parse the $.result array into rows using OPENJSON with an explicit schema
+INSERT INTO #todos (todo_id, user_id, title, is_complete)
+SELECT todo_id, user_id, title, is_complete
+FROM OPENJSON(@response, N'$.result')
+WITH (
+    todo_id     INT           N'$.id',
+    user_id     INT           N'$.userId',
+    title       NVARCHAR(500) N'$.title',
+    is_complete BIT           N'$.completed'
+);
+
+SELECT TOP 10 * FROM #todos ORDER BY todo_id;
+GO</pre>
+
+        <div class="callout">
+          <p><strong>Why <code>$.result</code> and not <code>$</code>:</strong> The procedure always wraps the
+            external API's response body inside a <code>result</code> key within its own JSON envelope. If your
+            OPENJSON expression targets <code>$</code> directly, it will read the wrapper object rather than the
+            API payload, returning one row for the entire response rather than the individual records you expect.
+            Always use <code>$.result</code> as the root path when parsing with OPENJSON.</p>
+        </div>
+
+        <div class="callout-warning">
+          <p><strong>Azure SQL's endpoint allowlist does not apply here:</strong> Azure SQL Database and Azure SQL
+            Managed Instance restrict this procedure to a documented allowlist of Azure service domains (Azure
+            Functions, Azure OpenAI, Blob Storage, Event Hubs, and similar). Microsoft's documentation is explicit
+            that this allowlist "only applies to Azure SQL Database and Azure SQL Managed Instance" — SQL Server
+            2025 on-premises has no equivalent built-in restriction, so any HTTPS endpoint with a trusted TLS
+            certificate is reachable by default. This is precisely why the network-layer firewall controls described
+            later in this post matter more for on-premises deployments than for Azure SQL.</p>
+        </div>
+
+        <h2>Step 4: Calling an Authenticated API with Database Scoped Credentials</h2>
+
+        <p>Most production APIs require authentication through an Authorization header, an API key header, or
+          a subscription key. Hardcoding secrets directly into T-SQL procedure calls creates a persistent
+          security risk: secrets appear in plan cache, Extended Events traces, and procedure text visible through
+          <code>sys.sql_modules</code>. The correct pattern uses a Database Scoped Credential, where the credential
+          name matches the target endpoint's URL (its protocol, fully-qualified domain, and a path at least as
+          generic as the URLs it will be used for) and the secret contains the headers as a JSON object.
+        </p>
+
+        <pre>-- Create the credential once per database, per target domain
+-- The IDENTITY must be 'HTTPEndpointHeaders' for header injection to work
+CREATE DATABASE SCOPED CREDENTIAL [https://api.example.com]
+WITH IDENTITY = 'HTTPEndpointHeaders',
+SECRET = N'{"Authorization":"Bearer your-token-here","x-api-version":"2026-01"}';
+GO</pre>
+
+        <p>Unlike <code>@url</code>, <code>@method</code>, or <code>@payload</code>, the credential is not resolved
+          automatically from the call's URL. It must be passed explicitly via the <code>@credential</code> parameter
+          on every invocation that needs it; the engine then injects the stored secret headers transparently before
+          transmitting the request. A call that omits <code>@credential</code> goes out with no authentication
+          applied, regardless of which credentials exist in the database.</p>
+
+        <pre>DECLARE @ret      INT;
+DECLARE @response NVARCHAR(MAX);
+
+EXEC @ret = sys.sp_invoke_external_rest_endpoint
+    @url        = N'https://api.example.com/v1/orders?status=pending',
+    @method     = N'GET',
+    @credential = [https://api.example.com],
+    @timeout    = 60,
+    @response   = @response OUTPUT;
+
+IF @ret NOT BETWEEN 200 AND 299
+BEGIN
+    SELECT @ret AS http_status,
+           JSON_VALUE(@response, '$.response.status.http.description') AS error_description;
+    RETURN;
+END
+
+-- Insert pending orders directly into a production staging table
+INSERT INTO stg.pending_orders (order_id, customer_id, order_date, total_amount, currency)
+SELECT order_id, customer_id, order_date, total_amount, currency
+FROM OPENJSON(@response, N'$.result.orders')
+WITH (
+    order_id      NVARCHAR(50)   N'$.id',
+    customer_id   NVARCHAR(50)   N'$.customerId',
+    order_date    DATE           N'$.createdAt',
+    total_amount  DECIMAL(18,2)  N'$.amount.value',
+    currency      CHAR(3)        N'$.amount.currency'
+);
+GO</pre>
+
+        <h2>Step 5: Sending Data with a POST Request</h2>
+
+        <p>POST calls follow the same pattern, with the addition of the <code>@payload</code> parameter, which
+          accepts an <code>NVARCHAR(MAX)</code> JSON string. When constructing the payload dynamically from
+          query results, the <code>FOR JSON PATH</code> clause produces conforming JSON without requiring
+          string concatenation, which avoids injection vulnerabilities and special-character escaping errors.</p>
+
+        <pre>DECLARE @ret      INT;
+DECLARE @response NVARCHAR(MAX);
+DECLARE @payload  NVARCHAR(MAX);
+
+-- Build the payload from a live query result using FOR JSON
+SELECT @payload = (
+    SELECT TOP 1
+        order_id    AS orderId,
+        customer_id AS customerId,
+        total_amount AS amount
+    FROM stg.pending_orders
+    WHERE order_id = 'ORD-20261109-0042'
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+);
+
+EXEC @ret = sys.sp_invoke_external_rest_endpoint
+    @url        = N'https://api.example.com/v1/orders/submit',
+    @method     = N'POST',
+    @credential = [https://api.example.com],
+    @payload    = @payload,
+    @timeout    = 60,
+    @response   = @response OUTPUT;
+
+SELECT @ret                                                     AS http_status,
+       JSON_VALUE(@response, '$.result.submissionId')          AS submission_id,
+       JSON_VALUE(@response, '$.response.status.http.code')    AS response_code;
+GO</pre>
+
+        <h2>Reading the Response Envelope</h2>
+
+        <p>Understanding the full structure of the response envelope is necessary for robust error handling.
+          The outer <code>response</code> node is always present, regardless of whether the call succeeded.
+          The <code>result</code> node contains the API's response body when present; it is absent when the
+          API returns HTTP 204 (No Content) or when the response body is empty.</p>
+
+        <pre>-- Inspect the full envelope structure to understand what any given API returns
+DECLARE @ret      INT;
+DECLARE @response NVARCHAR(MAX);
+
+EXEC @ret = sys.sp_invoke_external_rest_endpoint
+    @url     = N'https://jsonplaceholder.typicode.com/posts/1',
+    @method  = N'GET',
+    @timeout = 30,
+    @response = @response OUTPUT;
+
+-- Extract individual metadata fields from the envelope
+SELECT
+    @ret                                                                AS proc_return_code,
+    JSON_VALUE(@response, '$.response.status.http.code')               AS http_status_code,
+    JSON_VALUE(@response, '$.response.status.http.description')        AS http_description,
+    JSON_VALUE(@response, '$.response.headers.Content-Type')           AS content_type,
+    /* Navigate into the result node for actual payload fields */
+    JSON_VALUE(@response, '$.result.id')                               AS post_id,
+    JSON_VALUE(@response, '$.result.title')                            AS post_title,
+    JSON_VALUE(@response, '$.result.body')                             AS post_body;
+GO</pre>
+
+        <h2>Known Limitations and Preview-Stage Constraints</h2>
+
+        <p>The feature delivers genuine architectural value, but several technical boundaries must be understood
+          before designing production workflows around it. The limitations described here are documented across
+          Microsoft's official reference documentation, community research, and security advisory publications
+          as of 2026.</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Constraint Category</th>
+              <th>Specific Limitation</th>
+              <th>Engineering Implication</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Protocol</strong></td>
+              <td>HTTPS only. Plain HTTP endpoints are rejected regardless of network topology.</td>
+              <td>All target APIs must expose a valid TLS certificate trusted by the SQL Server host OS. Self-signed
+                certificates on internal services will cause connection failures unless explicitly added to the Windows
+                certificate store.</td>
+            </tr>
+            <tr>
+              <td><strong>Allowed Endpoints</strong></td>
+              <td>Azure SQL Database and Azure SQL Managed Instance restrict calls to a documented allowlist of Azure
+                service domains. SQL Server 2025 on-premises has no equivalent built-in allowlist.</td>
+              <td>Teams porting a workflow from Azure SQL to SQL Server 2025 on-premises gain the ability to call
+                arbitrary HTTPS endpoints — which is a capability expansion, not a parity feature, and raises the stakes
+                of the permission and network controls described later in this post.</td>
+            </tr>
+            <tr>
+              <td><strong>Parameter Size</strong></td>
+              <td>The <code>@url</code> and <code>@headers</code> parameters are each capped at 4,000 characters as
+                declared types. Beyond that, the combined size of all headers actually sent — your <code>@headers</code>
+                value plus any credential-injected headers plus system-supplied headers — is capped at 8 KB, and the
+                fully assembled URL (including any credential-injected query string) is capped at 8 KB. The
+                <code>@payload</code> and <code>@response</code> use <code>NVARCHAR(MAX)</code>, with payload size over
+                the wire limited to 100 MB.</td>
+              <td>Very long query strings or complex multi-header authentication schemes may exceed the URL and header
+                size limits even when individual parameters look small, requiring redesign of the target API call or use
+                of POST body instead of query parameters.</td>
+            </tr>
+            <tr>
+              <td><strong>Synchronous Execution</strong></td>
+              <td>The call blocks the executing worker thread until the endpoint responds or the timeout expires.</td>
+              <td>Slow or intermittent external APIs can cause lock contention and worker thread exhaustion when invoked
+                from high-concurrency workloads. This pattern is unsuitable for row-by-row API calls within cursor loops
+                over large datasets.</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>The <code>@timeout</code> parameter is measured in seconds, is a positive <code>smallint</code>, and
+                accepts values from 1 to 230. This range is documented as applying to SQL Server 2025 on-premises as
+                well as Azure SQL.</td>
+              <td>Long-running API calls that approach the timeout boundary hold database locks open for the duration,
+                which can cascade into application-level timeouts across unrelated sessions. 230 seconds is a hard
+                ceiling, not a tunable maximum — workflows needing longer-running external calls must poll a status
+                endpoint across multiple shorter invocations instead.</td>
+            </tr>
+            <tr>
+              <td><strong>Retry Behavior</strong></td>
+              <td>The optional <code>@retry_count</code> parameter (0–10, default 0) automatically retries on HTTP 408,
+                429, 500, 502, 503, and 504, honoring a <code>Retry-After</code> header when present or falling back to
+                exponential backoff.</td>
+              <td>This covers transport-level retries only, not transactional retry semantics — a POST that partially
+                succeeded on the external system before a retriable error occurred may be resubmitted, so idempotency on
+                the receiving API matters when <code>@retry_count</code> is used for anything beyond GET requests.</td>
+            </tr>
+            <tr>
+              <td><strong>No Async or Streaming</strong></td>
+              <td>There is no native mechanism to call the procedure asynchronously or to process a streaming response
+                body incrementally.</td>
+              <td>Large response payloads are captured in full into <code>NVARCHAR(MAX)</code> before any parsing
+                occurs, consuming memory proportional to the response size within the executing session.</td>
+            </tr>
+            <tr>
+              <td><strong>Preview Status</strong></td>
+              <td>On SQL Server 2025, the feature remains in preview at the time of publication, meaning behavioral
+                changes are possible in subsequent Cumulative Updates.</td>
+              <td>Critical workflows depending on this procedure should be tested after each Cumulative Update and
+                against Microsoft's release notes to detect any breaking changes before they affect production.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Security Considerations That Cannot Be Overlooked</h2>
+
+        <p>Security research published by SpecterOps in 2026 documented a threat model specific to this procedure
+          that every SQL Server administrator should review before enabling it. Because the procedure issues outbound
+          HTTPS requests directly from the database engine process, any principal with <code>EXECUTE ANY EXTERNAL
+          ENDPOINT</code> permission can transmit database contents to an arbitrary internet endpoint. In an
+          environment where SQL injection vulnerabilities exist in the application tier, an attacker who achieves
+          query execution could use this procedure to exfiltrate rows from sensitive tables to an attacker-controlled
+          server, bypassing network controls placed on the application layer.</p>
+
+        <p>Additionally, <code>EXECUTE ANY EXTERNAL ENDPOINT</code> is a database-level permission, not an
+          object-level permission. Granting it to a user allows that user to call the procedure against any URL,
+          not just a pre-approved allowlist — and, as noted above, SQL Server 2025 on-premises has no native
+          equivalent of the Azure SQL allowlist to fall back on. Mitigating this requires network-layer controls:
+          configuring the SQL Server host's outbound firewall rules to restrict HTTPS traffic to known, approved
+          API destinations.</p>
+
+        <p>Using a stored credential requires the separate <code>REFERENCES</code> grant described in Step 2, which
+          gives administrators a second control point: a principal can be allowed to call arbitrary unauthenticated
+          endpoints without necessarily being able to use any of the organization's stored API credentials, or vice
+          versa. Neither grant alone prevents data exfiltration via an unauthenticated POST, which is why the
+          network-layer controls below remain necessary regardless of how credential access is scoped.</p>
+
+        <div class="callout-warning">
+          <p><strong>Hardcoded secrets risk:</strong> Never pass authentication tokens or API keys directly in the
+            <code>@payload</code> or <code>@headers</code> parameters as literal string values. Doing so exposes
+            the secret in Extended Events session captures, Query Store plan text, and
+            <code>sys.dm_exec_query_stats</code>.
+            Always use a Database Scoped Credential with <code>IDENTITY = 'HTTPEndpointHeaders'</code>, referenced
+            explicitly via the <code>@credential</code> parameter, so that secrets are stored encrypted in the
+            database master key and injected transparently by the engine.
+          </p>
+        </div>
+
+        <h2>When This Pattern Makes Operational Sense</h2>
+
+        <p>Despite the limitations and security considerations, the procedure addresses genuine use cases that
+          previously required disproportionately complex infrastructure. Scheduled T-SQL Agent jobs that need to
+          notify a webhook or push a summary payload to an internal alerting API are a natural fit: the call volume
+          is low, the payload is small, and no external service deployment is needed. Stored procedures that look
+          up reference data from a stable internal REST service during a batch run can avoid an entire ETL pipeline
+          for data that changes infrequently.</p>
+
+        <p>Conversely, the procedure is poorly suited to real-time, row-level API enrichment patterns. Calling an
+          external geocoding or classification API once per record inside a trigger or a cursor loop over millions
+          of rows will block worker threads, generate network costs proportional to record volume, and produce
+          latency characteristics incompatible with transactional workloads. Those patterns belong in an
+          application tier with async HTTP client libraries, connection pooling, and retry logic that the
+          database engine does not expose.</p>
+
+        <p>For teams already using Azure SQL Database or Managed Instance, the procedure is generally available
+          rather than in preview, and the operational experience is well documented — though worth remembering that
+          Azure SQL's endpoint allowlist constrains it to approved Azure service domains in a way that SQL Server
+          2025 on-premises does not. SQL Server 2025 on-premises brings the same interface to organizations that
+          cannot or will not migrate to Azure SQL, and the activation path documented in this post is consistent
+          with what Microsoft's own reference documentation describes. As cumulative updates move the feature toward
+          general availability on SQL Server 2025, the remaining preview-stage constraints around behavioral
+          stability are likely to narrow.</p>
+
+      </div>
+    </article>
+
+    <aside
+      style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+      <h2
+        style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+        About the Author</h2>
+      <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+        <div>
+          <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun Park
+          </p>
+          <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+            Business Intelligence Professional</p>
+          <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer and
+            business intelligence professional with a focus on enterprise analytics, Power Platform architecture, and
+            applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+          <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+            style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+            on LinkedIn &rarr;</a>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align:center;padding:var(--space-l) 0;">
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>
