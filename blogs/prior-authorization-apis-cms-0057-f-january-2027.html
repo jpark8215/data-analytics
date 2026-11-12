@@ -285,7 +285,7 @@
           <p><strong>Scope Reference:</strong> The authoritative scope definition appears in the CMS-0057-F final rule
             published in the Federal Register on February 8, 2024 (89 Fed. Reg. 8758). The CMS fact sheet and
             implementation timeline are available at
-            <strong>cms.gov/priorities/key-initiatives/burden-reduction/prior-authorization</strong>.
+            <strong>cms.gov/priorities/key-initiatives/burden-reduction</strong>.
           </p>
         </div>
 
@@ -338,7 +338,7 @@
           complexity. One scheduling nuance matters for planning purposes: while Medicare Advantage organizations and
           state Medicaid/CHIP fee-for-service programs face a flat January 1, 2027 date, the rule ties the deadline
           for Medicaid managed care plans, CHIP managed care entities, and QHP issuers on the federally facilitated
-          exchanges to the start of their next rating period or plan year on or after that date — which can fall
+          exchanges to the start of their next rating period or plan year on or after that date, which can fall
           later in 2027 depending on a given plan's renewal cycle. The following sections examine each API in
           engineering terms.</p>
 
@@ -572,7 +572,7 @@ print(combined[["payer", "data_year", "total_requests", "total_approvals",
 
         <p>The economic rationale underlying CMS-0057-F is well documented, though the magnitude is worth stating
           precisely rather than approximately. The Council for Affordable Quality Healthcare (CAQH) 2023 Index
-          Report — the most recent edition with published per-transaction cost breakdowns — found that a manual
+          Report, the most recent edition with published per-transaction cost breakdowns, found that a manual
           medical prior authorization transaction costs providers an average of approximately \$10.97 to process,
           compared with approximately \$5.79 for a fully electronic transaction: electronic processing costs
           providers roughly half of what manual processing does. Payers see an even starker asymmetry, since a
@@ -608,8 +608,8 @@ print(combined[["payer", "data_year", "total_requests", "total_approvals",
           proven difficult to implement at scale in healthcare. Each payer must both serve as a data sender (for
           departing members) and a data receiver (for incoming members), and must resolve member identity across
           organizational boundaries without a universal patient identifier. The lack of a national patient
-          identifier in the United States — a funding restriction Congress has attached to every HHS appropriations
-          bill since 1998, despite HIPAA's original 1996 mandate to establish one — complicates cross-payer matching
+          identifier in the United States, a funding restriction Congress has attached to every HHS appropriations
+          bill since 1998, despite HIPAA's original 1996 mandate to establish one, complicates cross-payer matching
           and increases the risk of data integrity errors in the transfer workflow.</p>
 
         <div class="callout-warning">
@@ -633,8 +633,8 @@ print(combined[["payer", "data_year", "total_requests", "total_approvals",
         <p>It's worth being precise about what CMS-0062-P actually proposes technically, because it departs from
           the FHIR-centric approach of CMS-0057-F in an important way. Rather than extending the Da Vinci PAS /
           CRD-DTR-ePA FHIR pattern to drugs, CMS-0062-P proposes requiring impacted payers to support three
-          existing National Council for Prescription Drug Programs (NCPDP) standards — SCRIPT, Formulary & Benefit
-          (F&B), and Real-Time Prescription Benefit (RTPB) — the same standards retail pharmacy already uses for
+          existing National Council for Prescription Drug Programs (NCPDP) standards, SCRIPT, Formulary & Benefit
+          (F&B), and Real-Time Prescription Benefit (RTPB), the same standards retail pharmacy already uses for
           e-prescribing. The rationale given is that pharmacy benefit transactions already run natively on NCPDP
           rails, so requiring electronic prior authorization through those same rails avoids introducing a second,
           parallel standard into an already-standardized pharmacy workflow. This means the medical-services
