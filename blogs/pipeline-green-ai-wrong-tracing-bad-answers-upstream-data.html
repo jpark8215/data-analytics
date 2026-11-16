@@ -412,25 +412,42 @@
           record of the structural change that any downstream consumer can query.</p>
 
         <p>Configuring dbt to emit OpenLineage events requires installing the
-          <code>openlineage-dbt</code> integration and pointing it at a Marquez server or any
-          OpenLineage-compatible backend:
+          <code>openlineage-dbt</code> package and pointing the OpenLineage client at a Marquez server (or
+          any OpenLineage-compatible backend) via environment variables — there is no dedicated OpenLineage
+          block inside dbt's own <code>profiles.yml</code>. Critically, dbt must also be invoked through the
+          <code>dbt-ol</code> wrapper rather than the plain <code>dbt</code> command, or no events will be
+          emitted at all, regardless of configuration:
         </p>
 
-        <pre><code># profiles.yml addition for dbt + OpenLineage
-# Marquez is the open-source OpenLineage API server
-openlineage:
-  transport:
-    type: http
-    url: http://localhost:5000
-    endpoint: /api/v1/lineage
-  namespace: "finance_policy_rag"
-  job_name_prefix: "dbt"</code></pre>
+        <pre><code># Environment variables read by the OpenLineage Python client
+export OPENLINEAGE_URL=http://localhost:5000
+export OPENLINEAGE_NAMESPACE="finance_policy_rag"
+# Optional: export OPENLINEAGE_API_KEY=... if your backend requires bearer auth
 
-        <p>With this configuration active, every dbt model run emits a structured JSON event to Marquez.
-          The event for the schema migration run that introduced the silent column drop would include
-          a <code>schemaDatasetFacet</code> that no longer lists <code>policy_summary_text</code>.
-          A lineage monitoring alert configured against that dataset would detect the schema contraction
-          and fire before the embedding pipeline processes the corrupted table:</p>
+# Run dbt through the OpenLineage wrapper, not `dbt run`, so events are emitted
+dbt-ol run</code></pre>
+
+        <p>For more complex transport configuration (custom headers, a non-default endpoint path), use a
+          separate <code>openlineage.yml</code> file referenced via the <code>OPENLINEAGE_CONFIG</code>
+          environment variable, rather than embedding it in <code>profiles.yml</code>:</p>
+
+        <pre><code># openlineage.yml
+transport:
+  type: http
+  url: http://localhost:5000
+  endpoint: /api/v1/lineage
+</code></pre>
+
+        <pre><code>export OPENLINEAGE_CONFIG=/path/to/openlineage.yml
+dbt-ol run</code></pre>
+
+        <p>With this configuration active, every <code>dbt-ol run</code> invocation emits a structured JSON
+          event to Marquez. The event for the schema migration run that introduced the silent column drop
+          would include a <code>schemaDatasetFacet</code> that no longer lists
+          <code>policy_summary_text</code>. A lineage monitoring alert configured against that dataset
+          would detect the schema contraction and fire before the embedding pipeline processes the corrupted
+          table:
+        </p>
 
         <pre><code># Example: query Marquez API for schema changes on a specific dataset
 import requests
@@ -474,14 +491,16 @@ if added:
         <p>The embedding ingestion job should attach structured metadata to every vector upserted into
           the index. At minimum, this metadata should include the source table name, the dbt model version
           or run ID, the ingestion batch timestamp, and a hash of the chunk content. The following
-          example demonstrates this pattern using the Pinecone Python SDK:</p>
+          example demonstrates this pattern using the current (v3+) Pinecone Python SDK, which requires
+          constructing a <code>Pinecone</code> client instance rather than calling module-level functions:</p>
 
         <pre><code>import hashlib
-import pinecone
+import os
+from pinecone import Pinecone
 from datetime import datetime, timezone
-from openlineage.client import OpenLineageClient
 
-pinecone_index = pinecone.Index("policy-knowledge-base")
+pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+pinecone_index = pc.Index("policy-knowledge-base")
 
 def embed_and_upsert(chunks: list[dict], dbt_run_id: str, source_table: str):
     """
@@ -520,42 +539,53 @@ def embed_and_upsert(chunks: list[dict], dbt_run_id: str, source_table: str):
     pinecone_index.upsert(vectors=vectors)
     return len(vectors)</code></pre>
 
-        <p>The explicit validation on lines 20 through 26 transforms the silent failure into a loud one:
-          instead of embedding the string <code>"None"</code> and continuing, the job raises a
-          <code>ValueError</code> with a message that names the source table and the dbt run ID. The
-          embedding pipeline fails visibly, and the alert paths that engineers have configured for
-          job failures are triggered. The pipeline is no longer green, and the error message contains
-          the exact information needed to begin the investigation.
-        </p>
+        <p>The explicit validation transforms the silent failure into a loud one: instead of embedding
+          the string <code>"None"</code> and continuing, the job raises a <code>ValueError</code> with a
+          message that names the source table and the dbt run ID. The embedding pipeline fails visibly,
+          and the alert paths that engineers have configured for job failures are triggered. The pipeline
+          is no longer green, and the error message contains the exact information needed to begin the
+          investigation.</p>
 
         <h3>Layer 3: LLM Tracing with OpenTelemetry GenAI Semantic Conventions</h3>
 
         <p>The inference layer must emit structured trace spans that capture the retrieved context
-          with its provenance metadata attached. OpenTelemetry's GenAI semantic conventions, which
-          reached stable status for core LLM attributes in 2026, define a standard attribute vocabulary
-          for spans covering embedding generation, vector retrieval, and language model generation.
-          MLflow 3, released in 2026, provides a first-class implementation of these conventions with
-          native support for RAG trace hierarchies.</p>
+          with its provenance metadata attached. OpenTelemetry's GenAI semantic conventions define a
+          working attribute vocabulary for spans covering embedding generation, vector retrieval, and
+          language model generation — attributes like <code>gen_ai.request.model</code>,
+          <code>gen_ai.usage.input_tokens</code>, and <code>gen_ai.usage.output_tokens</code> are already
+          widely implemented across instrumentation libraries. It's worth being precise about their status,
+          though: as of this writing, every <code>gen_ai.*</code> attribute remains at "Development"
+          stability in OpenTelemetry's own registry — none has reached "Stable." If anything, the
+          ecosystem moved toward more flux in 2026, not less: in June 2026, the GenAI conventions were
+          split out of OpenTelemetry's core semantic-conventions repository into a dedicated
+          <code>semantic-conventions-genai</code> repo specifically so this area could keep iterating
+          without being held to the main spec's stability bar. MLflow 3, which reached general availability
+          in June 2025, provides a practical, OTel-compatible tracing implementation that teams can build
+          on today — with the understanding that upstream attribute names may still shift.
+        </p>
 
         <p>The following example instruments a FastAPI RAG endpoint using MLflow 3's tracing
           decorator, capturing both the retrieval span and the generation span with provenance data
           propagated from the retrieved vector metadata:</p>
 
-        <pre><code>import mlflow
-from mlflow.tracing import trace
-import pinecone
+        <pre><code>import os
+import mlflow
+from mlflow.entities import SpanEvent
+from pinecone import Pinecone
 
 mlflow.set_tracking_uri("http://localhost:5001")
 mlflow.set_experiment("policy-assistant-production")
 
-@trace
+pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+
+@mlflow.trace
 def retrieve_and_generate(query: str) -> dict:
     """
     Full RAG inference function with MLflow 3 tracing.
-    The @trace decorator creates a root span; child spans are added manually.
+    The @mlflow.trace decorator creates a root span; child spans are added manually.
     """
     with mlflow.start_span(name="vector_retrieval") as retrieval_span:
-        index = pinecone.Index("policy-knowledge-base")
+        index = pc.Index("policy-knowledge-base")
         query_embedding = get_embedding(query)
         results = index.query(
             vector=query_embedding,
@@ -575,11 +605,17 @@ def retrieve_and_generate(query: str) -> dict:
             }
             retrieved_chunks.append(chunk_info)
 
-        retrieval_span.set_attribute("gen_ai.retrieval.top_k", 5)
-        retrieval_span.set_attribute("gen_ai.retrieval.results_count", len(results["matches"]))
+        retrieval_span.set_attributes({
+            "gen_ai.retrieval.top_k": 5,
+            "gen_ai.retrieval.results_count": len(results["matches"]),
+        })
         # Log chunk provenance as a span event (not a high-cardinality attribute)
-        retrieval_span.add_event("retrieved_chunks_provenance",
-                                 {"chunks": str(retrieved_chunks)})
+        retrieval_span.add_event(
+            SpanEvent(
+                name="retrieved_chunks_provenance",
+                attributes={"chunks": str(retrieved_chunks)},
+            )
+        )
 
     with mlflow.start_span(name="llm_generation") as gen_span:
         context = "\n\n".join(
@@ -588,9 +624,11 @@ def retrieve_and_generate(query: str) -> dict:
         prompt = build_prompt(query, context)
         response = call_llm(prompt)
 
-        gen_span.set_attribute("gen_ai.request.model", "gpt-4o")
-        gen_span.set_attribute("gen_ai.usage.input_tokens", response["usage"]["prompt_tokens"])
-        gen_span.set_attribute("gen_ai.usage.output_tokens", response["usage"]["completion_tokens"])
+        gen_span.set_attributes({
+            "gen_ai.request.model": "gpt-4o",
+            "gen_ai.usage.input_tokens": response["usage"]["prompt_tokens"],
+            "gen_ai.usage.output_tokens": response["usage"]["completion_tokens"],
+        })
 
     return {
         "answer": response["choices"][0]["message"]["content"],
@@ -667,7 +705,6 @@ def retrieve_and_generate(query: str) -> dict:
           below a configured threshold.</p>
 
         <pre><code>import mlflow
-from mlflow.entities import RunStatus
 
 CANARY_QUERIES = [
     {
@@ -713,26 +750,26 @@ def run_canary_evaluation():
 
         <h2>What OpenTelemetry's GenAI Conventions Standardize and What They Do Not</h2>
 
-        <p>The OpenTelemetry GenAI semantic conventions, formalized in their stable release during 2026,
-          standardize a core set of span attributes for LLM interactions. The <code>gen_ai.request.model</code>,
-          <code>gen_ai.usage.input_tokens</code>, <code>gen_ai.usage.output_tokens</code>,
-          <code>gen_ai.operation.name</code>, and <code>gen_ai.system</code> attributes are now
-          consistently defined across compatible instrumentation libraries for frameworks including
-          LangChain, LlamaIndex, and vLLM. This standardization meaningfully reduces the instrumentation
-          overhead for teams adopting OTel-compatible backends.
-        </p>
+        <p>It's worth restating precisely where the OpenTelemetry GenAI semantic conventions stand,
+          since the status matters for how much teams should rely on attribute names staying put. As of
+          this writing, no <code>gen_ai.*</code> attribute, span, or metric has reached "Stable" in
+          OpenTelemetry's own registry — the entire namespace sits at "Development," the first rung of
+          OTel's stability ladder, and the June 2026 move into a separate <code>semantic-conventions-genai</code>
+          repository was explicitly meant to let the area iterate faster than the core stability process
+          allows. Attributes like <code>gen_ai.request.model</code>, <code>gen_ai.usage.input_tokens</code>,
+          and <code>gen_ai.usage.output_tokens</code> are nonetheless widely implemented and reasonably
+          consistent across compatible instrumentation libraries for frameworks including LangChain,
+          LlamaIndex, and vLLM, which meaningfully reduces instrumentation overhead in practice even
+          without a formal stability guarantee.</p>
 
-        <p>However, the conventions do not yet standardize retrieval-layer attributes at the same
-          level of specificity. Attributes such as <code>gen_ai.retrieval.top_k</code> and
-          <code>gen_ai.data_source.id</code> appear in vendor implementations but lack a stable
-          cross-framework specification as of November 2026. This means that teams must define and
-          maintain their own attribute naming convention for chunk provenance metadata, which
-          introduces a schema drift risk within the trace data itself. As documented by Dash0 in
-          their 2026 analysis of the GenAI OTel ecosystem, early-adopting instrumentation packages
-          frequently rename attributes during minor version bumps without issuing schema migration
-          files, leaving teams to manage attribute renaming manually in OTel Collector transform
-          processors.
-        </p>
+        <p>Retrieval-layer attributes are further behind than the core token-usage ones. Attributes such
+          as <code>gen_ai.retrieval.top_k</code> and <code>gen_ai.data_source.id</code> appear in vendor
+          implementations but lack even the loose cross-framework consistency that the core LLM-call
+          attributes have achieved. This means teams must define and maintain their own attribute naming
+          convention for chunk provenance metadata, which introduces a schema drift risk within the trace
+          data itself — early-adopting instrumentation packages have been known to rename attributes during
+          minor version bumps without issuing migration guidance, leaving teams to manage attribute
+          renaming manually in OTel Collector transform processors.</p>
 
         <div class="callout">
           <p><strong>Practical mitigation:</strong> Define a canonical internal attribute vocabulary
@@ -774,11 +811,12 @@ processors:
           a script creates the accountability structure that sustains the investment in connected
           observability over time.</p>
 
-        <p>The tooling ecosystem that supports this architecture has matured substantially through
-          2026. MLflow 3's native integration with Databricks Unity Catalog allows trace data to
-          be stored as Delta tables, enabling direct SQL queries over production inference history.
-          OpenLineage's support across dbt, Spark, and Airflow means that lineage instrumentation
-          is largely configuration rather than custom code. The remaining work is the deliberate
+        <p>The tooling ecosystem that supports this architecture has matured substantially since
+          MLflow 3's release in mid-2025. MLflow 3's native integration with Databricks Unity Catalog
+          allows trace data to be stored as Delta tables, enabling direct SQL queries over production
+          inference history. OpenLineage's support across dbt, Spark, and Airflow means that lineage
+          instrumentation is largely configuration and a changed run command (<code>dbt-ol</code> in
+          place of <code>dbt</code>) rather than custom code. The remaining work is the deliberate
           act of connecting the two systems at the vector metadata layer, which requires no
           specialized tooling and no vendor lock-in: only the discipline to treat chunk provenance
           as a first-class data artifact rather than a debug afterthought.</p>
