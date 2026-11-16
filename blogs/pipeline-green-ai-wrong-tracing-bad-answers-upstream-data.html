@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Pipeline Is Green but Your AI Is Wrong: Tracing Bad Answers Back to Upstream Data: Data Analytics &amp;
+    Beyond</title>
+  <meta name="description"
+    content="Most teams watch the pipeline and the model in separate tools, so nobody can connect a wrong AI answer to a stale table or a broken transform. This post shows how data lineage plus distributed traces lets you go from a bad LLM response back to the root cause in minutes.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content pre {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      margin: var(--space-m) 0;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.06);
+      border-left: 4px solid rgba(245, 158, 11, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout-warning p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout-warning p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-m);
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    .pipeline-step {
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .pipeline-step-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+  <meta property="og:title"
+    content="Your Pipeline Is Green but Your AI Is Wrong: Tracing Bad Answers Back to Upstream Data">
+  <meta property="og:description"
+    content="Most teams watch the pipeline and the model in separate tools, so nobody can connect a wrong AI answer to a stale table or a broken transform. This post shows how data lineage plus distributed traces lets you go from a bad LLM response back to the root cause in minutes.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/pipeline_observability_hero.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/pipeline-green-ai-wrong-tracing-bad-answers-upstream-data.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/pipeline-green-ai-wrong-tracing-bad-answers-upstream-data.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Your Pipeline Is Green but Your AI Is Wrong: Tracing Bad Answers Back to Upstream Data",
+      "description": "Most teams watch the pipeline and the model in separate tools, so nobody can connect a wrong AI answer to a stale table or a broken transform. This post shows how data lineage plus distributed traces lets you go from a bad LLM response back to the root cause in minutes.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/pipeline_observability_hero.jpg",
+      "datePublished": "2026-11-16",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "agentic AI engineer and business intelligence professional",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">&#8592; Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:#34d399;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Your Pipeline Is Green but Your AI Is Wrong:
+          Tracing Bad Answers Back to Upstream Data</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          A green pipeline status and a healthy model endpoint do not guarantee correct answers. This post
+          walks through a real failure pattern where a silent schema change upstream corrupts retrieval
+          quality, and shows how connecting data lineage to distributed traces resolves root cause in
+          minutes rather than days.
+        </p>
+        <p class="post-meta">Published: <time>November 16, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/pipeline_observability_hero.jpg"
+        alt="A data engineer at a workstation with multiple monitors displaying pipeline diagrams, trace graphs, and data flow visualizations in a modern tech office."
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>Every production AI system built on a retrieval-augmented generation (RAG) architecture rests on a supply
+          chain of data transformations that most engineering teams treat as invisible once deployed. The orchestration
+          job is green. The embedding pipeline completed without errors. The vector database index refreshed on
+          schedule. Yet users are receiving answers that are factually stale, contextually incomplete, or quietly
+          wrong in ways that never trigger an alert. This is not a hypothetical edge case; it is the dominant failure
+          mode observed across enterprise AI deployments as organizations scale from prototype to production.</p>
+
+        <p>The core problem is architectural: data pipeline observability and AI model observability have historically
+          lived in entirely separate toolchains. Data engineers monitor Airflow DAG status, dbt run results, and
+          row-count anomaly detectors. AI engineers monitor prompt token counts, model latency, and LLM-as-a-judge
+          evaluation scores. Neither discipline, operating in isolation, possesses the instrumentation necessary to
+          connect a degraded language model response to the upstream data transformation that caused it. This post
+          demonstrates how that gap is closed, through a concrete failure walkthrough and a step-by-step
+          instrumentation architecture using OpenLineage, OpenTelemetry GenAI semantic conventions, and MLflow 3.</p>
+
+        <h2>The Failure Nobody Sees Coming</h2>
+
+        <p>Consider a production internal knowledge assistant deployed at a mid-sized financial services organization.
+          The system answers employee questions about regulatory policy documents, product specifications, and
+          compliance procedures. Its architecture is representative: a dbt pipeline transforms raw policy documents
+          from a source database into a cleaned <code>policy_chunks</code> table in a Snowflake data warehouse;
+          a nightly embedding job reads from that table, generates text embeddings using an embedding model API,
+          and upserts the resulting vectors into a Pinecone index; a FastAPI application wraps a retrieval step
+          against that index followed by a generation step using a hosted large language model.</p>
+
+        <p>Three weeks after a routine quarterly schema migration, the system begins producing answers that
+          reference outdated policy versions and omit critical compliance caveats that the organization's legal
+          team had explicitly added. No alert fires. The pipeline DAG shows all green. The model endpoint
+          returns HTTP 200 on every request. The P99 latency is within normal bounds. A user submits a
+          complaint through a Slack channel. The investigation begins.</p>
+
+        <h3>What Actually Happened: The Silent Column Drop</h3>
+
+        <p>The quarterly schema migration included a dbt model refactor that renamed the
+          <code>policy_summary_text</code> column to <code>document_excerpt</code> across three upstream
+          models. The engineer who made the change updated the final mart model correctly, but one intermediate
+          staging model still referenced the old column name via a <code>SELECT *</code>. Because dbt
+          resolved the ambiguity by returning a <code>NULL</code> value rather than raising a compile error
+          in that specific materialization path, the downstream <code>policy_chunks</code> table began
+          populating the text field used for embedding generation with <code>None</code> values, silently
+          substituted as the string <code>"None"</code> by the Python ingestion script's f-string formatting.</p>
+
+        <p>The resulting text chunks embedded into Pinecone looked like this:</p>
+
+        <pre><code># Before the schema migration (healthy chunk)
+"Section 4.2 - Anti-Money Laundering Requirements: Transactions exceeding $10,000 must
+ be reported within 15 business days. Customer identification verification is mandatory
+ for all wire transfers above $3,000. Updated: Q3 2026."
+
+# After the silent column drop (corrupted chunk)
+"None"</code></pre>
+
+        <p>The embedding model faithfully embedded the string <code>"None"</code> as a valid vector. The
+          Pinecone index accepted the upsert without error. The similarity search returned those vectors as
+          top-k results for queries semantically related to null-like or absent content. The LLM received
+          impoverished context and synthesized plausible-sounding but factually unsupported answers.
+          The pipeline remained entirely green throughout.</p>
+
+        <div class="callout-warning">
+          <p><strong>The monitoring gap:</strong> Standard pipeline health checks verify job completion
+            status and row counts. They do not verify the semantic integrity of the content written to the
+            vector index. Standard LLM monitoring verifies response latency and token usage. It does not
+            verify that retrieved context is substantive. The failure lived between both systems, invisible
+            to each.</p>
+        </div>
+
+        <h2>The Architecture of Connected Observability</h2>
+
+        <p>Closing this monitoring gap requires treating the data supply chain and the AI inference chain
+          as a single instrumented system rather than two adjacent systems that happen to exchange data.
+          Three telemetry layers must be present and connected for end-to-end root cause analysis to
+          be possible within minutes.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;min-width:600px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#6366f1" />
+              </marker>
+            </defs>
+            <!-- Layer boxes -->
+            <!-- Layer 1: Data Pipeline -->
+            <rect x="20" y="20" width="200" height="60" rx="8" fill="rgba(16,185,129,0.12)" stroke="#34d399" stroke-width="1.5" />
+            <text x="120" y="44" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12" font-weight="700" fill="#34d399">DATA PIPELINE LAYER</text>
+            <text x="120" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">dbt + Airflow + Snowflake</text>
+            <text x="120" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">OpenLineage events emitted</text>
+            <!-- Layer 2: Embedding -->
+            <rect x="280" y="20" width="200" height="60" rx="8" fill="rgba(99,102,241,0.12)" stroke="#818cf8" stroke-width="1.5" />
+            <text x="380" y="44" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12" font-weight="700" fill="#818cf8">EMBEDDING LAYER</text>
+            <text x="380" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">Chunk validation + embedding</text>
+            <text x="380" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">OTel spans + chunk metadata</text>
+            <!-- Layer 3: Inference -->
+            <rect x="540" y="20" width="200" height="60" rx="8" fill="rgba(59,130,246,0.12)" stroke="#60a5fa" stroke-width="1.5" />
+            <text x="640" y="44" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12" font-weight="700" fill="#60a5fa">INFERENCE LAYER</text>
+            <text x="640" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">RAG retrieval + LLM generation</text>
+            <text x="640" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">MLflow 3 trace spans</text>
+            <!-- Arrows between layers -->
+            <line x1="220" y1="50" x2="278" y2="50" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr)" />
+            <line x1="480" y1="50" x2="538" y2="50" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr)" />
+            <!-- Lineage store -->
+            <rect x="150" y="140" width="180" height="50" rx="8" fill="rgba(16,185,129,0.08)" stroke="#34d399" stroke-width="1" stroke-dasharray="4,3" />
+            <text x="240" y="160" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#34d399">OpenLineage / Marquez</text>
+            <text x="240" y="176" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#6b7280">Schema facets + job events</text>
+            <!-- Trace store -->
+            <rect x="430" y="140" width="180" height="50" rx="8" fill="rgba(59,130,246,0.08)" stroke="#60a5fa" stroke-width="1" stroke-dasharray="4,3" />
+            <text x="520" y="160" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#60a5fa">MLflow 3 / OTel Collector</text>
+            <text x="520" y="176" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#6b7280">Retrieval + generation spans</text>
+            <!-- Arrows down to stores -->
+            <line x1="120" y1="80" x2="200" y2="140" stroke="#34d399" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)" />
+            <line x1="380" y1="80" x2="300" y2="140" stroke="#34d399" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)" />
+            <line x1="640" y1="80" x2="560" y2="140" stroke="#60a5fa" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)" />
+            <!-- Unified root-cause layer -->
+            <rect x="240" y="240" width="280" height="50" rx="8" fill="rgba(245,158,11,0.08)" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="380" y="260" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12" font-weight="700" fill="#f59e0b">ROOT CAUSE ANALYSIS</text>
+            <text x="380" y="278" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#94a3b8">Correlate chunk provenance to lineage graph</text>
+            <!-- Arrows up to RCA -->
+            <line x1="280" y1="190" x2="330" y2="240" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)" />
+            <line x1="470" y1="190" x2="430" y2="240" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)" />
+          </svg>
+          <p class="diagram-caption">The three-layer observability architecture. Data pipeline events flow into an
+            OpenLineage store; inference traces flow into MLflow 3. The root cause analysis layer joins them via shared
+            chunk provenance metadata attached at embedding time.</p>
+        </div>
+
+        <h3>Layer 1: Data Pipeline Lineage with OpenLineage</h3>
+
+        <p>OpenLineage, the open standard for data lineage collection maintained by the Linux Foundation,
+          defines a structured event format that any data pipeline tool can emit when it reads or writes
+          a dataset. dbt, Apache Spark, Apache Airflow, Flink, and several commercial warehouses support
+          native OpenLineage integration. Each event carries a <code>schemaDatasetFacet</code> describing
+          the columns present in the dataset at the time of the job run. When a column is dropped, the
+          next OpenLineage event for that dataset will reflect a narrower schema, creating a versioned
+          record of the structural change that any downstream consumer can query.</p>
+
+        <p>Configuring dbt to emit OpenLineage events requires installing the
+          <code>openlineage-dbt</code> integration and pointing it at a Marquez server or any
+          OpenLineage-compatible backend:</p>
+
+        <pre><code># profiles.yml addition for dbt + OpenLineage
+# Marquez is the open-source OpenLineage API server
+openlineage:
+  transport:
+    type: http
+    url: http://localhost:5000
+    endpoint: /api/v1/lineage
+  namespace: "finance_policy_rag"
+  job_name_prefix: "dbt"</code></pre>
+
+        <p>With this configuration active, every dbt model run emits a structured JSON event to Marquez.
+          The event for the schema migration run that introduced the silent column drop would include
+          a <code>schemaDatasetFacet</code> that no longer lists <code>policy_summary_text</code>.
+          A lineage monitoring alert configured against that dataset would detect the schema contraction
+          and fire before the embedding pipeline processes the corrupted table:</p>
+
+        <pre><code># Example: query Marquez API for schema changes on a specific dataset
+import requests
+
+MARQUEZ_URL = "http://localhost:5000"
+NAMESPACE = "finance_policy_rag"
+DATASET = "policy_chunks"
+
+response = requests.get(
+    f"{MARQUEZ_URL}/api/v1/namespaces/{NAMESPACE}/datasets/{DATASET}/versions",
+    params={"limit": 5}
+)
+versions = response.json()["versions"]
+
+# Compare the two most recent schema versions
+prev_cols = {f["name"] for f in versions[1]["facets"]["schema"]["fields"]}
+curr_cols = {f["name"] for f in versions[0]["facets"]["schema"]["fields"]}
+
+dropped = prev_cols - curr_cols
+added   = curr_cols - prev_cols
+
+if dropped:
+    print(f"ALERT: Columns dropped from {DATASET}: {dropped}")
+    # Fire PagerDuty / Slack notification here
+if added:
+    print(f"INFO: New columns added to {DATASET}: {added}")</code></pre>
+
+        <p>This alert, had it been in place, would have flagged the column drop within minutes of the
+          dbt run completing, before the embedding pipeline consumed the corrupted table. The pipeline
+          would still have shown green, but the lineage monitor would have surfaced the semantic change
+          that the job status alone cannot reveal.</p>
+
+        <h3>Layer 2: Chunk-Level Provenance Tags at Embedding Time</h3>
+
+        <p>The bridge between the data pipeline layer and the inference layer is the provenance metadata
+          attached to each vector during the embedding ingestion job. Table-level lineage is insufficient
+          for root cause analysis of RAG failures, because a single Pinecone query may return vectors
+          originating from multiple dbt models, ingestion batches, and time windows. The investigation
+          must be traceable to the specific chunk that caused the retrieval failure.</p>
+
+        <p>The embedding ingestion job should attach structured metadata to every vector upserted into
+          the index. At minimum, this metadata should include the source table name, the dbt model version
+          or run ID, the ingestion batch timestamp, and a hash of the chunk content. The following
+          example demonstrates this pattern using the Pinecone Python SDK:</p>
+
+        <pre><code>import hashlib
+import pinecone
+from datetime import datetime, timezone
+from openlineage.client import OpenLineageClient
+
+pinecone_index = pinecone.Index("policy-knowledge-base")
+
+def embed_and_upsert(chunks: list[dict], dbt_run_id: str, source_table: str):
+    """
+    Embed text chunks and upsert into Pinecone with full provenance metadata.
+    Each vector carries the metadata needed to trace it back to its upstream source.
+    """
+    batch_ts = datetime.now(timezone.utc).isoformat()
+    vectors = []
+
+    for chunk in chunks:
+        text = chunk.get("policy_summary_text") or chunk.get("document_excerpt", "")
+
+        # Fail loudly rather than embed empty or null content
+        if not text or text.strip().lower() in ("none", "null", ""):
+            raise ValueError(
+                f"Empty or null text content for chunk id={chunk['id']}. "
+                f"Possible upstream column drop in {source_table}. "
+                f"dbt_run_id={dbt_run_id}"
+            )
+
+        embedding = get_embedding(text)  # your embedding API call
+        content_hash = hashlib.sha256(text.encode()).hexdigest()[:16]
+
+        vectors.append({
+            "id": chunk["id"],
+            "values": embedding,
+            "metadata": {
+                "source_table": source_table,
+                "dbt_run_id": dbt_run_id,
+                "ingestion_batch_ts": batch_ts,
+                "content_hash": content_hash,
+                "text_length": len(text),
+            }
+        })
+
+    pinecone_index.upsert(vectors=vectors)
+    return len(vectors)</code></pre>
+
+        <p>The explicit validation on lines 20 through 26 transforms the silent failure into a loud one:
+          instead of embedding the string <code>"None"</code> and continuing, the job raises a
+          <code>ValueError</code> with a message that names the source table and the dbt run ID. The
+          embedding pipeline fails visibly, and the alert paths that engineers have configured for
+          job failures are triggered. The pipeline is no longer green, and the error message contains
+          the exact information needed to begin the investigation.</p>
+
+        <h3>Layer 3: LLM Tracing with OpenTelemetry GenAI Semantic Conventions</h3>
+
+        <p>The inference layer must emit structured trace spans that capture the retrieved context
+          with its provenance metadata attached. OpenTelemetry's GenAI semantic conventions, which
+          reached stable status for core LLM attributes in 2026, define a standard attribute vocabulary
+          for spans covering embedding generation, vector retrieval, and language model generation.
+          MLflow 3, released in 2026, provides a first-class implementation of these conventions with
+          native support for RAG trace hierarchies.</p>
+
+        <p>The following example instruments a FastAPI RAG endpoint using MLflow 3's tracing
+          decorator, capturing both the retrieval span and the generation span with provenance data
+          propagated from the retrieved vector metadata:</p>
+
+        <pre><code>import mlflow
+from mlflow.tracing import trace
+import pinecone
+
+mlflow.set_tracking_uri("http://localhost:5001")
+mlflow.set_experiment("policy-assistant-production")
+
+@trace
+def retrieve_and_generate(query: str) -> dict:
+    """
+    Full RAG inference function with MLflow 3 tracing.
+    The @trace decorator creates a root span; child spans are added manually.
+    """
+    with mlflow.start_span(name="vector_retrieval") as retrieval_span:
+        index = pinecone.Index("policy-knowledge-base")
+        query_embedding = get_embedding(query)
+        results = index.query(
+            vector=query_embedding,
+            top_k=5,
+            include_metadata=True
+        )
+        # Attach provenance of every retrieved chunk to the span
+        retrieved_chunks = []
+        for match in results["matches"]:
+            chunk_info = {
+                "score": match["score"],
+                "source_table": match["metadata"].get("source_table"),
+                "dbt_run_id":   match["metadata"].get("dbt_run_id"),
+                "ingestion_ts": match["metadata"].get("ingestion_batch_ts"),
+                "content_hash": match["metadata"].get("content_hash"),
+                "text_length":  match["metadata"].get("text_length"),
+            }
+            retrieved_chunks.append(chunk_info)
+
+        retrieval_span.set_attribute("gen_ai.retrieval.top_k", 5)
+        retrieval_span.set_attribute("gen_ai.retrieval.results_count", len(results["matches"]))
+        # Log chunk provenance as a span event (not a high-cardinality attribute)
+        retrieval_span.add_event("retrieved_chunks_provenance",
+                                 {"chunks": str(retrieved_chunks)})
+
+    with mlflow.start_span(name="llm_generation") as gen_span:
+        context = "\n\n".join(
+            m["metadata"].get("text", "") for m in results["matches"]
+        )
+        prompt = build_prompt(query, context)
+        response = call_llm(prompt)
+
+        gen_span.set_attribute("gen_ai.request.model", "gpt-4o")
+        gen_span.set_attribute("gen_ai.usage.input_tokens", response["usage"]["prompt_tokens"])
+        gen_span.set_attribute("gen_ai.usage.output_tokens", response["usage"]["completion_tokens"])
+
+    return {
+        "answer": response["choices"][0]["message"]["content"],
+        "retrieved_chunks": retrieved_chunks,
+    }</code></pre>
+
+        <p>With this instrumentation active, every inference request produces an MLflow 3 trace that
+          contains the exact dbt run ID and source table for every chunk that contributed to the answer.
+          When a user flags an incorrect response, the investigation path becomes deterministic.</p>
+
+        <h2>The Root Cause Investigation: From Bad Answer to Broken Transform in Minutes</h2>
+
+        <p>With the three observability layers in place, the investigation workflow that would have
+          taken days in the original scenario is reduced to a structured sequence of queries. The
+          following walkthrough traces the investigation path from a user-flagged bad answer back
+          to the dbt model that introduced the column drop.</p>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Step 1: Locate the Flagged Trace in MLflow 3</div>
+          <p>The user submits a thumbs-down rating on the assistant response. That rating is linked to
+            the MLflow 3 trace ID that was returned in the response HTTP header. The engineer opens
+            the MLflow 3 trace UI, navigates to the flagged trace, and expands the
+            <code>vector_retrieval</code> span. The <code>retrieved_chunks_provenance</code> event
+            shows five chunks, all with <code>text_length: 4</code> (the length of the string "None")
+            and a shared <code>dbt_run_id: run_20261103_142301</code>.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Step 2: Query OpenLineage for the dbt Run</div>
+          <p>The engineer queries the Marquez API for the lineage event associated with
+            <code>run_20261103_142301</code>. The event record shows that the run wrote to the
+            <code>policy_chunks</code> dataset and that the output <code>schemaDatasetFacet</code>
+            no longer includes the <code>policy_summary_text</code> field. The event also shows
+            the upstream input datasets: <code>stg_policy_documents</code> and
+            <code>stg_compliance_caveats</code>. The column was present in the input schema but
+            absent from the output schema, confirming that the transformation logic is responsible.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Step 3: Examine the dbt Model DAG</div>
+          <p>Using the dbt Cloud IDE or the dbt docs lineage graph, the engineer navigates to the
+            <code>policy_chunks</code> mart model and traces the <code>policy_summary_text</code>
+            field through its upstream staging models. The intermediate model
+            <code>stg_policy_documents</code> shows the field resolved as <code>NULL</code> because
+            the <code>SELECT *</code> propagation missed the column rename in the
+            <code>policy_summary_text</code> to <code>document_excerpt</code> migration. The specific
+            dbt model, the specific commit, and the specific column are all identified.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Step 4: Scope the Impact and Remediate</div>
+          <p>The engineer queries the Pinecone index for all vectors whose metadata contains
+            <code>dbt_run_id: run_20261103_142301</code> and verifies the
+            <code>text_length: 4</code> pattern to confirm the full set of corrupted chunks.
+            The dbt model fix is applied, the corrected run executes, and the embedding pipeline
+            re-ingests only the affected chunk IDs using the ingestion timestamp range from the
+            lineage event. Total investigation time: approximately 18 minutes. Without the
+            connected observability stack, the same investigation averaged 3.5 days in the
+            organization's pre-instrumentation incident retrospectives.</p>
+        </div>
+
+        <h2>Canary Queries: Detecting Degradation Before Users Notice</h2>
+
+        <p>Reactive investigation after a user complaint is a minimum viable capability. A more
+          mature posture adds proactive detection through canary evaluation queries that run on a
+          regular schedule against the production inference stack. The concept is straightforward:
+          maintain a curated set of queries for which the correct answers are known and stable,
+          run them against the system at scheduled intervals, score the responses using a deterministic
+          similarity metric or an LLM-as-a-judge scorer, and alert when the aggregate score drops
+          below a configured threshold.</p>
+
+        <pre><code>import mlflow
+from mlflow.entities import RunStatus
+
+CANARY_QUERIES = [
+    {
+        "query": "What is the reporting deadline for transactions exceeding $10,000?",
+        "expected_keywords": ["15 business days", "15-day", "BSA", "Bank Secrecy Act"],
+        "min_keyword_hits": 2,
+    },
+    {
+        "query": "What documentation is required for wire transfers above $3,000?",
+        "expected_keywords": ["customer identification", "CIP", "identity verification"],
+        "min_keyword_hits": 1,
+    },
+]
+
+def run_canary_evaluation():
+    with mlflow.start_run(run_name="canary_eval"):
+        pass_count = 0
+        for item in CANARY_QUERIES:
+            result = retrieve_and_generate(item["query"])
+            answer = result["answer"].lower()
+            hits = sum(1 for kw in item["expected_keywords"] if kw.lower() in answer)
+            passed = hits >= item["min_keyword_hits"]
+            if passed:
+                pass_count += 1
+            mlflow.log_metric(f"canary_pass_{item['query'][:30]}", int(passed))
+
+        overall_pass_rate = pass_count / len(CANARY_QUERIES)
+        mlflow.log_metric("canary_pass_rate", overall_pass_rate)
+
+        if overall_pass_rate < 0.80:
+            # Trigger alerting webhook
+            raise RuntimeError(
+                f"Canary evaluation failed: pass_rate={overall_pass_rate:.2%}. "
+                "Possible upstream data quality regression."
+            )</code></pre>
+
+        <p>Scheduled as a daily Airflow task, this evaluation would have detected the
+          <code>"None"</code> embedding corruption within 24 hours of the dbt run, long before
+          the user complaint arrived. The alert message explicitly attributes the failure to a
+          possible upstream data quality regression rather than a model failure, directing the
+          investigation toward the data pipeline layer from the first notification.</p>
+
+        <h2>What OpenTelemetry's GenAI Conventions Standardize and What They Do Not</h2>
+
+        <p>The OpenTelemetry GenAI semantic conventions, formalized in their stable release during 2026,
+          standardize a core set of span attributes for LLM interactions. The <code>gen_ai.request.model</code>,
+          <code>gen_ai.usage.input_tokens</code>, <code>gen_ai.usage.output_tokens</code>,
+          <code>gen_ai.operation.name</code>, and <code>gen_ai.system</code> attributes are now
+          consistently defined across compatible instrumentation libraries for frameworks including
+          LangChain, LlamaIndex, and vLLM. This standardization meaningfully reduces the instrumentation
+          overhead for teams adopting OTel-compatible backends.</p>
+
+        <p>However, the conventions do not yet standardize retrieval-layer attributes at the same
+          level of specificity. Attributes such as <code>gen_ai.retrieval.top_k</code> and
+          <code>gen_ai.data_source.id</code> appear in vendor implementations but lack a stable
+          cross-framework specification as of November 2026. This means that teams must define and
+          maintain their own attribute naming convention for chunk provenance metadata, which
+          introduces a schema drift risk within the trace data itself. As documented by Dash0 in
+          their 2026 analysis of the GenAI OTel ecosystem, early-adopting instrumentation packages
+          frequently rename attributes during minor version bumps without issuing schema migration
+          files, leaving teams to manage attribute renaming manually in OTel Collector transform
+          processors.</p>
+
+        <div class="callout">
+          <p><strong>Practical mitigation:</strong> Define a canonical internal attribute vocabulary
+            for retrieval provenance metadata and enforce it in an OTel Collector transform processor.
+            This decouples your storage backend and dashboards from the volatility of upstream
+            instrumentation library releases. The transform processor configuration shown below
+            normalizes two common attribute naming variants into a single canonical form:</p>
+        </div>
+
+        <pre><code># otel-collector-config.yaml
+processors:
+  transform:
+    error_mode: ignore
+    trace_statements:
+      - context: span
+        statements:
+          # Normalize retrieval model attribute name variants
+          - set(attributes["gen_ai.request.model"], attributes["llm.model_name"])
+            where attributes["llm.model_name"] != nil
+          # Normalize chunk source table attribute
+          - set(attributes["rag.chunk.source_table"], attributes["retrieval.source"])
+            where attributes["retrieval.source"] != nil</code></pre>
+
+        <h2>The Organizational Dimension: Who Owns the Bridge</h2>
+
+        <p>The technical instrumentation described in this post solves a tractable engineering
+          problem. The harder problem is organizational. Data pipeline observability is typically
+          owned by a data engineering or data platform team, while AI model observability is
+          owned by an ML engineering or AI product team. Neither team has a natural incentive to
+          build and maintain the bridge between their respective toolchains, because the failure
+          mode it addresses is invisible when it occurs and attributed to the other team when it
+          surfaces.</p>
+
+        <p>Organizations that have resolved this effectively treat the embedding ingestion pipeline
+          as a seam that both teams co-own. The data engineering team owns the upstream schema
+          contract and the OpenLineage instrumentation. The AI engineering team owns the chunk
+          validation logic, the provenance metadata schema, and the canary evaluation framework.
+          A shared on-call rotation for the embedding pipeline formalized as a service rather than
+          a script creates the accountability structure that sustains the investment in connected
+          observability over time.</p>
+
+        <p>The tooling ecosystem that supports this architecture has matured substantially through
+          2026. MLflow 3's native integration with Databricks Unity Catalog allows trace data to
+          be stored as Delta tables, enabling direct SQL queries over production inference history.
+          OpenLineage's support across dbt, Spark, and Airflow means that lineage instrumentation
+          is largely configuration rather than custom code. The remaining work is the deliberate
+          act of connecting the two systems at the vector metadata layer, which requires no
+          specialized tooling and no vendor lock-in: only the discipline to treat chunk provenance
+          as a first-class data artifact rather than a debug afterthought.</p>
+
+        <h2>Limitations and What This Approach Does Not Solve</h2>
+
+        <p>Connected lineage and tracing is not a universal solution for AI answer quality problems.
+          Several important failure modes remain outside its scope. Retrieval quality degradation
+          caused by embedding model updates, where the same text produces a different vector because
+          the embedding model changed versions, is not detectable through data lineage alone; it
+          requires explicit versioning of the embedding model used at ingest time and re-embedding
+          on model change. Answer quality problems caused by LLM model updates, reasoning failures,
+          or instruction-following regressions are model-layer problems that require evaluation
+          frameworks rather than data lineage. Schema change detection through OpenLineage is also
+          limited to datasets for which lineage integration is configured; legacy systems emitting
+          flat files or proprietary formats may not support OpenLineage emission without custom
+          integration work.</p>
+
+        <p>Furthermore, connecting a bad answer to a specific upstream data defect requires that
+          the answer actually be flagged as bad through some feedback mechanism. Teams without
+          user feedback collection, automated evaluation guardrails, or canary monitoring will
+          not receive the signal that initiates the investigation, regardless of how well the
+          lineage and tracing instrumentation is configured. The observability architecture
+          described here amplifies and accelerates the investigation once a defect signal exists;
+          it does not substitute for the defect detection capability that must precede it.</p>
+
+        <p>Taken together, however, lineage-connected tracing represents the most direct path
+          from the experience that most AI platform teams are living today (separate dashboards,
+          separate on-call, and no way to explain a bad answer without a multi-day investigation)
+          to an operational posture where the data supply chain is as observable as the model it
+          feeds. The engineering investment is modest relative to the reduction in mean time to
+          resolution it delivers, and the organizational discipline it requires is the same
+          discipline that distinguishes mature data platforms from fragile ones.</p>
+
+        <aside
+          style="border-top:1px solid rgba(255,255,255,0.08);margin-top:var(--space-xl);padding-top:var(--space-l);">
+          <p style="font-size:0.95rem;color:var(--clr-text-muted);">
+            <strong style="color:var(--clr-text-main);">About the Author</strong><br>
+            Jieun Park is an agentic AI engineer and business intelligence professional with a focus on enterprise
+            analytics, Power Platform architecture, and applied AI systems. She writes on the intersection of data
+            engineering and organizational strategy.
+          </p>
+        </aside>
+
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
