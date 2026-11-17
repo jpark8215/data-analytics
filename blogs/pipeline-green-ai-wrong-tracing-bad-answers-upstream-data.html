@@ -413,7 +413,7 @@
 
         <p>Configuring dbt to emit OpenLineage events requires installing the
           <code>openlineage-dbt</code> package and pointing the OpenLineage client at a Marquez server (or
-          any OpenLineage-compatible backend) via environment variables — there is no dedicated OpenLineage
+          any OpenLineage-compatible backend) via environment variables, as there is no dedicated OpenLineage
           block inside dbt's own <code>profiles.yml</code>. Critically, dbt must also be invoked through the
           <code>dbt-ol</code> wrapper rather than the plain <code>dbt</code> command, or no events will be
           emitted at all, regardless of configuration:
@@ -551,17 +551,17 @@ def embed_and_upsert(chunks: list[dict], dbt_run_id: str, source_table: str):
         <p>The inference layer must emit structured trace spans that capture the retrieved context
           with its provenance metadata attached. OpenTelemetry's GenAI semantic conventions define a
           working attribute vocabulary for spans covering embedding generation, vector retrieval, and
-          language model generation — attributes like <code>gen_ai.request.model</code>,
+          language model generation; attributes like <code>gen_ai.request.model</code>,
           <code>gen_ai.usage.input_tokens</code>, and <code>gen_ai.usage.output_tokens</code> are already
           widely implemented across instrumentation libraries. It's worth being precise about their status,
           though: as of this writing, every <code>gen_ai.*</code> attribute remains at "Development"
-          stability in OpenTelemetry's own registry — none has reached "Stable." If anything, the
+          stability in OpenTelemetry's own registry; none has reached "Stable." If anything, the
           ecosystem moved toward more flux in 2026, not less: in June 2026, the GenAI conventions were
           split out of OpenTelemetry's core semantic-conventions repository into a dedicated
           <code>semantic-conventions-genai</code> repo specifically so this area could keep iterating
           without being held to the main spec's stability bar. MLflow 3, which reached general availability
           in June 2025, provides a practical, OTel-compatible tracing implementation that teams can build
-          on today — with the understanding that upstream attribute names may still shift.
+          on today with the understanding that upstream attribute names may still shift.
         </p>
 
         <p>The following example instruments a FastAPI RAG endpoint using MLflow 3's tracing
@@ -753,7 +753,7 @@ def run_canary_evaluation():
         <p>It's worth restating precisely where the OpenTelemetry GenAI semantic conventions stand,
           since the status matters for how much teams should rely on attribute names staying put. As of
           this writing, no <code>gen_ai.*</code> attribute, span, or metric has reached "Stable" in
-          OpenTelemetry's own registry — the entire namespace sits at "Development," the first rung of
+          OpenTelemetry's own registry; the entire namespace sits at "Development," the first rung of
           OTel's stability ladder, and the June 2026 move into a separate <code>semantic-conventions-genai</code>
           repository was explicitly meant to let the area iterate faster than the core stability process
           allows. Attributes like <code>gen_ai.request.model</code>, <code>gen_ai.usage.input_tokens</code>,
@@ -767,7 +767,7 @@ def run_canary_evaluation():
           implementations but lack even the loose cross-framework consistency that the core LLM-call
           attributes have achieved. This means teams must define and maintain their own attribute naming
           convention for chunk provenance metadata, which introduces a schema drift risk within the trace
-          data itself — early-adopting instrumentation packages have been known to rename attributes during
+          data itself. Early-adopting instrumentation packages have been known to rename attributes during
           minor version bumps without issuing migration guidance, leaving teams to manage attribute
           renaming manually in OTel Collector transform processors.</p>
 
@@ -866,8 +866,9 @@ processors:
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 Data Analytics &amp; Beyond. All rights reserved.</p>
+    <div class="container" style="text-align:center;padding:var(--space-l) 0;">
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
     </div>
   </footer>
 
