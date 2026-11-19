@@ -472,7 +472,7 @@
           <li><strong>Recent run history</strong>: an HTTP action calling the ADF REST API's "Pipeline Runs -
             Query By Factory" endpoint, filtered to the last 48 hours for the matching pipeline name. This is a
             <strong>POST</strong> request with the time window passed in the JSON body, not a GET with query
-            parameters — the ADF Pipeline Runs API doesn't support filtering via query string
+            parameters, as the ADF Pipeline Runs API doesn't support filtering via query string
           </li>
           <li><strong>Affected table or dataset</strong>: either parsed from the error body or pulled from
             a Dataverse table that maps pipeline names to their target datasets</li>
@@ -616,9 +616,10 @@ trim(
           includes the pipeline name, the AI's probable cause sentence, the category, the confidence
           score, and the recommended action, with two custom buttons: <strong>Approve Fix</strong>
           and <strong>Escalate to On-Call</strong>. The flow reads the approver's choice from the action's
-          own output — an expression like
-          <code>outputs('Post_an_Adaptive_Card_and_wait_for_a_response')?['body/data/action']</code>
-          — since this pattern doesn't route through the Approvals connector at all.</p>
+          own output, such as
+          <code>outputs('Post_an_Adaptive_Card_and_wait_for_a_response')?['body/data/action']</code>,
+          since this pattern doesn't route through the Approvals connector at all.
+        </p>
 
         <p>If your organization prefers Dataverse-backed approval records with built-in audit history
           over a hand-authored Adaptive Card, the <strong>Start and wait for an approval</strong> action
@@ -626,8 +627,8 @@ trim(
           creates the Dataverse approval record and lets approvers respond from Outlook, Teams (via the
           built-in Approvals app), or the Power Automate action center. The trade-off is that its card
           format and button labels come from the Approval Type you select rather than being freely
-          customizable, and its result is read differently —
-          <code>outputs('Start_and_wait_for_an_approval')?['body/outcome']</code> — than the custom
+          customizable, and its result is read differently:
+          <code>outputs('Start_and_wait_for_an_approval')?['body/outcome']</code>, than the custom
           Adaptive Card path above. Build one pattern or the other per flow rather than mixing them, since
           they produce differently shaped outputs for the downstream Condition and logging steps.
         </p>
