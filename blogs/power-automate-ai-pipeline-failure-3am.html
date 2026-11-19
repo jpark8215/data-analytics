@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When a Pipeline Fails at 3am: Building a Power Automate Flow Where AI Analyzes the Error and Decides What
+    Happens Next: Data Analytics &amp; Beyond</title>
+  <meta name="description"
+    content="Build a Power Automate cloud flow that catches an ADF or Fabric pipeline failure, uses an AI prompt action to classify the error, and routes it automatically: auto-retry transient faults, request Teams approval for medium severity issues, and page on-call for high-severity failures.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content pre {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      margin: var(--space-m) 0;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.06);
+      border-left: 4px solid rgba(245, 158, 11, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout-warning p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout-warning p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-m);
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    .pipeline-step {
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .pipeline-step-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .prompt-box {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: var(--radius-m);
+      padding: 1.5rem;
+      margin: var(--space-m) 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #c7d2fe;
+      white-space: pre-wrap;
+    }
+  </style>
+  <meta property="og:title"
+    content="When a Pipeline Fails at 3am: Building a Power Automate Flow Where AI Analyzes the Error and Decides What Happens Next">
+  <meta property="og:description"
+    content="Build a Power Automate cloud flow that catches an ADF or Fabric pipeline failure, uses an AI prompt action to classify the error, and routes it automatically: auto-retry transient faults, request Teams approval for medium severity issues, and page on-call for high-severity failures.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/power_automate_ai_pipeline_failure.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/power-automate-ai-pipeline-failure-3am.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/power-automate-ai-pipeline-failure-3am.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "When a Pipeline Fails at 3am: Building a Power Automate Flow Where AI Analyzes the Error and Decides What Happens Next",
+      "description": "Build a Power Automate cloud flow that catches an ADF or Fabric pipeline failure, uses an AI prompt action to classify the error, and routes it automatically: auto-retry transient faults, request Teams approval for medium severity issues, and page on-call for high-severity failures.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/power_automate_ai_pipeline_failure.jpg",
+      "datePublished": "2026-11-18",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "agentic AI engineer and business intelligence professional",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">&#8592; Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(99,102,241,0.2);color:#818cf8;">Agent</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">When a Pipeline Fails at 3am: Building a
+          Power Automate Flow Where AI Analyzes the Error and Decides What Happens Next</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          A step-by-step guide to building a Power Automate cloud flow that catches ADF or Fabric pipeline failures,
+          classifies them with an AI prompt action, and routes each case automatically: silent retry, Teams approval
+          request, or on-call page, with everything logged for a Power BI measurement report.
+        </p>
+        <p class="post-meta">Published: <time>November 18, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/power_automate_ai_pipeline_failure.jpg"
+        alt="Abstract dark-mode pipeline flow diagram with glowing data nodes, an amber failure alert, and AI decision branches splitting into auto-retry, approval, and escalation paths."
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>The email arrives at 3:17 in the morning. Subject line: <em>Pipeline 'sales_mart_refresh' Failed
+            [ADF-PROD]</em>. The body contains a stack trace, an activity run ID, and a timestamp. For the engineer
+          whose phone just vibrated, the next thirty minutes follow a predictable and exhausting script: open the
+          Azure portal, navigate to the Data Factory monitoring view, expand the failed activity, read the error
+          message, assess whether it is the kind of failure that resolves on a retry or the kind that requires
+          investigation, and then decide whether to wake anyone else up. Most of the time, the error is a
+          transient network timeout that would have resolved itself if the pipeline had simply tried again. The
+          engineer retries manually, the pipeline succeeds, and two hours of sleep are lost to a problem that
+          never required human judgment at all.</p>
+
+        <p>This post builds a Power Automate cloud flow that eliminates the routine triage step by inserting an
+          AI analysis action between the failure alert and the human response. The AI reads the error context,
+          categorizes the failure, assigns a severity, and proposes an action. The flow then routes accordingly:
+          transient failures are retried silently and logged; medium-severity failures are summarized in a
+          Teams message where an approver can confirm before any fix runs; high-severity failures or cases where
+          the AI returns low confidence go directly to the on-call engineer with the full analysis attached.
+          At no point does the AI trigger a destructive operation on its own.</p>
+
+        <h2>Choosing the Right Build Path in 2026</h2>
+
+        <p>Power Automate in 2026 offers three distinct paths for embedding AI reasoning into automation workflows,
+          and choosing the wrong one for the wrong use case is a common source of both over-engineering and
+          unexpected cost.</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>What It Is</th>
+              <th>Best For</th>
+              <th>Cost Model</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>AI actions in cloud flows</strong></td>
+              <td>The "Run a Prompt" AI Builder action embedded directly in a standard cloud flow</td>
+              <td>Deterministic routing with one AI step; predictable behavior; standard Power Automate licensing</td>
+              <td>AI Builder credits per prompt run; the rest of the flow uses standard Power Automate execution limits
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Agent flows in Copilot Studio</strong></td>
+              <td>Flows managed and triggered by a Copilot Studio agent that calls them as tools mid-conversation</td>
+              <td>Multi-turn reasoning; dynamic tool selection; when the agent must decide which flow to invoke based on
+                context</td>
+              <td>Copilot Credits: 13 credits per 100 flow actions, plus 5 credits per agent action invocation, per
+                Microsoft's 2026 pricing documentation</td>
+            </tr>
+            <tr>
+              <td><strong>Autonomous Copilot Studio agents</strong></td>
+              <td>Agents with memory and planning that trigger flows as background tools without a human in the
+                conversation</td>
+              <td>Complex, multi-step incident response involving multiple systems and unbounded reasoning chains</td>
+              <td>Highest: autonomous trigger credits plus agent action credits per execution; plan carefully against
+                tenant capacity pool</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>This post uses the first path: AI actions inside a standard cloud flow. The reasoning is deliberate.
+          Pipeline failure triage follows a finite decision tree that is fully expressible in a cloud flow's
+          switch-and-branch structure. The AI is responsible for one classification step, not for orchestrating
+          the entire response. That separation makes the flow's behavior auditable, its cost predictable, and its
+          guardrails enforceable without depending on an agent's reasoning chain staying within expected bounds.
+          The appropriate time to graduate to agent flows is when the response requires dynamic tool selection
+          across multiple systems, such as when the correct remediation action differs substantially across pipeline
+          types and the agent must consult a knowledge base, run a diagnostic query, and choose from a library
+          of fix procedures. For a nightly ETL monitoring flow, cloud flow routing with one AI step is both
+          sufficient and preferable.</p>
+
+        <h2>The Flow Architecture</h2>
+
+        <p>The complete flow has eight logical stages. The diagram below shows the structure before the
+          step-by-step build begins.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 480" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;min-width:600px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#6366f1" />
+              </marker>
+              <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#34d399" />
+              </marker>
+              <marker id="arr-amber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#f59e0b" />
+              </marker>
+              <marker id="arr-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#f87171" />
+              </marker>
+            </defs>
+
+            <!-- Stage 1: Trigger -->
+            <rect x="280" y="10" width="200" height="44" rx="8" fill="rgba(99,102,241,0.15)" stroke="#818cf8"
+              stroke-width="1.5" />
+            <text x="380" y="27" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#818cf8">TRIGGER</text>
+            <text x="380" y="44" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">When
+              email arrives (ADF / Fabric alert)</text>
+
+            <!-- Arrow -->
+            <line x1="380" y1="54" x2="380" y2="74" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr2)" />
+
+            <!-- Stage 2: Collect context -->
+            <rect x="280" y="74" width="200" height="44" rx="8" fill="rgba(59,130,246,0.1)" stroke="#60a5fa"
+              stroke-width="1.5" />
+            <text x="380" y="91" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#60a5fa">COLLECT CONTEXT</text>
+            <text x="380" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Parse error, pipeline name, run history</text>
+
+            <!-- Arrow -->
+            <line x1="380" y1="118" x2="380" y2="138" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr2)" />
+
+            <!-- Stage 3: AI Analysis -->
+            <rect x="260" y="138" width="240" height="50" rx="8" fill="rgba(139,92,246,0.15)" stroke="#a78bfa"
+              stroke-width="2" />
+            <text x="380" y="157" text-anchor="middle" font-family="Outfit,sans-serif" font-size="12" font-weight="700"
+              fill="#a78bfa">AI ANALYSIS</text>
+            <text x="380" y="175" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Run
+              a Prompt + Parse JSON response</text>
+
+            <!-- Arrow to router -->
+            <line x1="380" y1="188" x2="380" y2="210" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr2)" />
+
+            <!-- Stage 4: Route -->
+            <rect x="300" y="210" width="160" height="40" rx="8" fill="rgba(99,102,241,0.12)" stroke="#818cf8"
+              stroke-width="1.5" />
+            <text x="380" y="228" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#818cf8">ROUTE BY CATEGORY</text>
+            <text x="380" y="244" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Switch on AI output</text>
+
+            <!-- Three branches -->
+            <!-- Left: Transient -->
+            <line x1="300" y1="250" x2="120" y2="300" stroke="#34d399" stroke-width="1.5"
+              marker-end="url(#arr-green)" />
+            <rect x="20" y="300" width="200" height="54" rx="8" fill="rgba(16,185,129,0.1)" stroke="#34d399"
+              stroke-width="1.5" />
+            <text x="120" y="318" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700"
+              fill="#34d399">TRANSIENT</text>
+            <text x="120" y="333" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Auto-retry pipeline</text>
+            <text x="120" y="346" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Log
+              silently</text>
+
+            <!-- Middle: Medium -->
+            <line x1="380" y1="250" x2="380" y2="300" stroke="#f59e0b" stroke-width="1.5"
+              marker-end="url(#arr-amber)" />
+            <rect x="280" y="300" width="200" height="54" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b"
+              stroke-width="1.5" />
+            <text x="380" y="318" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700"
+              fill="#f59e0b">MEDIUM SEVERITY</text>
+            <text x="380" y="333" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Post
+              Teams summary</text>
+            <text x="380" y="346" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Wait
+              for approval</text>
+
+            <!-- Right: High -->
+            <line x1="460" y1="250" x2="640" y2="300" stroke="#f87171" stroke-width="1.5" marker-end="url(#arr-red)" />
+            <rect x="540" y="300" width="200" height="54" rx="8" fill="rgba(239,68,68,0.1)" stroke="#f87171"
+              stroke-width="1.5" />
+            <text x="640" y="318" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700"
+              fill="#f87171">HIGH / LOW CONFIDENCE</text>
+            <text x="640" y="333" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Page
+              on-call engineer</text>
+            <text x="640" y="346" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Attach AI analysis</text>
+
+            <!-- All converge to log -->
+            <line x1="120" y1="354" x2="340" y2="416" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,3"
+              marker-end="url(#arr2)" />
+            <line x1="380" y1="354" x2="380" y2="416" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,3"
+              marker-end="url(#arr2)" />
+            <line x1="640" y1="354" x2="420" y2="416" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,3"
+              marker-end="url(#arr2)" />
+
+            <!-- Stage 5: Log -->
+            <rect x="260" y="416" width="240" height="44" rx="8" fill="rgba(16,185,129,0.1)" stroke="#34d399"
+              stroke-width="1.5" />
+            <text x="380" y="433" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#34d399">LOG TO DATAVERSE</text>
+            <text x="380" y="450" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Error + AI classification + action + approver</text>
+          </svg>
+          <p class="diagram-caption">The complete Power Automate flow. The AI analysis stage produces a structured JSON
+            response; the Switch action branches on the category field. All three paths converge at the Dataverse log
+            step.</p>
+        </div>
+
+        <h2>Step 1: Trigger and Collect Context</h2>
+
+        <p>Azure Data Factory and Microsoft Fabric Data Factory both support alert rules that send email
+          notifications when a pipeline run fails. The standard alert email contains the pipeline name,
+          the activity that failed, the error message, and a link to the monitoring view. Power Automate's
+          <strong>When a new email arrives (V3)</strong> trigger, filtered to the ADF alert sender address
+          and a subject containing the word "Failed," catches these reliably.
+        </p>
+
+        <p>Once triggered, the flow needs four pieces of context before it can call the AI action:</p>
+
+        <ul>
+          <li><strong>Pipeline name</strong>: extractable from the email subject using a <code>split()</code>
+            expression on the subject line pattern <code>Pipeline 'X' Failed</code></li>
+          <li><strong>Error message</strong>: extractable from the email body using a Compose action with a
+            <code>substring()</code> expression targeting the error block
+          </li>
+          <li><strong>Recent run history</strong>: an HTTP action calling the ADF REST API's "Pipeline Runs -
+            Query By Factory" endpoint, filtered to the last 48 hours for the matching pipeline name. This is a
+            <strong>POST</strong> request with the time window passed in the JSON body, not a GET with query
+            parameters — the ADF Pipeline Runs API doesn't support filtering via query string
+          </li>
+          <li><strong>Affected table or dataset</strong>: either parsed from the error body or pulled from
+            a Dataverse table that maps pipeline names to their target datasets</li>
+        </ul>
+
+        <p>For the ADF REST API call, the flow's connection should use a service principal with the
+          <strong>Data Factory Contributor</strong> role scoped to the specific factory. This avoids
+          granting broad subscription-level read permissions to the flow's identity.
+        </p>
+
+        <pre><code>// Power Automate expression: extract pipeline name from subject
+// Subject format: "Pipeline 'sales_mart_refresh' Failed [ADF-PROD]"
+
+trim(
+  split(
+    split(triggerOutputs()?['body/subject'], '''')[1],
+    ''''
+  )[0]
+)</code></pre>
+
+        <p>The run-history lookup itself is a POST to the factory-level query endpoint, with the time window
+          and an optional pipeline-name filter in the request body:</p>
+
+        <pre><code>POST https://management.azure.com/subscriptions/{subscriptionId}/
+  resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/
+  factories/{factoryName}/queryPipelineRuns
+  ?api-version=2018-06-01
+
+// Request body
+{
+  "lastUpdatedAfter": "@{addHours(utcNow(), -48)}",
+  "lastUpdatedBefore": "@{utcNow()}",
+  "filters": [
+    {
+      "operand": "PipelineName",
+      "operator": "Equals",
+      "values": ["@{variables('PipelineName')}"]
+    }
+  ]
+}</code></pre>
+
+        <h2>Step 2: The AI Analysis Action and Prompt</h2>
+
+        <p>The AI analysis step uses Power Automate's <strong>Run a Prompt</strong> action from the AI Builder
+          connector. This action calls an AI Builder custom prompt that you define and store in your Power
+          Platform environment. The prompt is the most important part of this flow: it determines the quality
+          of the classification, the consistency of the JSON schema, and the reliability of every downstream
+          routing decision.</p>
+
+        <p>Create the prompt in the AI Builder Hub before building the flow. Storing it as a managed resource
+          rather than embedding it inline in the flow ensures that it survives environment migrations and can
+          be updated without editing the flow itself. The following is the exact prompt text to use:</p>
+
+        <div class="prompt-box">You are a data engineering operations assistant. Analyze the following Azure Data
+          Factory or Microsoft Fabric pipeline failure and return a structured JSON classification.
+
+          PIPELINE NAME: @{variables('PipelineName')}
+          ERROR MESSAGE: @{variables('ErrorMessage')}
+          RECENT RUN HISTORY (last 48h): @{variables('RunHistory')}
+          AFFECTED TABLE: @{variables('AffectedTable')}
+
+          Classify this failure and return ONLY valid JSON in the following exact schema. Do not include
+          any text outside the JSON block.
+
+          {
+          "probable_cause": "One sentence describing the most likely root cause",
+          "category": "TRANSIENT | SCHEMA_CHANGE | PERMISSIONS | DATA_ISSUE | UNKNOWN",
+          "severity": "LOW | MEDIUM | HIGH",
+          "confidence": 0.0,
+          "recommended_action": "One sentence describing the recommended next step",
+          "retry_safe": true
+          }
+
+          Category definitions:
+          - TRANSIENT: network timeout, throttling, transient service unavailability, rate limit
+          - SCHEMA_CHANGE: column missing, type mismatch, table not found, schema evolution error
+          - PERMISSIONS: access denied, unauthorized, missing role assignment, credential expired
+          - DATA_ISSUE: null constraint violation, referential integrity failure, bad source data
+          - UNKNOWN: none of the above categories match with reasonable confidence
+
+          Set confidence between 0.0 (no confidence) and 1.0 (certain).
+          Set retry_safe to true only if retrying the pipeline immediately is unlikely to cause data
+          duplication or corruption.
+
+          Respond with JSON only.</div>
+
+        <p>Several design decisions in this prompt warrant explanation. The <code>category</code> field is
+          constrained to a fixed enumeration. If the AI returns a value outside this list, the flow's
+          subsequent Switch action will fall through to the default branch, which pages the on-call engineer.
+          This is intentional: an unexpected category is treated as low-confidence and escalated to a human.
+          The <code>confidence</code> field enables a second routing filter: even if the category is
+          <code>TRANSIENT</code>, a confidence score below 0.75 triggers the Teams approval path rather
+          than an automatic retry. The <code>retry_safe</code> field prevents the flow from auto-retrying
+          a failure that could cause duplicate writes if the pipeline had already partially succeeded
+          before failing.
+        </p>
+
+        <p>After the Run a Prompt action, add a <strong>Parse JSON</strong> action targeting the prompt's
+          text output. Set the schema to match the JSON structure above. This converts the AI's text
+          response into typed properties that subsequent condition and switch actions can reference
+          directly without additional string parsing.</p>
+
+        <div class="callout">
+          <p><strong>AI Builder licensing note:</strong> The Run a Prompt action consumes AI Builder credits.
+            Each prompt run is billed against the AI Builder credit allocation for the environment.
+            Ensure that credits are explicitly allocated to your target environment in the Power Platform
+            Admin Center under Resources &gt; Capacity &gt; AI Builder before deploying this flow to
+            production. Credit depletion causes the action to return a 429 error, which the flow's error
+            handler should catch and route to the on-call path as a fallback.</p>
+        </div>
+
+        <h2>Step 3: Route by the AI's Decision</h2>
+
+        <p>The routing logic uses a <strong>Switch</strong> action on the <code>category</code> parsed
+          from the AI's JSON output, with an additional confidence check layered inside the
+          <code>TRANSIENT</code> case.
+        </p>
+
+        <h3>Branch A: Transient Failure (Auto-Retry)</h3>
+
+        <p>When the category is <code>TRANSIENT</code>, <code>retry_safe</code> is <code>true</code>,
+          and <code>confidence</code> is at or above 0.75, the flow calls the ADF REST API to trigger
+          a pipeline rerun. The API endpoint for this action is:</p>
+
+        <pre><code>POST https://management.azure.com/subscriptions/{subscriptionId}/
+  resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/
+  factories/{factoryName}/pipelines/{pipelineName}/createRun
+  ?api-version=2018-06-01</code></pre>
+
+        <p>No notification is sent to any team. The flow logs the event to Dataverse and exits. If the
+          retry also fails, ADF will send another alert email and the flow will trigger again. After
+          two consecutive transient failures for the same pipeline within a one-hour window, a
+          condition in the run history analysis upgrades the routing to the Medium severity branch
+          rather than attempting a third automatic retry.</p>
+
+        <h3>Branch B: Medium Severity (Teams Approval)</h3>
+
+        <p>Schema changes, data issues, and transient failures below the confidence threshold all land
+          here. The flow posts a custom Adaptive Card to a designated Teams channel using the Teams
+          connector's <strong>Post an Adaptive Card and wait for a response</strong> action. The card body
+          includes the pipeline name, the AI's probable cause sentence, the category, the confidence
+          score, and the recommended action, with two custom buttons: <strong>Approve Fix</strong>
+          and <strong>Escalate to On-Call</strong>. The flow reads the approver's choice from the action's
+          own output — an expression like
+          <code>outputs('Post_an_Adaptive_Card_and_wait_for_a_response')?['body/data/action']</code>
+          — since this pattern doesn't route through the Approvals connector at all.</p>
+
+        <p>If your organization prefers Dataverse-backed approval records with built-in audit history
+          over a hand-authored Adaptive Card, the <strong>Start and wait for an approval</strong> action
+          is the alternative worth considering: it is a Standard connector action that automatically
+          creates the Dataverse approval record and lets approvers respond from Outlook, Teams (via the
+          built-in Approvals app), or the Power Automate action center. The trade-off is that its card
+          format and button labels come from the Approval Type you select rather than being freely
+          customizable, and its result is read differently —
+          <code>outputs('Start_and_wait_for_an_approval')?['body/outcome']</code> — than the custom
+          Adaptive Card path above. Build one pattern or the other per flow rather than mixing them, since
+          they produce differently shaped outputs for the downstream Condition and logging steps.
+        </p>
+
+        <p>One important operational constraint applies to either approach: Power Automate cloud flow
+          runs have a hard maximum duration of 30 days from the moment the flow is triggered. An approval
+          request that remains unanswered for 30 days will cause the flow run to fail with a timeout
+          error rather than expire gracefully. For pipeline failure approvals, this is rarely a practical
+          concern because unanswered approval requests at that timescale represent a process failure.
+          However, teams with strict audit requirements may prefer to implement the decoupled
+          two-flow approval pattern: Flow 1 creates the approval record (via <strong>Create an approval
+            (v2)</strong>) and exits; Flow 2 is triggered by a Dataverse row update when the approver
+          responds, ensuring neither flow holds a 30-day thread open.</p>
+
+        <h3>Branch C: High Severity or Low Confidence (On-Call Page)</h3>
+
+        <p>Permissions errors, unknown categories, and any failure where <code>confidence</code>
+          is below 0.50 go here. The flow sends an email to the on-call distribution list with
+          the full AI analysis JSON formatted as a readable table, the original ADF error message,
+          and a direct link to the ADF monitoring run. If your team uses PagerDuty or Opsgenie,
+          an HTTP action can call their API to open a high-priority incident instead of or in
+          addition to the email.</p>
+
+        <div class="callout-warning">
+          <p><strong>Guardrail principle:</strong> The AI analysis result is advisory only. No branch
+            triggers a destructive operation autonomously. The auto-retry in Branch A calls the
+            pipeline rerun endpoint, which is a safe idempotent read-and-requeue operation because
+            <code>retry_safe</code> is verified first. No branch drops, truncates, or modifies
+            the affected table without explicit human approval. The allowed action list for
+            autonomous execution is exactly one item: pipeline rerun. Everything else requires
+            a human in the loop.
+          </p>
+        </div>
+
+        <h2>Step 4: Validate AI Output Before Routing</h2>
+
+        <p>The Parse JSON action will fail if the AI returns malformed JSON or omits a required field.
+          Wrap the entire AI analysis and Parse JSON block in a <strong>Scope</strong> configured
+          as a Try scope. Create a parallel Catch scope configured to run when the Try scope
+          has failed, timed out, or been skipped. Inside the Catch scope, the flow routes directly
+          to the on-call path with an error message indicating that the AI analysis itself failed,
+          not the original pipeline. This ensures that an AI Builder outage or credit depletion
+          never silently drops a pipeline failure alert.</p>
+
+        <p>Additionally, after the Parse JSON step succeeds, add a <strong>Condition</strong> action
+          that validates the <code>category</code> value against a predefined list before entering
+          the Switch. This can be expressed as a Power Automate expression:</p>
+
+        <pre><code>// Condition expression: validate category is in the allowed list
+contains(
+  createArray('TRANSIENT','SCHEMA_CHANGE','PERMISSIONS','DATA_ISSUE','UNKNOWN'),
+  body('Parse_AI_Response')?['category']
+)</code></pre>
+
+        <p>If this condition is false, the flow skips the Switch entirely and routes to the on-call
+          path. This guards against the AI returning a category that is semantically reasonable but
+          not in the enumeration, such as "INFRASTRUCTURE" or "CAPACITY_LIMIT," which would
+          otherwise fall through the Switch's default case silently.</p>
+
+        <h2>Step 5: Log Everything to Dataverse</h2>
+
+        <p>Every flow execution, regardless of which branch it takes, should write one record to a
+          Dataverse table. The table schema should include at minimum the following columns:</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PipelineName</td>
+              <td>Text</td>
+              <td>Parsed from alert email subject</td>
+            </tr>
+            <tr>
+              <td>FailureTimestamp</td>
+              <td>DateTime</td>
+              <td>Email received time</td>
+            </tr>
+            <tr>
+              <td>ErrorMessage</td>
+              <td>Text (long)</td>
+              <td>Parsed from alert email body</td>
+            </tr>
+            <tr>
+              <td>AI_Category</td>
+              <td>Choice</td>
+              <td>AI JSON output: category field</td>
+            </tr>
+            <tr>
+              <td>AI_Severity</td>
+              <td>Choice</td>
+              <td>AI JSON output: severity field</td>
+            </tr>
+            <tr>
+              <td>AI_Confidence</td>
+              <td>Decimal</td>
+              <td>AI JSON output: confidence field</td>
+            </tr>
+            <tr>
+              <td>AI_ProbableCause</td>
+              <td>Text</td>
+              <td>AI JSON output: probable_cause field</td>
+            </tr>
+            <tr>
+              <td>ActionTaken</td>
+              <td>Choice</td>
+              <td>Which branch executed: AutoRetry / TeamsApproval / OnCallPage / AIFailed</td>
+            </tr>
+            <tr>
+              <td>ApproverName</td>
+              <td>Text</td>
+              <td>Approval response metadata (Branch B only)</td>
+            </tr>
+            <tr>
+              <td>ApproverDecision</td>
+              <td>Choice</td>
+              <td>Approve / Escalate (Branch B only)</td>
+            </tr>
+            <tr>
+              <td>ResolutionTimestamp</td>
+              <td>DateTime</td>
+              <td>When the flow completed or the approval was received</td>
+            </tr>
+            <tr>
+              <td>AI_ClassificationOverridden</td>
+              <td>Yes/No</td>
+              <td>True if approver selected Escalate despite AI routing to Branch B</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>The <code>AI_ClassificationOverridden</code> column is especially important for the
+          measurement report. When an approver selects "Escalate to On-Call" on a card that the AI
+          categorized as Medium severity, that decision signals that the AI's classification was
+          incorrect or insufficient for the situation. Tracking this override rate over time provides
+          the ground-truth feedback necessary to refine the prompt.</p>
+
+        <h2>Step 6: Measure Whether the AI Was Right</h2>
+
+        <p>The Dataverse log table feeds directly into a Power BI report that answers the questions that
+          justify the investment in building this flow. The most important metrics are not the ones that
+          make the flow look good; they are the ones that reveal where it needs improvement.</p>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Metric 1: Auto-Resolution Rate</div>
+          <p>The percentage of pipeline failures that the flow resolved without human involvement
+            (Branch A executions where the auto-retry succeeded). A high rate confirms that the
+            transient classification is accurate. A low rate may indicate that the confidence
+            threshold is set too conservatively, or that the pipeline's failure modes are genuinely
+            diverse and require human judgment more often than expected.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Metric 2: Mean Time to Resolution (MTTR)</div>
+          <p>The difference between <code>FailureTimestamp</code> and <code>ResolutionTimestamp</code>
+            for each record. Segment this by <code>ActionTaken</code> to see the median resolution
+            time for auto-retried failures versus approved-then-fixed failures versus on-call pages.
+            The goal is not to minimize MTTR universally but to ensure that the fastest resolution
+            path (auto-retry) is applied to the largest share of failures that genuinely warrant it.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Metric 3: AI Classification Override Rate</div>
+          <p>The percentage of Branch B cases where the approver selected "Escalate to On-Call"
+            rather than approving the AI's recommended action. An override rate above 20 percent
+            on a stable pipeline portfolio suggests that the prompt's category definitions or the
+            confidence threshold require adjustment. Each override is also a labeled training
+            example: the error message, the AI's classification, and the human's correction form
+            a dataset for prompt refinement.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Metric 4: AI Analysis Failure Rate</div>
+          <p>The percentage of flow runs that hit the Catch scope because the AI action itself
+            failed, typically due to credit depletion or a malformed JSON response. This metric
+            monitors the reliability of the AI Builder infrastructure and flags when credit
+            allocation needs to be increased in the Power Platform Admin Center.</p>
+        </div>
+
+        <p>Building this report as a live Power BI dataset connected to Dataverse via DirectQuery
+          means the operational team can monitor these metrics in near real time without scheduled
+          refreshes. A monthly review of the override rate and category distribution should drive
+          quarterly prompt revisions as the pipeline portfolio changes and new failure modes emerge.</p>
+
+        <h2>What This Approach Does Well and Where It Falls Short</h2>
+
+        <p>The architecture described in this post delivers genuine operational value across several
+          dimensions. Engineers are no longer paged for routine transient failures at 3am.
+          Medium-severity failures receive structured context rather than a raw stack trace,
+          which accelerates human decision-making even when a human remains in the loop.
+          The Dataverse log creates an auditable record of every AI recommendation and every
+          human override, which is a meaningful improvement over the informal email threads
+          and Slack messages that previously constituted incident history. The measurement
+          report closes the feedback loop, treating AI classification accuracy as an operational
+          KPI rather than an assumption.</p>
+
+        <p>However, several limitations are worth stating plainly. The Run a Prompt action's
+          AI Builder model is a general-purpose language model, not a model trained on your
+          organization's pipeline history. Its classification accuracy for novel failure modes
+          or organization-specific error codes will be lower than its accuracy for common,
+          well-described failure patterns. The confidence score it returns is the model's
+          self-reported uncertainty, which is not a calibrated probability; a reported confidence
+          of 0.85 does not mean the classification is correct 85 percent of the time, and
+          the threshold values in the routing logic should be validated empirically against
+          your own incident log before treating them as production-ready defaults.</p>
+
+        <p>Additionally, the flow's email trigger introduces a dependency on ADF's alert email
+          format, which is subject to change with product updates. A more resilient trigger
+          would use ADF's native webhook or Event Grid integration to send a structured JSON
+          payload directly to a Power Automate HTTP trigger, eliminating the need to parse
+          free-text email bodies. Teams that want to invest in a more durable architecture
+          should consider that path before scaling this flow across a large pipeline portfolio.</p>
+
+        <p>The core insight this flow embodies is not that AI should make incident response
+          decisions autonomously. It is that AI classification as one deterministic step inside
+          a structured routing flow is a tractable, auditable, and immediately valuable use
+          of AI in production operations. The flow is green or not based on its own execution
+          logic. The AI is right or not based on the override data the log accumulates. Both
+          can be monitored independently, and both improve over time through deliberate
+          measurement rather than assumption.</p>
+
+        <aside
+          style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+          <h2
+            style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+            About the Author</h2>
+          <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+            <div>
+              <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun
+                Park
+              </p>
+              <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+                Business Intelligence Professional</p>
+              <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer
+                and
+                business intelligence professional with a focus on enterprise analytics, Power Platform architecture,
+                and
+                applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+              <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+                on LinkedIn &rarr;</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align:center;padding:var(--space-l) 0;">
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
