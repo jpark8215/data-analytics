@@ -260,12 +260,12 @@
         <p>NVIDIA Inference Microservices, known as NIM, occupies the practical middle ground. Its "model-free"
           deployment mode wraps a Hugging Face-compatible model in a container that downloads the weights,
           generates a runtime manifest, selects a matching deployment profile for your GPU, and exposes the
-          result as a standard OpenAI-compatible REST API — backed by either a vLLM or an SGLang inference
-          engine, depending on which model-free image you choose. (NVIDIA separately publishes model-specific,
+          result as a standard OpenAI-compatible REST API backed by either a vLLM or an SGLang inference
+          engine, depending on which model-free image you choose. NVIDIA separately publishes model-specific,
           pre-optimized NIM containers for a curated set of popular models that use a TensorRT-LLM engine
           instead; this guide focuses on the more flexible model-free path, which trades some of that
           pre-compiled TensorRT-LLM performance for the ability to serve any architecture-compatible model,
-          including your own fine-tuned weights, from one generic container.) For a data engineer or AI
+          including your own fine-tuned weights, from one generic container. For a data engineer or AI
           developer who is not a GPU performance specialist, NIM removes the most technically demanding
           parts of the self-hosting problem while producing a service that existing application code can
           call without modification. This guide walks through the complete setup on a single NVIDIA GPU
@@ -636,7 +636,7 @@ print(response.choices[0].message.content)
 
         <p>Many teams reach NIM after fine-tuning a base model on their domain data. Serving a
           fine-tuned model uses the same <code>NIM_MODEL_PATH</code> variable from Step 4, pointed
-          at a local directory instead of a Hugging Face URI — model-free NIM supports a plain local
+          at a local directory instead of a Hugging Face URI. Model-free NIM supports a plain local
           absolute path as one of its model sources. The directory must follow the standard Hugging
           Face safetensors layout, including the <code>config.json</code>, <code>tokenizer.json</code>,
           and all weight shard files:</p>
@@ -676,7 +676,7 @@ docker run -it --rm \
           manifest directly from the configuration files in that directory. NIM analyzes those files,
           selects a compatible deployment profile for your GPU, and starts the vLLM engine against
           your weights. <code>NIM_SERVED_MODEL_NAME</code> controls the name your applications will
-          see when they query <code>/v1/models</code> or make inference requests — without it, NIM
+          see when they query <code>/v1/models</code> or make inference requests. Without it, NIM
           derives a name from the path itself, which is rarely what you want for a model you intend
           to call by a stable, memorable identifier.</p>
 
@@ -793,7 +793,8 @@ server {
                 the <code>-v</code> mount</td>
               <td>Verify all required files are present using the directory structure checklist in Step 7. Ensure the
                 <code>-v</code> source and destination paths are identical (NIM expects the mounted path to match the
-                environment variable value).</td>
+                environment variable value).
+              </td>
             </tr>
             <tr>
               <td>High latency on first token for every request</td>
@@ -816,11 +817,11 @@ server {
           Lambda Labs) to \$1.86/hour on hyperscalers like AWS, with a tracked market median around
           \$1.57/hour. Running 24 hours per day at that median yields a monthly infrastructure cost
           of roughly \$1,130, plus the NVIDIA AI Enterprise self-managed subscription fee of \$4,500
-          per GPU per year (\$375/month) if you require enterprise support — though NVIDIA also
+          per GPU per year (\$375/month) if you require enterprise support, though NVIDIA also
           offers a pay-as-you-go cloud consumption rate of \$1/GPU-hour as an alternative to the
           annual subscription. At the median infrastructure cost, and assuming the L40S can sustain
           approximately 1,500 tokens per second for an 8B model, the break-even threshold against
-          typical hosted API pricing falls at roughly 300 to 450 million tokens per month — and
+          typical hosted API pricing falls at roughly 300 to 450 million tokens per month and
           shifts meaningfully lower if you source GPU capacity from a budget provider instead of a
           hyperscaler. Below that volume, a hosted API is cheaper. Above it, self-hosting wins on
           marginal cost.</p>
