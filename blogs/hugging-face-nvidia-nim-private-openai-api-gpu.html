@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Run Any Hugging Face Model on Your Own NVIDIA GPU as a Private, OpenAI-Compatible API: A Step-by-Step Guide
+    with NIM: Data Analytics &amp; Beyond</title>
+  <meta name="description"
+    content="A step-by-step guide to deploying any Hugging Face model on your own NVIDIA GPU using NVIDIA NIM, exposing it as an OpenAI-compatible REST API. Covers hardware requirements, quantization, fine-tuned model serving, security, and an honest cost comparison with hosted APIs.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+  <style>
+    .post-container {
+      max-width: var(--content-width);
+      margin: var(--space-xl) auto;
+      padding: 0 var(--space-m);
+    }
+
+    .post-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--radius-l);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--clr-text-main);
+    }
+
+    .post-content h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-xl) 0 var(--space-m);
+    }
+
+    .post-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--clr-surface-invert);
+      margin: var(--space-l) 0 var(--space-s);
+    }
+
+    .post-content p {
+      margin-bottom: var(--space-m);
+    }
+
+    .post-content code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #60a5fa;
+    }
+
+    .post-content pre {
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: var(--radius-m);
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      margin: var(--space-m) 0;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: var(--space-m);
+      padding-left: 2rem;
+    }
+
+    .post-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 4px solid rgba(59, 130, 246, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.06);
+      border-left: 4px solid rgba(245, 158, 11, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .callout-warning p {
+      margin-bottom: 0.5rem;
+    }
+
+    .callout-warning p:last-child {
+      margin-bottom: 0;
+    }
+
+    .diagram-wrap {
+      background: rgba(10, 15, 30, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-m);
+      padding: 1.5rem 1rem;
+      margin: var(--space-m) 0 var(--space-l);
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    .pipeline-step {
+      background: rgba(99, 102, 241, 0.06);
+      border-left: 4px solid rgba(99, 102, 241, 0.5);
+      border-radius: 0 var(--radius-m) var(--radius-m) 0;
+      padding: 1.25rem 1.5rem;
+      margin: var(--space-m) 0;
+    }
+
+    .pipeline-step-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-l) 0;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+  <meta property="og:title"
+    content="Run Any Hugging Face Model on Your Own NVIDIA GPU as a Private, OpenAI-Compatible API: A Step-by-Step Guide with NIM">
+  <meta property="og:description"
+    content="A step-by-step guide to deploying any Hugging Face model on your own NVIDIA GPU using NVIDIA NIM, exposing it as an OpenAI-compatible REST API. Covers hardware requirements, quantization, fine-tuned model serving, security, and an honest cost comparison with hosted APIs.">
+  <meta property="og:image"
+    content="https://jpark8215.github.io/data-analytics/assets/images/nvidia_nim_self_host_gpu.jpg">
+  <meta property="og:url"
+    content="https://jpark8215.github.io/data-analytics/blogs/hugging-face-nvidia-nim-private-openai-api-gpu.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical"
+    href="https://jpark8215.github.io/data-analytics/blogs/hugging-face-nvidia-nim-private-openai-api-gpu.html">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Run Any Hugging Face Model on Your Own NVIDIA GPU as a Private, OpenAI-Compatible API: A Step-by-Step Guide with NIM",
+      "description": "A step-by-step guide to deploying any Hugging Face model on your own NVIDIA GPU using NVIDIA NIM, exposing it as an OpenAI-compatible REST API. Covers hardware requirements, quantization, fine-tuned model serving, security, and an honest cost comparison with hosted APIs.",
+      "image": "https://jpark8215.github.io/data-analytics/assets/images/nvidia_nim_self_host_gpu.jpg",
+      "datePublished": "2026-11-23",
+      "author": {
+        "@type": "Person",
+        "name": "Jieun Park",
+        "jobTitle": "agentic AI engineer and business intelligence professional",
+        "url": "https://www.linkedin.com/in/developerjp/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <header class="site-header glass">
+    <div class="container nav-container">
+      <a href="../index.html" class="logo">DATA<span>ANALYTICS</span></a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html" class="nav-link">Home</a></li>
+          <li><a href="../index.html#topics" class="nav-link">Topics</a></li>
+        </ul>
+      </nav>
+      <a href="https://github.com/jpark8215" target="_blank" class="btn btn-outline"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem;">GitHub</a>
+    </div>
+  </header>
+
+  <main class="post-container">
+    <a href="../index.html" class="back-link">&#8592; Back to Insights</a>
+
+    <article>
+      <header class="post-header">
+        <span class="blog-card-tag" style="background:rgba(16,185,129,0.2);color:#34d399;">Engineering</span>
+        <h1 class="hero-title" style="font-size:2.75rem;margin-top:1rem;">Run Any Hugging Face Model on Your Own
+          NVIDIA GPU as a Private, OpenAI-Compatible API: A Step-by-Step Guide with NIM</h1>
+        <p style="color:var(--clr-text-muted);font-size:1.125rem;margin-top:1rem;">
+          Healthcare, finance, and government teams cannot send sensitive data to a public AI API. This guide shows
+          the practical middle path: take any model from Hugging Face, serve it on your own NVIDIA GPU with NVIDIA
+          NIM, and call it exactly like the OpenAI API, with data that never leaves your network.
+        </p>
+        <p class="post-meta">Published: <time>November 23, 2026</time></p>
+      </header>
+
+      <img src="../assets/images/nvidia_nim_self_host_gpu.jpg"
+        alt="Multi-GPU AI workstation in a dark server room with green and cyan LED lighting from NVIDIA GPU cards."
+        class="post-image">
+
+      <div class="post-content">
+
+        <p>Every organization building AI-assisted workflows eventually encounters the same compliance wall:
+          the data you most want to analyze is the data you are least permitted to send to a third-party
+          API. Electronic health records, financial transaction histories, government procurement documents,
+          and customer support transcripts all carry regulatory or contractual restrictions that make
+          sending them to a hosted large language model service legally or operationally untenable for
+          many teams. The standard responses to this constraint are unsatisfying in opposite directions:
+          hobby-grade setups using llama.cpp on a laptop are too slow for production workloads, while
+          enterprise GPU clusters require infrastructure engineering expertise and procurement cycles
+          that most data teams cannot absorb.</p>
+
+        <p>NVIDIA Inference Microservices, known as NIM, occupies the practical middle ground. Its "model-free"
+          deployment mode wraps a Hugging Face-compatible model in a container that downloads the weights,
+          generates a runtime manifest, selects a matching deployment profile for your GPU, and exposes the
+          result as a standard OpenAI-compatible REST API — backed by either a vLLM or an SGLang inference
+          engine, depending on which model-free image you choose. (NVIDIA separately publishes model-specific,
+          pre-optimized NIM containers for a curated set of popular models that use a TensorRT-LLM engine
+          instead; this guide focuses on the more flexible model-free path, which trades some of that
+          pre-compiled TensorRT-LLM performance for the ability to serve any architecture-compatible model,
+          including your own fine-tuned weights, from one generic container.) For a data engineer or AI
+          developer who is not a GPU performance specialist, NIM removes the most technically demanding
+          parts of the self-hosting problem while producing a service that existing application code can
+          call without modification. This guide walks through the complete setup on a single NVIDIA GPU
+          workstation, from hardware verification through production monitoring, and includes an
+          honest evaluation of when self-hosting is the wrong choice.</p>
+
+        <h2>What You Are Building</h2>
+
+        <p>The architecture is intentionally simple. The Hugging Face Hub serves as the model
+          repository. The NIM container runs on your GPU server, pulls the model weights, selects
+          a matching deployment profile, and starts an HTTP server. Your applications, whether
+          they are Python scripts, Power Automate flows calling an HTTP action, or any tool that
+          supports the OpenAI client library, send requests to your local endpoint using the same
+          interface they would use for any hosted model.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 120" xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;min-width:560px;max-width:760px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0,8 3,0 6" fill="#6366f1" />
+              </marker>
+            </defs>
+            <!-- HF Hub -->
+            <rect x="10" y="30" width="150" height="50" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b"
+              stroke-width="1.5" />
+            <text x="85" y="51" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#f59e0b">HUGGING FACE HUB</text>
+            <text x="85" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">Model
+              weights</text>
+            <!-- Arrow -->
+            <line x1="160" y1="55" x2="195" y2="55" stroke="#6366f1" stroke-width="1.5" marker-end="url(#a3)" />
+            <!-- NIM Container -->
+            <rect x="195" y="20" width="200" height="70" rx="8" fill="rgba(16,185,129,0.1)" stroke="#34d399"
+              stroke-width="2" />
+            <text x="295" y="43" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#34d399">NIM CONTAINER</text>
+            <text x="295" y="59" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">NVIDIA GPU server</text>
+            <text x="295" y="74" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#94a3b8">vLLM
+              or SGLang (model-free)</text>
+            <!-- Arrow -->
+            <line x1="395" y1="55" x2="430" y2="55" stroke="#6366f1" stroke-width="1.5" marker-end="url(#a3)" />
+            <!-- OpenAI API -->
+            <rect x="430" y="30" width="150" height="50" rx="8" fill="rgba(99,102,241,0.1)" stroke="#818cf8"
+              stroke-width="1.5" />
+            <text x="505" y="51" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#818cf8">OPENAI-COMPATIBLE</text>
+            <text x="505" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">localhost:8000/v1</text>
+            <!-- Arrow -->
+            <line x1="580" y1="55" x2="615" y2="55" stroke="#6366f1" stroke-width="1.5" marker-end="url(#a3)" />
+            <!-- Apps -->
+            <rect x="615" y="30" width="135" height="50" rx="8" fill="rgba(59,130,246,0.1)" stroke="#60a5fa"
+              stroke-width="1.5" />
+            <text x="682" y="51" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="700"
+              fill="#60a5fa">YOUR APPS</text>
+            <text x="682" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="10"
+              fill="#94a3b8">Python / Power Automate</text>
+          </svg>
+          <p class="diagram-caption">The complete data flow. All traffic remains inside your network. The NIM container
+            is the only component that changes relative to a hosted API integration.</p>
+        </div>
+
+        <h2>Step 1: Check Your Hardware</h2>
+
+        <p>GPU memory (VRAM) is the primary constraint for self-hosting LLMs, and the relationship
+          between parameter count and required VRAM is not obvious from model card descriptions alone.
+          The raw weight size in BF16 precision is approximately two bytes per parameter: an 8-billion
+          parameter model requires roughly 16 GB just to load the weights. NIM then needs additional
+          VRAM headroom for the CUDA runtime context, the KV cache that stores attention states for
+          active requests, and the inference engine's working memory. NVIDIA's deployment profiles,
+          which you can list before pulling a full model by running the container with the
+          <code>list-model-profiles</code> argument, reflect these combined requirements.
+        </p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Model Size</th>
+              <th>Approx. Weight Size (BF16)</th>
+              <th>Min. VRAM for NIM</th>
+              <th>Practical Hardware</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>7B / 8B (e.g., Llama 3.1 8B)</td>
+              <td>~15 GB</td>
+              <td>24 GB</td>
+              <td>RTX 3090, RTX 4090, L4, L40S (single GPU)</td>
+            </tr>
+            <tr>
+              <td>13B / 14B</td>
+              <td>~26 GB</td>
+              <td>48 GB</td>
+              <td>RTX 6000 Ada, L40S, A6000 (single GPU)</td>
+            </tr>
+            <tr>
+              <td>70B (e.g., Llama 3.3 70B)</td>
+              <td>~131 GB</td>
+              <td>140-160 GB</td>
+              <td>2x A100 80GB, 2x H100 80GB, or 8x RTX 4090</td>
+            </tr>
+            <tr>
+              <td>70B with FP8 quantization</td>
+              <td>~70 GB</td>
+              <td>80 GB</td>
+              <td>1x H100 80GB or 1x H200 141GB</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>If your GPU falls short of the minimum for your desired model, you have three viable paths.
+          First, choose a smaller model: a well-instructed 8B model on a 24 GB RTX 4090 outperforms
+          a misconfigured 70B model on hardware that cannot support it. Second, apply quantization,
+          which is covered in Step 6 of this guide. Third, rent the GPU rather than buying it: cloud
+          providers including Lambda Labs, CoreWeave, RunPod, and Crusoe Energy offer bare NVIDIA L40S
+          and H100 instances that you can provision on demand, install NIM on, and treat as your private
+          endpoint for the duration of a project without a capital expenditure.</p>
+
+        <h2>Step 2: Prepare the Host</h2>
+
+        <p>Three prerequisites must be satisfied on the host machine before the NIM container will run.
+          Each has a one-command verification test so you can confirm readiness before proceeding.</p>
+
+        <h3>NVIDIA Driver (CUDA 12.1 or later)</h3>
+
+        <pre><code># Verify NVIDIA driver and CUDA version
+nvidia-smi
+
+# Expected output includes something like:
+# CUDA Version: 12.4
+# Driver Version: 550.90.07
+# GPU 0: NVIDIA GeForce RTX 4090 (UUID: ...)
+</code></pre>
+
+        <p>If <code>nvidia-smi</code> fails or reports a CUDA version below 12.1, install or upgrade
+          the driver from the NVIDIA Driver Downloads page. On Ubuntu, the fastest path is
+          <code>sudo apt install nvidia-driver-550</code> followed by a reboot.
+        </p>
+
+        <h3>Docker and the NVIDIA Container Toolkit</h3>
+
+        <pre><code># Install Docker (if not already present)
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# Install the NVIDIA Container Toolkit
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor \
+  -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+
+# One-line GPU visibility test: confirms the GPU is accessible inside a container
+docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+# You should see your GPU listed in the nvidia-smi output from inside the container
+</code></pre>
+
+        <p>If the final test command returns the same output as running <code>nvidia-smi</code>
+          directly on the host, your container environment is correctly configured. Any error
+          here, most commonly a permissions issue or a missing runtime configuration, must
+          be resolved before proceeding.</p>
+
+        <h2>Step 3: Get Your Credentials</h2>
+
+        <p>NIM requires two credentials: an NGC API key to authenticate with NVIDIA's container
+          registry, and a Hugging Face token if you are using a gated model such as Meta's
+          Llama family.</p>
+
+        <ul>
+          <li><strong>NGC API Key:</strong> Create an account at
+            <code>catalog.ngc.nvidia.com</code>, navigate to your profile, and generate a Personal
+            API Key. Store it in an environment variable: <code>export NGC_API_KEY="nvapi-..."</code>
+          </li>
+          <li><strong>Hugging Face Token:</strong> At <code>huggingface.co/settings/tokens</code>,
+            create a Read token. For gated models, you must also visit the model's repository page
+            and accept the license agreement while logged in. The token alone is not sufficient;
+            the license acceptance is a separate step that many tutorials omit.</li>
+        </ul>
+
+        <div class="callout-warning">
+          <p><strong>Gated model access:</strong> If you receive a <code>401 Unauthorized</code> or
+            <code>403 Forbidden</code> error when NIM attempts to download a gated model, the most
+            common cause is that your Hugging Face account has not accepted the model's license on
+            the repository page. The token is valid but the account-level permission was never
+            granted. Navigate to the model page while signed in and look for the access request form.
+          </p>
+        </div>
+
+        <h2>Step 4: Run Your First Model</h2>
+
+        <p>The following command starts the vLLM model-free NIM container with
+          <code>meta-llama/Meta-Llama-3.1-8B-Instruct</code>. It is a reasonable starting model:
+          capable enough to demonstrate real use cases, small enough to fit on a single 24 GB GPU,
+          and openly licensed for commercial use with the Llama 3.1 community license. The model
+          source is passed via <code>NIM_MODEL_PATH</code>, using the <code>hf://</code> prefix
+          model-free NIM expects for Hugging Face Hub sources.
+        </p>
+
+        <pre><code>export NGC_API_KEY="nvapi-your-key-here"
+export HF_TOKEN="hf_your-token-here"
+export LOCAL_CACHE="$HOME/.cache/nim"
+
+mkdir -p "$LOCAL_CACHE"
+
+# Log in to the NVIDIA Container Registry
+echo "$NGC_API_KEY" | docker login nvcr.io -u '$oauthtoken' --password-stdin
+
+# Start the NIM container
+docker run -it --rm \
+  --gpus all \
+  --shm-size=16GB \
+  -e NGC_API_KEY="$NGC_API_KEY" \
+  -e HF_TOKEN="$HF_TOKEN" \
+  -e NIM_MODEL_PATH="hf://meta-llama/Meta-Llama-3.1-8B-Instruct" \
+  -v "$LOCAL_CACHE:/opt/nim/.cache" \
+  -p 8000:8000 \
+  nvcr.io/nim/nvidia/vllm-model-free-nim:latest
+</code></pre>
+
+        <p>On first run, NIM downloads the model weights from Hugging Face, generates a runtime
+          manifest, and selects a deployment profile matched to your GPU before the vLLM engine
+          performs its own startup warm-up (including CUDA graph capture). This startup sequence
+          can take several minutes depending on your GPU and the model size. Subsequent starts
+          using the same cache directory reuse the cached manifest and skip re-downloading the
+          weights, starting substantially faster. Watch for the following line in the container
+          output, which confirms the server is ready to accept requests:</p>
+
+        <pre><code># Expected ready signal in container logs:
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+</code></pre>
+
+        <p>Verify the endpoint is live with a quick health check:</p>
+
+        <pre><code>curl http://localhost:8000/v1/models
+# Expected response includes:
+# {"object":"list","data":[{"id":"meta-llama/Meta-Llama-3.1-8B-Instruct",...}]}
+</code></pre>
+
+        <h2>Step 5: Call It with the OpenAI Python Client</h2>
+
+        <p>This is the step that makes the architecture immediately practical for existing application
+          code. The only change required to redirect an OpenAI Python client to your local NIM
+          instance is the <code>base_url</code> parameter. The model name, the message format,
+          and every other API parameter remain identical.</p>
+
+        <pre><code>from openai import OpenAI
+
+# Point the client at your local NIM instance
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="not-needed-for-local"  # NIM does not require auth locally by default
+)
+
+response = client.chat.completions.create(
+    model="meta-llama/Meta-Llama-3.1-8B-Instruct",
+    messages=[
+        {
+            "role": "system",
+            "content": "You are a clinical documentation assistant. Answer questions based only on the provided context."
+        },
+        {
+            "role": "user",
+            "content": "Summarize the key findings from the following patient encounter note: ..."
+        }
+    ],
+    temperature=0.1,
+    max_tokens=512
+)
+
+print(response.choices[0].message.content)
+</code></pre>
+
+        <p>The same client code runs against <code>api.openai.com</code> or your local NIM endpoint
+          by changing one line. For teams migrating existing integrations to a private deployment,
+          this compatibility means no application-layer changes are required. Any tool that calls
+          the OpenAI REST API, including Power Automate HTTP actions and Azure Logic Apps, will
+          work against your NIM endpoint by updating the base URL and removing the
+          <code>Authorization</code> header, or replacing it with a local API key once
+          you add an authentication gateway.
+        </p>
+
+        <h2>Step 6: Make It Faster with Quantization</h2>
+
+        <p>Running a model in its default BF16 precision uses the most GPU memory and is not
+          necessarily the fastest inference configuration. NVIDIA's TensorRT Model Optimizer
+          supports post-training quantization that reduces model size and increases throughput,
+          with two formats relevant to most deployments.</p>
+
+        <p><strong>FP8 (8-bit floating point)</strong> is the recommended format for NVIDIA Hopper
+          and Blackwell architecture GPUs (H100, H200, B100 series). It reduces memory footprint
+          by approximately 50 percent relative to BF16 with near-lossless accuracy impact because
+          Hopper Tensor Cores have native hardware support for FP8 arithmetic. For a 70B model,
+          FP8 compresses the weight size from roughly 131 GB to approximately 70 GB, making
+          single-H100 deployment viable.</p>
+
+        <p><strong>AWQ (Activation-aware Weight Quantization)</strong> compresses weights to 4-bit
+          integers, reducing memory footprint by approximately 75 percent relative to BF16. This
+          allows larger models on consumer hardware: a 70B model quantized with AWQ can fit on
+          a single RTX 6000 Ada (48 GB) in some configurations. The accuracy trade-off is
+          measurably larger than FP8, particularly on reasoning-intensive tasks, but typically
+          acceptable for summarization, extraction, and classification workloads.</p>
+
+        <p>NVIDIA publishes pre-quantized model checkpoints directly on the Hugging Face Hub
+          under the <code>nvidia</code> organization. These are ready-to-deploy checkpoints that
+          skip the quantization step entirely. To use a pre-quantized checkpoint, substitute
+          the model path in <code>NIM_MODEL_PATH</code>:</p>
+
+        <pre><code># Use NVIDIA's pre-quantized FP8 checkpoint instead of the base model
+# No local quantization step required - the checkpoint is already optimized
+-e NIM_MODEL_PATH="hf://nvidia/Meta-Llama-3.1-8B-Instruct-FP8"
+
+# Or AWQ 4-bit quantized version
+-e NIM_MODEL_PATH="hf://nvidia/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+</code></pre>
+
+        <p>Before deploying a quantized model for a task with quality requirements, run a spot
+          check against a representative sample of your actual workload. The easiest approach is
+          to compare outputs from the base model and the quantized model on 20 to 50 examples
+          drawn from your production use case. Accuracy degradation on general benchmarks does
+          not reliably predict degradation on domain-specific tasks; a clinical note summarization
+          task may show negligible difference between BF16 and AWQ, while a complex legal
+          reasoning task may show a meaningful regression. Measure against your actual use case
+          rather than published benchmark numbers.</p>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Memory vs. BF16</th>
+              <th>Throughput vs. BF16</th>
+              <th>Accuracy Impact</th>
+              <th>Best GPU Architecture</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>BF16 (default)</td>
+              <td>Baseline</td>
+              <td>Baseline</td>
+              <td>None</td>
+              <td>All NVIDIA GPUs</td>
+            </tr>
+            <tr>
+              <td>FP8</td>
+              <td>~50% reduction</td>
+              <td>1.5x to 2x faster</td>
+              <td>Negligible (&lt;1% on most benchmarks)</td>
+              <td>H100, H200, B100 (Hopper/Blackwell)</td>
+            </tr>
+            <tr>
+              <td>AWQ INT4</td>
+              <td>~75% reduction</td>
+              <td>2x to 3x faster</td>
+              <td>Low to moderate (task-dependent)</td>
+              <td>All architectures; Ada Lovelace and newer preferred</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Step 7: Serve Your Own Fine-Tuned Model</h2>
+
+        <p>Many teams reach NIM after fine-tuning a base model on their domain data. Serving a
+          fine-tuned model uses the same <code>NIM_MODEL_PATH</code> variable from Step 4, pointed
+          at a local directory instead of a Hugging Face URI — model-free NIM supports a plain local
+          absolute path as one of its model sources. The directory must follow the standard Hugging
+          Face safetensors layout, including the <code>config.json</code>, <code>tokenizer.json</code>,
+          and all weight shard files:</p>
+
+        <pre><code># Required directory structure for fine-tuned weights
+/path/to/my-finetuned-model/
+├── config.json
+├── generation_config.json
+├── model.safetensors.index.json
+├── model-00001-of-00004.safetensors
+├── model-00002-of-00004.safetensors
+├── model-00003-of-00004.safetensors
+├── model-00004-of-00004.safetensors
+├── special_tokens_map.json
+├── tokenizer.json
+└── tokenizer_config.json
+</code></pre>
+
+        <pre><code>export CUSTOM_WEIGHTS="/path/to/my-finetuned-model"
+export NIM_IMAGE="nvcr.io/nim/nvidia/vllm-model-free-nim:latest"
+
+docker run -it --rm \
+  --name nim-custom \
+  --gpus all \
+  --shm-size=16GB \
+  -e NGC_API_KEY="$NGC_API_KEY" \
+  -e NIM_MODEL_PATH="$CUSTOM_WEIGHTS" \
+  -e NIM_SERVED_MODEL_NAME="my-clinical-model-v2" \
+  -v "$CUSTOM_WEIGHTS:$CUSTOM_WEIGHTS" \
+  -u "$(id -u)" \
+  -p 8000:8000 \
+  "$NIM_IMAGE"
+</code></pre>
+
+        <p>When <code>NIM_MODEL_PATH</code> points at a local directory rather than a <code>hf://</code>
+          URI, the container skips the Hugging Face download step entirely and builds its runtime
+          manifest directly from the configuration files in that directory. NIM analyzes those files,
+          selects a compatible deployment profile for your GPU, and starts the vLLM engine against
+          your weights. <code>NIM_SERVED_MODEL_NAME</code> controls the name your applications will
+          see when they query <code>/v1/models</code> or make inference requests — without it, NIM
+          derives a name from the path itself, which is rarely what you want for a model you intend
+          to call by a stable, memorable identifier.</p>
+
+        <div class="callout">
+          <p><strong>Version check advisory:</strong> Model-free NIM's supported environment variables
+            and model-source conventions have evolved across container releases. The
+            <code>NIM_MODEL_PATH</code> and <code>NIM_SERVED_MODEL_NAME</code> behavior documented
+            here reflects the <code>vllm-model-free-nim</code> image as of November 2026. If you
+            encounter unexpected behavior, run the container with <code>--help</code> or consult
+            <code>docs.nvidia.com/nim</code> for the current environment variable reference,
+            as parameter names have changed between major releases.
+          </p>
+        </div>
+
+        <h2>Step 8: Secure and Monitor the Endpoint</h2>
+
+        <p>A NIM container running on your internal network exposes an unauthenticated HTTP
+          endpoint by default. Before connecting any application to it, two security controls
+          are essential: network restriction and API authentication.</p>
+
+        <p><strong>Network restriction:</strong> Bind the container's port to a specific interface
+          rather than all interfaces. Replace <code>-p 8000:8000</code> with
+          <code>-p 127.0.0.1:8000:8000</code> if only local processes should access it, or
+          with the specific internal network interface IP if other servers on your VLAN need
+          access but external traffic should not.
+        </p>
+
+        <p><strong>API authentication:</strong> Place a lightweight reverse proxy such as nginx
+          or Caddy in front of the NIM endpoint. The proxy handles TLS termination, adds an
+          <code>Authorization</code> header validation layer, and can enforce rate limits.
+          A minimal nginx configuration for this purpose:
+        </p>
+
+        <pre><code># nginx.conf snippet: proxy NIM with bearer token authentication
+server {
+    listen 443 ssl;
+    server_name nim.internal.yourcompany.com;
+
+    ssl_certificate     /etc/ssl/certs/nim.crt;
+    ssl_certificate_key /etc/ssl/private/nim.key;
+
+    location /v1/ {
+        # Validate bearer token against a static key or an auth service
+        auth_request /validate;
+
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 300s;
+    }
+
+    location = /validate {
+        internal;
+        proxy_pass http://127.0.0.1:9000/validate;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Authorization $http_authorization;
+    }
+}
+</code></pre>
+
+        <p><strong>Monitoring:</strong> NIM exposes a Prometheus-compatible metrics endpoint at
+          <code>/metrics</code> that reports GPU utilization, token throughput, request latency
+          percentiles, and queue depth. Add this endpoint as a scrape target in your Prometheus
+          configuration and build a Grafana dashboard tracking the four metrics most relevant
+          to production health: GPU memory utilization (should stay below 90% under load),
+          tokens-per-second throughput, P95 and P99 time-to-first-token latency, and
+          request queue depth. When queue depth rises consistently, your single GPU instance
+          has reached its concurrency limit and you should consider adding a second instance
+          behind a load balancer.
+        </p>
+
+        <h2>Troubleshooting Common Issues</h2>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Symptom</th>
+              <th>Likely Cause</th>
+              <th>Resolution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Container exits with <code>CUDA out of memory</code></td>
+              <td>Model too large for available VRAM, or another process is using GPU memory</td>
+              <td>Run <code>nvidia-smi</code> to check for competing processes. Choose a smaller model or apply FP8/AWQ
+                quantization. Use <code>list-model-profiles</code> to see which profiles match your hardware.</td>
+            </tr>
+            <tr>
+              <td><code>401 Unauthorized</code> when pulling gated model</td>
+              <td>License not accepted on the Hugging Face repository page, or <code>HF_TOKEN</code> variable not set
+              </td>
+              <td>Navigate to the model page on huggingface.co while signed in and complete the license acceptance form.
+                Verify the token is exported in your shell session.</td>
+            </tr>
+            <tr>
+              <td>Slow first request after container starts</td>
+              <td>Weight download and vLLM engine warm-up (manifest generation, profile selection, CUDA graph capture)
+                in progress. This is expected on first run.</td>
+              <td>Wait for the startup sequence to complete. Subsequent requests will respond at full speed. Ensure the
+                cache volume (<code>-v</code> mount) is persistent so the model weights and manifest are not
+                re-downloaded on restart.</td>
+            </tr>
+            <tr>
+              <td><code>No compatible profile found</code> error at startup</td>
+              <td>GPU architecture or VRAM does not match any available deployment profile for the requested model</td>
+              <td>Run with <code>list-model-profiles</code> to see the available profiles. Switch to a smaller model or
+                a quantized variant.</td>
+            </tr>
+            <tr>
+              <td>Fine-tuned model weights not loading via <code>NIM_MODEL_PATH</code></td>
+              <td>Missing required files in the weight directory (tokenizer, config.json), or incorrect path mapping in
+                the <code>-v</code> mount</td>
+              <td>Verify all required files are present using the directory structure checklist in Step 7. Ensure the
+                <code>-v</code> source and destination paths are identical (NIM expects the mounted path to match the
+                environment variable value).</td>
+            </tr>
+            <tr>
+              <td>High latency on first token for every request</td>
+              <td>CUDA graph capture warming up, or KV cache not pre-allocated</td>
+              <td>Send a warmup request immediately after the server reports ready. Consider capping context length via
+                the backend's max-sequence-length setting to reduce KV cache allocation overhead.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Cost Comparison: Self-Hosting vs. Per-Token Pricing</h2>
+
+        <p>Self-hosting an LLM is a fixed-cost commitment. The GPU either runs and costs money or
+          sits idle and still costs money. Hosted API pricing is purely variable: you pay only
+          for the tokens you generate. This structural difference makes volume the decisive
+          factor in the cost comparison.</p>
+
+        <p>As of late 2026, a single NVIDIA L40S instance rented from a cloud GPU provider spans a
+          wide range, from roughly \$0.68–\$1.10/hour on budget providers (Crusoe Energy, RunPod,
+          Lambda Labs) to \$1.86/hour on hyperscalers like AWS, with a tracked market median around
+          \$1.57/hour. Running 24 hours per day at that median yields a monthly infrastructure cost
+          of roughly \$1,130, plus the NVIDIA AI Enterprise self-managed subscription fee of \$4,500
+          per GPU per year (\$375/month) if you require enterprise support — though NVIDIA also
+          offers a pay-as-you-go cloud consumption rate of \$1/GPU-hour as an alternative to the
+          annual subscription. At the median infrastructure cost, and assuming the L40S can sustain
+          approximately 1,500 tokens per second for an 8B model, the break-even threshold against
+          typical hosted API pricing falls at roughly 300 to 450 million tokens per month — and
+          shifts meaningfully lower if you source GPU capacity from a budget provider instead of a
+          hyperscaler. Below that volume, a hosted API is cheaper. Above it, self-hosting wins on
+          marginal cost.</p>
+
+        <p>The calculation changes decisively when data residency is a legal requirement rather
+          than a preference. If your compliance posture prohibits sending data to a third-party
+          API regardless of cost, the break-even calculation becomes irrelevant. The self-hosted
+          option is the only option, and the cost comparison shifts to self-hosting versus
+          not building the AI feature at all.</p>
+
+        <h2>When Not to Self-Host</h2>
+
+        <p>Self-hosting an LLM is the right architectural choice for specific situations, and the
+          wrong choice for others. The following conditions argue clearly against it, and
+          recognizing them early avoids substantial wasted engineering effort.</p>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">Low or Unpredictable Volume</div>
+          <p>If your application generates fewer than 10 million tokens per day on average, a
+            hosted API will almost certainly cost less than renting or purchasing the GPU
+            infrastructure required to run NIM around the clock. Serverless inference options
+            such as Together AI, Groq, and AWS Bedrock offer open-weight model access at
+            per-token pricing that is competitive with the marginal cost of self-hosting at
+            modest volume.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">No Available GPU or No Budget for One</div>
+          <p>NIM requires a supported NVIDIA GPU with at least 24 GB of VRAM for the smallest
+            useful models. Running inference on CPU is feasible with llama.cpp for development
+            and testing, but the throughput is too low for production workloads with more than
+            a handful of concurrent users. If your organization does not have a GPU budget and
+            cannot rent one, NIM is not the right tool.</p>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-step-title">No Engineering Capacity to Maintain It</div>
+          <p>A self-hosted NIM instance is a production service that requires ongoing maintenance:
+            driver updates, container version upgrades, certificate renewals, monitoring alert
+            response, and capacity planning as usage grows. If your team does not have an
+            engineer who can own this service as part of their regular responsibilities, the
+            operational burden will eventually fall to whoever is available, which produces
+            the same kind of unplanned 3am incident response that motivates the pipeline
+            monitoring automation described elsewhere on this site.</p>
+        </div>
+
+        <p>For teams in regulated industries who do have the volume, the hardware, and the
+          engineering capacity, NIM represents a substantial maturation of the self-hosting
+          option. The containerized packaging eliminates the most demanding parts of the
+          GPU performance engineering problem, the OpenAI API compatibility eliminates
+          application-layer migration work, and the Hugging Face integration gives access
+          to the full open-weight model ecosystem without leaving your network perimeter.
+          The result is a private AI API that is indistinguishable from a hosted service
+          from the perspective of the applications calling it, while remaining entirely
+          under your operational control.</p>
+
+        <aside
+          style="margin-top: var(--space-xl); padding-top: var(--space-l); border-top: 1px solid rgba(255,255,255,0.08);">
+          <h2
+            style="font-family:'Outfit',sans-serif;font-size:1.5rem;color:var(--clr-surface-invert);margin-bottom:var(--space-m);">
+            About the Author</h2>
+          <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+            <div>
+              <p style="font-weight:600;font-size:1.1rem;color:var(--clr-surface-invert);margin-bottom:0.25rem;">Jieun
+                Park
+              </p>
+              <p style="color:var(--clr-text-muted);font-size:0.95rem;margin-bottom:0.75rem;">Agentic AI Engineer &amp;
+                Business Intelligence Professional</p>
+              <p style="color:var(--clr-text-main);font-size:1rem;line-height:1.7;">Jieun Park is an agentic AI engineer
+                and
+                business intelligence professional with a focus on enterprise analytics, Power Platform architecture,
+                and
+                applied AI systems. She writes on the intersection of data engineering and organizational strategy.</p>
+              <a href="https://www.linkedin.com/in/developerjp/" target="_blank"
+                style="display:inline-block;margin-top:0.75rem;color:#60a5fa;font-size:0.95rem;text-decoration:none;">Connect
+                on LinkedIn &rarr;</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align:center;padding:var(--space-l) 0;">
+      <p style="color:var(--clr-text-muted);font-size:0.9rem;">&copy; 2026 Data Analytics &amp; Beyond. All rights
+        reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>
